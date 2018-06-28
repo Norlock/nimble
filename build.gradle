@@ -21,7 +21,8 @@ mainClassName = 'App'
 
 dependencies {
 
-    antlr "org.antlr:antlr4:4.5" // use ANTLR version 4
+    antlr "org.antlr:antlr4:4.5.1" // use ANTLR version 4
+    compile "org.antlr:antlr4-runtime:4.5.1"
     // Use JUnit test framework
     testCompile 'junit:junit:4.12'
 }
@@ -31,4 +32,8 @@ repositories {
     // Use jcenter for resolving your dependencies.
     // You can declare any Maven/Ivy/file repository here.
     jcenter()
+}
+
+clean{
+    delete "src/main/java/generated/*"
 }

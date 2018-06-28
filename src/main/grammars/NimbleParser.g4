@@ -31,6 +31,7 @@ functionCall
 
 functionDeclaration
     : modifier variableType
+    ;
 
 functionType
     : variableType
