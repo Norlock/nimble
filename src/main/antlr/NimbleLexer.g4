@@ -3,6 +3,7 @@ lexer grammar NimbleLexer;
 // TYPES
 STRING_TYPE: 'string';
 INTEGER_TYPE: 'int';
+DOUBLE_TYPE: 'double';
 BOOLEAN_TYPE: 'bool';
 VOID: 'void';
 NULL: 'null';
@@ -61,6 +62,8 @@ BOOLEAN
     ;
 
 INTEGER: [0-9]+;
+
+DOUBLE: INTEGER+ ',' INTEGER+;
 
 STRING
  : '"' (~["\r\n] | '""')* '"'

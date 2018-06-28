@@ -17,14 +17,15 @@ public class NimbleParser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		STRING_TYPE=1, INTEGER_TYPE=2, BOOLEAN_TYPE=3, VOID=4, NULL=5, GLOBAL=6, 
-		PACKAGE=7, INTERNAL=8, MAIN=9, SEMICOLON=10, COMMA=11, DOT=12, LEFT_PARENTHESE=13, 
-		RIGHT_PARENTHESE=14, LEFT_BRACE=15, RIGHT_BRACE=16, LEFT_SQUARE_BRACKET=17, 
-		RIGHT_SQUARE_BRACKET=18, ASSIGN=19, LESSER=20, GREATER=21, EQUAL=22, NOT_EQUAL=23, 
-		LESSER_OR_EQUAL=24, GREATER_OR_EQUAL=25, AND=26, OR=27, INCREMENT=28, 
-		DECREMENT=29, ADD=30, SUBSTRACT=31, MULTIPLY=32, DIVIDE=33, MODULO=34, 
-		NOT=35, IF=36, ELSE=37, GOTO=38, RETURN=39, FOR=40, WHILE=41, CLASS=42, 
-		BOOLEAN=43, INTEGER=44, STRING=45, IDENTIFIER=46, WS=47, COMMENT=48, LINE_COMMENT=49;
+		STRING_TYPE=1, INTEGER_TYPE=2, DOUBLE_TYPE=3, BOOLEAN_TYPE=4, VOID=5, 
+		NULL=6, GLOBAL=7, PACKAGE=8, INTERNAL=9, MAIN=10, SEMICOLON=11, COMMA=12, 
+		DOT=13, LEFT_PARENTHESE=14, RIGHT_PARENTHESE=15, LEFT_BRACE=16, RIGHT_BRACE=17, 
+		LEFT_SQUARE_BRACKET=18, RIGHT_SQUARE_BRACKET=19, ASSIGN=20, LESSER=21, 
+		GREATER=22, EQUAL=23, NOT_EQUAL=24, LESSER_OR_EQUAL=25, GREATER_OR_EQUAL=26, 
+		AND=27, OR=28, INCREMENT=29, DECREMENT=30, ADD=31, SUBSTRACT=32, MULTIPLY=33, 
+		DIVIDE=34, MODULO=35, NOT=36, IF=37, ELSE=38, GOTO=39, RETURN=40, FOR=41, 
+		WHILE=42, CLASS=43, BOOLEAN=44, INTEGER=45, DOUBLE=46, STRING=47, IDENTIFIER=48, 
+		WS=49, COMMENT=50, LINE_COMMENT=51;
 	public static final int
 		RULE_main = 0, RULE_block = 1, RULE_statement = 2, RULE_variableDeclaration = 3, 
 		RULE_ifStatement = 4, RULE_functionCall = 5, RULE_functionDeclaration = 6, 
@@ -39,21 +40,21 @@ public class NimbleParser extends Parser {
 	};
 
 	private static final String[] _LITERAL_NAMES = {
-		null, "'string'", "'int'", "'bool'", "'void'", "'null'", "'global'", "'package'", 
-		"'internal'", "'main'", "';'", "','", "'.'", "'('", "')'", "'{'", "'}'", 
-		"'['", "']'", "'='", "'<'", "'>'", "'=='", "'!='", "'<='", "'>='", "'&&'", 
-		"'||'", "'++'", "'--'", "'+'", "'-'", "'*'", "'/'", "'%'", "'!'", "'if'", 
-		"'else'", "'goto'", "'return'", "'for'", "'while'", "'class'"
+		null, "'string'", "'int'", "'double'", "'bool'", "'void'", "'null'", "'global'", 
+		"'package'", "'internal'", "'main'", "';'", "','", "'.'", "'('", "')'", 
+		"'{'", "'}'", "'['", "']'", "'='", "'<'", "'>'", "'=='", "'!='", "'<='", 
+		"'>='", "'&&'", "'||'", "'++'", "'--'", "'+'", "'-'", "'*'", "'/'", "'%'", 
+		"'!'", "'if'", "'else'", "'goto'", "'return'", "'for'", "'while'", "'class'"
 	};
 	private static final String[] _SYMBOLIC_NAMES = {
-		null, "STRING_TYPE", "INTEGER_TYPE", "BOOLEAN_TYPE", "VOID", "NULL", "GLOBAL", 
-		"PACKAGE", "INTERNAL", "MAIN", "SEMICOLON", "COMMA", "DOT", "LEFT_PARENTHESE", 
-		"RIGHT_PARENTHESE", "LEFT_BRACE", "RIGHT_BRACE", "LEFT_SQUARE_BRACKET", 
-		"RIGHT_SQUARE_BRACKET", "ASSIGN", "LESSER", "GREATER", "EQUAL", "NOT_EQUAL", 
-		"LESSER_OR_EQUAL", "GREATER_OR_EQUAL", "AND", "OR", "INCREMENT", "DECREMENT", 
-		"ADD", "SUBSTRACT", "MULTIPLY", "DIVIDE", "MODULO", "NOT", "IF", "ELSE", 
-		"GOTO", "RETURN", "FOR", "WHILE", "CLASS", "BOOLEAN", "INTEGER", "STRING", 
-		"IDENTIFIER", "WS", "COMMENT", "LINE_COMMENT"
+		null, "STRING_TYPE", "INTEGER_TYPE", "DOUBLE_TYPE", "BOOLEAN_TYPE", "VOID", 
+		"NULL", "GLOBAL", "PACKAGE", "INTERNAL", "MAIN", "SEMICOLON", "COMMA", 
+		"DOT", "LEFT_PARENTHESE", "RIGHT_PARENTHESE", "LEFT_BRACE", "RIGHT_BRACE", 
+		"LEFT_SQUARE_BRACKET", "RIGHT_SQUARE_BRACKET", "ASSIGN", "LESSER", "GREATER", 
+		"EQUAL", "NOT_EQUAL", "LESSER_OR_EQUAL", "GREATER_OR_EQUAL", "AND", "OR", 
+		"INCREMENT", "DECREMENT", "ADD", "SUBSTRACT", "MULTIPLY", "DIVIDE", "MODULO", 
+		"NOT", "IF", "ELSE", "GOTO", "RETURN", "FOR", "WHILE", "CLASS", "BOOLEAN", 
+		"INTEGER", "DOUBLE", "STRING", "IDENTIFIER", "WS", "COMMENT", "LINE_COMMENT"
 	};
 	public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
 
@@ -1548,7 +1549,7 @@ public class NimbleParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\63\u009d\4\2\t\2"+
+		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\65\u009d\4\2\t\2"+
 		"\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13"+
 		"\t\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\4\21\t\21\3\2\3\2"+
 		"\3\2\3\2\3\2\3\3\3\3\7\3*\n\3\f\3\16\3-\13\3\3\3\3\3\3\4\3\4\3\4\3\4\5"+
@@ -1560,38 +1561,39 @@ public class NimbleParser extends Parser {
 		"\3\20\3\20\3\20\3\20\3\20\3\20\3\20\3\20\3\20\3\20\3\20\3\20\3\20\7\20"+
 		"\u008d\n\20\f\20\16\20\u0090\13\20\3\21\3\21\3\21\3\21\3\21\3\21\3\21"+
 		"\3\21\3\21\5\21\u009b\n\21\3\21\2\3\36\22\2\4\6\b\n\f\16\20\22\24\26\30"+
-		"\32\34\36 \2\b\3\2\b\n\3\2\3\5\3\2 !\3\2\"$\4\2\26\27\32\33\3\2\30\31"+
-		"\u00a1\2\"\3\2\2\2\4\'\3\2\2\2\6\64\3\2\2\2\b\66\3\2\2\2\n<\3\2\2\2\f"+
-		"J\3\2\2\2\16P\3\2\2\2\20U\3\2\2\2\22W\3\2\2\2\24Z\3\2\2\2\26_\3\2\2\2"+
-		"\30a\3\2\2\2\32c\3\2\2\2\34i\3\2\2\2\36x\3\2\2\2 \u009a\3\2\2\2\"#\7\13"+
-		"\2\2#$\5\32\16\2$%\5\4\3\2%&\7\2\2\3&\3\3\2\2\2\'+\7\21\2\2(*\5\6\4\2"+
-		")(\3\2\2\2*-\3\2\2\2+)\3\2\2\2+,\3\2\2\2,.\3\2\2\2-+\3\2\2\2./\7\22\2"+
-		"\2/\5\3\2\2\2\60\65\5\b\5\2\61\65\5\n\6\2\62\65\5\f\7\2\63\65\5\22\n\2"+
-		"\64\60\3\2\2\2\64\61\3\2\2\2\64\62\3\2\2\2\64\63\3\2\2\2\65\7\3\2\2\2"+
-		"\66\67\5\30\r\2\678\7\60\2\289\7\25\2\29:\5\36\20\2:;\7\f\2\2;\t\3\2\2"+
-		"\2<=\7&\2\2=C\5\24\13\2>?\7\'\2\2?@\7&\2\2@B\5\24\13\2A>\3\2\2\2BE\3\2"+
-		"\2\2CA\3\2\2\2CD\3\2\2\2DH\3\2\2\2EC\3\2\2\2FG\7\'\2\2GI\5\4\3\2HF\3\2"+
-		"\2\2HI\3\2\2\2I\13\3\2\2\2JK\7\60\2\2KL\7\17\2\2LM\5 \21\2MN\7\20\2\2"+
-		"NO\7\f\2\2O\r\3\2\2\2PQ\5\26\f\2QR\5\30\r\2R\17\3\2\2\2SV\5\30\r\2TV\7"+
-		"\6\2\2US\3\2\2\2UT\3\2\2\2V\21\3\2\2\2WX\7+\2\2XY\5\24\13\2Y\23\3\2\2"+
-		"\2Z[\7\17\2\2[\\\5\36\20\2\\]\7\20\2\2]^\5\4\3\2^\25\3\2\2\2_`\t\2\2\2"+
-		"`\27\3\2\2\2ab\t\3\2\2b\31\3\2\2\2ce\7\17\2\2df\5\34\17\2ed\3\2\2\2ef"+
-		"\3\2\2\2fg\3\2\2\2gh\7\20\2\2h\33\3\2\2\2ij\5\30\r\2jq\7\60\2\2kl\7\r"+
-		"\2\2lm\5\30\r\2mn\7\60\2\2np\3\2\2\2ok\3\2\2\2ps\3\2\2\2qo\3\2\2\2qr\3"+
-		"\2\2\2r\35\3\2\2\2sq\3\2\2\2tu\b\20\1\2uv\7%\2\2vy\5\36\20\nwy\5 \21\2"+
-		"xt\3\2\2\2xw\3\2\2\2y\u008e\3\2\2\2z{\f\t\2\2{|\t\4\2\2|\u008d\5\36\20"+
-		"\n}~\f\b\2\2~\177\t\5\2\2\177\u008d\5\36\20\t\u0080\u0081\f\7\2\2\u0081"+
-		"\u0082\t\6\2\2\u0082\u008d\5\36\20\b\u0083\u0084\f\6\2\2\u0084\u0085\t"+
-		"\7\2\2\u0085\u008d\5\36\20\7\u0086\u0087\f\5\2\2\u0087\u0088\7\34\2\2"+
-		"\u0088\u008d\5\36\20\6\u0089\u008a\f\4\2\2\u008a\u008b\7\35\2\2\u008b"+
-		"\u008d\5\36\20\5\u008cz\3\2\2\2\u008c}\3\2\2\2\u008c\u0080\3\2\2\2\u008c"+
-		"\u0083\3\2\2\2\u008c\u0086\3\2\2\2\u008c\u0089\3\2\2\2\u008d\u0090\3\2"+
-		"\2\2\u008e\u008c\3\2\2\2\u008e\u008f\3\2\2\2\u008f\37\3\2\2\2\u0090\u008e"+
-		"\3\2\2\2\u0091\u0092\7\17\2\2\u0092\u0093\5\36\20\2\u0093\u0094\7\20\2"+
-		"\2\u0094\u009b\3\2\2\2\u0095\u009b\7.\2\2\u0096\u009b\7-\2\2\u0097\u009b"+
-		"\7\60\2\2\u0098\u009b\7/\2\2\u0099\u009b\7\7\2\2\u009a\u0091\3\2\2\2\u009a"+
-		"\u0095\3\2\2\2\u009a\u0096\3\2\2\2\u009a\u0097\3\2\2\2\u009a\u0098\3\2"+
-		"\2\2\u009a\u0099\3\2\2\2\u009b!\3\2\2\2\r+\64CHUeqx\u008c\u008e\u009a";
+		"\32\34\36 \2\b\3\2\t\13\4\2\3\4\6\6\3\2!\"\3\2#%\4\2\27\30\33\34\3\2\31"+
+		"\32\u00a1\2\"\3\2\2\2\4\'\3\2\2\2\6\64\3\2\2\2\b\66\3\2\2\2\n<\3\2\2\2"+
+		"\fJ\3\2\2\2\16P\3\2\2\2\20U\3\2\2\2\22W\3\2\2\2\24Z\3\2\2\2\26_\3\2\2"+
+		"\2\30a\3\2\2\2\32c\3\2\2\2\34i\3\2\2\2\36x\3\2\2\2 \u009a\3\2\2\2\"#\7"+
+		"\f\2\2#$\5\32\16\2$%\5\4\3\2%&\7\2\2\3&\3\3\2\2\2\'+\7\22\2\2(*\5\6\4"+
+		"\2)(\3\2\2\2*-\3\2\2\2+)\3\2\2\2+,\3\2\2\2,.\3\2\2\2-+\3\2\2\2./\7\23"+
+		"\2\2/\5\3\2\2\2\60\65\5\b\5\2\61\65\5\n\6\2\62\65\5\f\7\2\63\65\5\22\n"+
+		"\2\64\60\3\2\2\2\64\61\3\2\2\2\64\62\3\2\2\2\64\63\3\2\2\2\65\7\3\2\2"+
+		"\2\66\67\5\30\r\2\678\7\62\2\289\7\26\2\29:\5\36\20\2:;\7\r\2\2;\t\3\2"+
+		"\2\2<=\7\'\2\2=C\5\24\13\2>?\7(\2\2?@\7\'\2\2@B\5\24\13\2A>\3\2\2\2BE"+
+		"\3\2\2\2CA\3\2\2\2CD\3\2\2\2DH\3\2\2\2EC\3\2\2\2FG\7(\2\2GI\5\4\3\2HF"+
+		"\3\2\2\2HI\3\2\2\2I\13\3\2\2\2JK\7\62\2\2KL\7\20\2\2LM\5 \21\2MN\7\21"+
+		"\2\2NO\7\r\2\2O\r\3\2\2\2PQ\5\26\f\2QR\5\30\r\2R\17\3\2\2\2SV\5\30\r\2"+
+		"TV\7\7\2\2US\3\2\2\2UT\3\2\2\2V\21\3\2\2\2WX\7,\2\2XY\5\24\13\2Y\23\3"+
+		"\2\2\2Z[\7\20\2\2[\\\5\36\20\2\\]\7\21\2\2]^\5\4\3\2^\25\3\2\2\2_`\t\2"+
+		"\2\2`\27\3\2\2\2ab\t\3\2\2b\31\3\2\2\2ce\7\20\2\2df\5\34\17\2ed\3\2\2"+
+		"\2ef\3\2\2\2fg\3\2\2\2gh\7\21\2\2h\33\3\2\2\2ij\5\30\r\2jq\7\62\2\2kl"+
+		"\7\16\2\2lm\5\30\r\2mn\7\62\2\2np\3\2\2\2ok\3\2\2\2ps\3\2\2\2qo\3\2\2"+
+		"\2qr\3\2\2\2r\35\3\2\2\2sq\3\2\2\2tu\b\20\1\2uv\7&\2\2vy\5\36\20\nwy\5"+
+		" \21\2xt\3\2\2\2xw\3\2\2\2y\u008e\3\2\2\2z{\f\t\2\2{|\t\4\2\2|\u008d\5"+
+		"\36\20\n}~\f\b\2\2~\177\t\5\2\2\177\u008d\5\36\20\t\u0080\u0081\f\7\2"+
+		"\2\u0081\u0082\t\6\2\2\u0082\u008d\5\36\20\b\u0083\u0084\f\6\2\2\u0084"+
+		"\u0085\t\7\2\2\u0085\u008d\5\36\20\7\u0086\u0087\f\5\2\2\u0087\u0088\7"+
+		"\35\2\2\u0088\u008d\5\36\20\6\u0089\u008a\f\4\2\2\u008a\u008b\7\36\2\2"+
+		"\u008b\u008d\5\36\20\5\u008cz\3\2\2\2\u008c}\3\2\2\2\u008c\u0080\3\2\2"+
+		"\2\u008c\u0083\3\2\2\2\u008c\u0086\3\2\2\2\u008c\u0089\3\2\2\2\u008d\u0090"+
+		"\3\2\2\2\u008e\u008c\3\2\2\2\u008e\u008f\3\2\2\2\u008f\37\3\2\2\2\u0090"+
+		"\u008e\3\2\2\2\u0091\u0092\7\20\2\2\u0092\u0093\5\36\20\2\u0093\u0094"+
+		"\7\21\2\2\u0094\u009b\3\2\2\2\u0095\u009b\7/\2\2\u0096\u009b\7.\2\2\u0097"+
+		"\u009b\7\62\2\2\u0098\u009b\7\61\2\2\u0099\u009b\7\b\2\2\u009a\u0091\3"+
+		"\2\2\2\u009a\u0095\3\2\2\2\u009a\u0096\3\2\2\2\u009a\u0097\3\2\2\2\u009a"+
+		"\u0098\3\2\2\2\u009a\u0099\3\2\2\2\u009b!\3\2\2\2\r+\64CHUeqx\u008c\u008e"+
+		"\u009a";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {
