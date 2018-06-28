@@ -16,8 +16,29 @@ public class Value {
     }
 
     public int asInteger() {
-        return (int) value;
+        return (Integer) value;
     }
 
-    
+    public String asString() {
+        return String.valueOf(value);
+    }
+
+    public boolean isDouble() {
+        return value instanceof Double;
+    }
+
+    @Override
+    public int hashCode() {
+
+        if(value == null) {
+            return 0;
+        }
+
+        return this.value.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
 }
