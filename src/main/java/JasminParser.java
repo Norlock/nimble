@@ -1,8 +1,8 @@
-public class Value {
+public class JasminParser {
 
     final Object value;
 
-    public Value(Object value) {
+    public JasminParser(Object value) {
         this.value = value;
     }
 

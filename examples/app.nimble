@@ -1,11 +1,12 @@
 main() {
-    int a = 0;
-    int b = 1;
+    int intA = 3;
+    int intB = 1;
     bool c = False;
-b = 2;
+    b = 2;
+    print(intA);
 
 }
 
-global void test() {
+global void test(int a, int b) {
 
 }

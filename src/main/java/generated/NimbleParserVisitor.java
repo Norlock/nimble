@@ -17,6 +17,12 @@ public interface NimbleParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitMain(NimbleParser.MainContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link NimbleParser#constructorDeclaration}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitConstructorDeclaration(NimbleParser.ConstructorDeclarationContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link NimbleParser#block}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -35,12 +41,6 @@ public interface NimbleParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitVariableAssignment(NimbleParser.VariableAssignmentContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link NimbleParser#constructorDeclaration}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitConstructorDeclaration(NimbleParser.ConstructorDeclarationContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link NimbleParser#statement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -58,6 +58,12 @@ public interface NimbleParserVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitFunctionCall(NimbleParser.FunctionCallContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link NimbleParser#printStatement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPrintStatement(NimbleParser.PrintStatementContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link NimbleParser#function}.
 	 * @param ctx the parse tree
@@ -82,6 +88,12 @@ public interface NimbleParserVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitConditionBlock(NimbleParser.ConditionBlockContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link NimbleParser#condition}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCondition(NimbleParser.ConditionContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link NimbleParser#modifier}.
 	 * @param ctx the parse tree

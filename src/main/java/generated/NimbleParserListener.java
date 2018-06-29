@@ -18,6 +18,16 @@ public interface NimbleParserListener extends ParseTreeListener {
 	 */
 	void exitMain(NimbleParser.MainContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link NimbleParser#constructorDeclaration}.
+	 * @param ctx the parse tree
+	 */
+	void enterConstructorDeclaration(NimbleParser.ConstructorDeclarationContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NimbleParser#constructorDeclaration}.
+	 * @param ctx the parse tree
+	 */
+	void exitConstructorDeclaration(NimbleParser.ConstructorDeclarationContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link NimbleParser#block}.
 	 * @param ctx the parse tree
 	 */
@@ -48,16 +58,6 @@ public interface NimbleParserListener extends ParseTreeListener {
 	 */
 	void exitVariableAssignment(NimbleParser.VariableAssignmentContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link NimbleParser#constructorDeclaration}.
-	 * @param ctx the parse tree
-	 */
-	void enterConstructorDeclaration(NimbleParser.ConstructorDeclarationContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link NimbleParser#constructorDeclaration}.
-	 * @param ctx the parse tree
-	 */
-	void exitConstructorDeclaration(NimbleParser.ConstructorDeclarationContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link NimbleParser#statement}.
 	 * @param ctx the parse tree
 	 */
@@ -87,6 +87,16 @@ public interface NimbleParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitFunctionCall(NimbleParser.FunctionCallContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link NimbleParser#printStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterPrintStatement(NimbleParser.PrintStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NimbleParser#printStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitPrintStatement(NimbleParser.PrintStatementContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link NimbleParser#function}.
 	 * @param ctx the parse tree
@@ -127,6 +137,16 @@ public interface NimbleParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitConditionBlock(NimbleParser.ConditionBlockContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link NimbleParser#condition}.
+	 * @param ctx the parse tree
+	 */
+	void enterCondition(NimbleParser.ConditionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NimbleParser#condition}.
+	 * @param ctx the parse tree
+	 */
+	void exitCondition(NimbleParser.ConditionContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link NimbleParser#modifier}.
 	 * @param ctx the parse tree

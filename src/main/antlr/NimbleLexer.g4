@@ -55,6 +55,7 @@ RETURN: 'return';
 FOR: 'for';
 WHILE: 'while';
 CLASS: 'class';
+PRINT: 'print';
 
 TRUE: 'true';
 FALSE: 'false';

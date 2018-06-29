@@ -3,7 +3,11 @@ parser grammar NimbleParser;
 options { tokenVocab=NimbleLexer; }
 
 main
-    : MAIN constructorDeclaration block function*  EOF
+    : MAIN block function*  EOF
+    ;
+
+constructorDeclaration
+    : LEFT_PARENTHESE constructorParameters? RIGHT_PARENTHESE
     ;
 
 block
@@ -18,9 +22,6 @@ variableAssignment
     : IDENTIFIER ASSIGN expression SEMICOLON
     ;
 
-constructorDeclaration
-    : LEFT_PARENTHESE constructorParameters? RIGHT_PARENTHESE
-    ;
 
 statement
     : variableDeclaration
@@ -28,6 +29,7 @@ statement
     | ifStatement
     | functionCall
     | whileLoop
+    | printStatement
     ;
 
 ifStatement
@@ -36,6 +38,10 @@ ifStatement
 
 functionCall
     : IDENTIFIER LEFT_PARENTHESE atom RIGHT_PARENTHESE SEMICOLON
+    ;
+
+printStatement
+    : PRINT condition SEMICOLON
     ;
 
 function
@@ -52,7 +58,11 @@ whileLoop
     ;
 
 conditionBlock
-    : LEFT_PARENTHESE expression RIGHT_PARENTHESE block
+    :  condition block
+    ;
+
+condition
+    : LEFT_PARENTHESE expression RIGHT_PARENTHESE
     ;
 
 modifier: GLOBAL | PACKAGE | INTERNAL ;
