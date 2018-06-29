@@ -2,8 +2,13 @@ parser grammar NimbleParser;
 
 options { tokenVocab=NimbleLexer; }
 
+// functies mogen boven de main bevinden.
 main
-    : MAIN block function*  EOF
+    : field* function* MAIN block field* function*  EOF
+    ;
+
+field
+    : modifier variableDeclaration
     ;
 
 constructorDeclaration

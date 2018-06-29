@@ -10,7 +10,7 @@ import java.util.Map;
 public class NimbleVisitor extends NimbleParserBaseVisitor<JasminParser> {
 
     // store variables
-    private Map<String, JasminParser> variables = new HashMap<String, JasminParser>();
+    private Map<String, JasminParser> variables = new HashMap<>();
 
     /**
      * Visit a parse tree produced by {@link NimbleParser#main}.
@@ -20,16 +20,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<JasminParser> {
      */
     @Override
     public JasminParser visitMain(NimbleParser.MainContext ctx) {
-
-        if(ctx.getChild(0).getText().equals("main")) {
-            System.out.println("Starting nimble application");
-            return super.visitMain(ctx);
-        }
-        else {
-            System.out.println("Can't detect main closing app");
-            return null;
-        }
-
+        return super.visitMain(ctx);
     }
 
     /**
@@ -62,7 +53,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<JasminParser> {
      */
     @Override
     public JasminParser visitVariableDeclaration(NimbleParser.VariableDeclarationContext ctx) {
-        variables.put(ctx.IDENTIFIER().getText(), new JasminParser(0));
+        variables.put(ctx.IDENTIFIER().getText(), ctx.variableType().getText());
 
         return super.visitVariableDeclaration(ctx);
     }
@@ -75,7 +66,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<JasminParser> {
     @Override
     public JasminParser visitVariableAssignment(NimbleParser.VariableAssignmentContext ctx) {
         String varIdentifier = ctx.IDENTIFIER().getText();
-        JasminParser var = variables.get(varIdentifier);
+        String var = variables.get(varIdentifier);
 
         if(var == null) {
             throw new RuntimeException("Variable: " + varIdentifier + " has been assigned before being declared");
@@ -105,7 +96,6 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<JasminParser> {
     public JasminParser visitFunctionCall(NimbleParser.FunctionCallContext ctx) {
         return super.visitFunctionCall(ctx);
     }
-
 
     @Override
     public JasminParser visitFunction(NimbleParser.FunctionContext ctx) {
@@ -312,6 +302,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<JasminParser> {
      */
     @Override
     public JasminParser visitBooleanAtom(NimbleParser.BooleanAtomContext ctx) {
+        String test;
         return super.visitBooleanAtom(ctx);
     }
 
@@ -324,6 +315,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<JasminParser> {
      */
     @Override
     public JasminParser visitIdentifierAtom(NimbleParser.IdentifierAtomContext ctx) {
+        String id = ctx.IDENTIFIER().getText();
         return super.visitIdentifierAtom(ctx);
     }
 

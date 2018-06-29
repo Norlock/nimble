@@ -17,6 +17,12 @@ public interface NimbleParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitMain(NimbleParser.MainContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link NimbleParser#field}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitField(NimbleParser.FieldContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link NimbleParser#constructorDeclaration}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

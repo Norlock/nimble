@@ -26,7 +26,7 @@ public class Nimble {
             ParseTree tree = nimbleParser.main();
             nimbleVisitor.visit(tree);
 
-            CodeGenerator codeGenerator = new CodeGenerator(Grammar.load(args[0]));
+//            CodeGenerator codeGenerator = new CodeGenerator(Grammar.load(args[0]));
         } catch (IOException e) {
             System.out.println("File not found");
             e.printStackTrace();
