@@ -284,29 +284,29 @@ public interface NimbleParserListener extends ParseTreeListener {
 	 */
 	void exitMultiplicationExpression(NimbleParser.MultiplicationExpressionContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code parantheseExpression}
+	 * Enter a parse tree produced by the {@code parentheseExpression}
 	 * labeled alternative in {@link NimbleParser#atom}.
 	 * @param ctx the parse tree
 	 */
-	void enterParantheseExpression(NimbleParser.ParantheseExpressionContext ctx);
+	void enterParentheseExpression(NimbleParser.ParentheseExpressionContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code parantheseExpression}
+	 * Exit a parse tree produced by the {@code parentheseExpression}
 	 * labeled alternative in {@link NimbleParser#atom}.
 	 * @param ctx the parse tree
 	 */
-	void exitParantheseExpression(NimbleParser.ParantheseExpressionContext ctx);
+	void exitParentheseExpression(NimbleParser.ParentheseExpressionContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code numberAtom}
+	 * Enter a parse tree produced by the {@code integerAtom}
 	 * labeled alternative in {@link NimbleParser#atom}.
 	 * @param ctx the parse tree
 	 */
-	void enterNumberAtom(NimbleParser.NumberAtomContext ctx);
+	void enterIntegerAtom(NimbleParser.IntegerAtomContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code numberAtom}
+	 * Exit a parse tree produced by the {@code integerAtom}
 	 * labeled alternative in {@link NimbleParser#atom}.
 	 * @param ctx the parse tree
 	 */
-	void exitNumberAtom(NimbleParser.NumberAtomContext ctx);
+	void exitIntegerAtom(NimbleParser.IntegerAtomContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code booleanAtom}
 	 * labeled alternative in {@link NimbleParser#atom}.

@@ -328,25 +328,25 @@ public class NimbleParserBaseListener implements NimbleParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterParantheseExpression(NimbleParser.ParantheseExpressionContext ctx) { }
+	@Override public void enterParentheseExpression(NimbleParser.ParentheseExpressionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitParantheseExpression(NimbleParser.ParantheseExpressionContext ctx) { }
+	@Override public void exitParentheseExpression(NimbleParser.ParentheseExpressionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterNumberAtom(NimbleParser.NumberAtomContext ctx) { }
+	@Override public void enterIntegerAtom(NimbleParser.IntegerAtomContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitNumberAtom(NimbleParser.NumberAtomContext ctx) { }
+	@Override public void exitIntegerAtom(NimbleParser.IntegerAtomContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

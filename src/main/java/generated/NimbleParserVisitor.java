@@ -175,19 +175,19 @@ public interface NimbleParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitMultiplicationExpression(NimbleParser.MultiplicationExpressionContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code parantheseExpression}
+	 * Visit a parse tree produced by the {@code parentheseExpression}
 	 * labeled alternative in {@link NimbleParser#atom}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitParantheseExpression(NimbleParser.ParantheseExpressionContext ctx);
+	T visitParentheseExpression(NimbleParser.ParentheseExpressionContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code numberAtom}
+	 * Visit a parse tree produced by the {@code integerAtom}
 	 * labeled alternative in {@link NimbleParser#atom}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitNumberAtom(NimbleParser.NumberAtomContext ctx);
+	T visitIntegerAtom(NimbleParser.IntegerAtomContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code booleanAtom}
 	 * labeled alternative in {@link NimbleParser#atom}.

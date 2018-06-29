@@ -228,7 +228,7 @@ public class NimbleLexer extends Lexer {
 		"\2\u0156\u0158\n\7\2\2\u0157\u0156\3\2\2\2\u0158\u015b\3\2\2\2\u0159\u0157"+
 		"\3\2\2\2\u0159\u015a\3\2\2\2\u015a\u015c\3\2\2\2\u015b\u0159\3\2\2\2\u015c"+
 		"\u015d\b\66\2\2\u015dl\3\2\2\2\f\2\u011f\u0124\u012a\u0130\u0132\u013b"+
-		"\u0141\u014b\u0159\3\2\3\2";
+		"\u0141\u014b\u0159\3\b\2\2";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

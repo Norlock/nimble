@@ -1,9 +1,10 @@
 global string testStr = "test";
 
-man {
+main {
     int intA = 3;
     int intB = 1;
-    bool c = False;
+    bool test = false;
+    bool c = test;
     //b = 2;
     print(intA);
 

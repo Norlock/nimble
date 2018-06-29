@@ -1340,7 +1340,6 @@ public class NimbleParser extends Parser {
 		}
 	}
 	public static class AdditiveExpressionContext extends ExpressionContext {
-		public Token op;
 		public List<ExpressionContext> expression() {
 			return getRuleContexts(ExpressionContext.class);
 		}
@@ -1529,10 +1528,9 @@ public class NimbleParser extends Parser {
 						setState(172);
 						if (!(precpred(_ctx, 7))) throw new FailedPredicateException(this, "precpred(_ctx, 7)");
 						setState(173);
-						((AdditiveExpressionContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
 						if ( !(_la==ADD || _la==SUBSTRACT) ) {
-							((AdditiveExpressionContext)_localctx).op = (Token)_errHandler.recoverInline(this);
+						_errHandler.recoverInline(this);
 						} else {
 							consume();
 						}
@@ -1668,6 +1666,27 @@ public class NimbleParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
+	public static class ParentheseExpressionContext extends AtomContext {
+		public TerminalNode LEFT_PARENTHESE() { return getToken(NimbleParser.LEFT_PARENTHESE, 0); }
+		public ExpressionContext expression() {
+			return getRuleContext(ExpressionContext.class,0);
+		}
+		public TerminalNode RIGHT_PARENTHESE() { return getToken(NimbleParser.RIGHT_PARENTHESE, 0); }
+		public ParentheseExpressionContext(AtomContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof NimbleParserListener ) ((NimbleParserListener)listener).enterParentheseExpression(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof NimbleParserListener ) ((NimbleParserListener)listener).exitParentheseExpression(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NimbleParserVisitor ) return ((NimbleParserVisitor<? extends T>)visitor).visitParentheseExpression(this);
+			else return visitor.visitChildren(this);
+		}
+	}
 	public static class IdentifierAtomContext extends AtomContext {
 		public TerminalNode IDENTIFIER() { return getToken(NimbleParser.IDENTIFIER, 0); }
 		public IdentifierAtomContext(AtomContext ctx) { copyFrom(ctx); }
@@ -1702,41 +1721,20 @@ public class NimbleParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
-	public static class ParantheseExpressionContext extends AtomContext {
-		public TerminalNode LEFT_PARENTHESE() { return getToken(NimbleParser.LEFT_PARENTHESE, 0); }
-		public ExpressionContext expression() {
-			return getRuleContext(ExpressionContext.class,0);
-		}
-		public TerminalNode RIGHT_PARENTHESE() { return getToken(NimbleParser.RIGHT_PARENTHESE, 0); }
-		public ParantheseExpressionContext(AtomContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NimbleParserListener ) ((NimbleParserListener)listener).enterParantheseExpression(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NimbleParserListener ) ((NimbleParserListener)listener).exitParantheseExpression(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NimbleParserVisitor ) return ((NimbleParserVisitor<? extends T>)visitor).visitParantheseExpression(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-	public static class NumberAtomContext extends AtomContext {
+	public static class IntegerAtomContext extends AtomContext {
 		public TerminalNode INTEGER() { return getToken(NimbleParser.INTEGER, 0); }
-		public NumberAtomContext(AtomContext ctx) { copyFrom(ctx); }
+		public IntegerAtomContext(AtomContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NimbleParserListener ) ((NimbleParserListener)listener).enterNumberAtom(this);
+			if ( listener instanceof NimbleParserListener ) ((NimbleParserListener)listener).enterIntegerAtom(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NimbleParserListener ) ((NimbleParserListener)listener).exitNumberAtom(this);
+			if ( listener instanceof NimbleParserListener ) ((NimbleParserListener)listener).exitIntegerAtom(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NimbleParserVisitor ) return ((NimbleParserVisitor<? extends T>)visitor).visitNumberAtom(this);
+			if ( visitor instanceof NimbleParserVisitor ) return ((NimbleParserVisitor<? extends T>)visitor).visitIntegerAtom(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1766,7 +1764,7 @@ public class NimbleParser extends Parser {
 			setState(204);
 			switch (_input.LA(1)) {
 			case LEFT_PARENTHESE:
-				_localctx = new ParantheseExpressionContext(_localctx);
+				_localctx = new ParentheseExpressionContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(195);
@@ -1778,7 +1776,7 @@ public class NimbleParser extends Parser {
 				}
 				break;
 			case INTEGER:
-				_localctx = new NumberAtomContext(_localctx);
+				_localctx = new IntegerAtomContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(199);

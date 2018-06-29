@@ -1,16 +1,15 @@
 import generated.NimbleParser;
 import generated.NimbleParserBaseVisitor;
 import org.antlr.v4.runtime.tree.ErrorNode;
-import org.antlr.v4.runtime.tree.RuleNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class NimbleVisitor extends NimbleParserBaseVisitor<JasminParser> {
+public class NimbleVisitor extends NimbleParserBaseVisitor<ValueInfo> {
 
     // store variables
-    private Map<String, JasminParser> variables = new HashMap<>();
+    private Map<String, ValueInfo> variables = new HashMap<>();
 
     /**
      * Visit a parse tree produced by {@link NimbleParser#main}.
@@ -19,43 +18,80 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<JasminParser> {
      * @return the visitor result
      */
     @Override
-    public JasminParser visitMain(NimbleParser.MainContext ctx) {
+    public ValueInfo visitMain(NimbleParser.MainContext ctx) {
         return super.visitMain(ctx);
     }
 
-    /**
-     * Visit a parse tree produced by {@link NimbleParser#block}.
-     *
-     * @param ctx the parse tree
-     * @return the visitor result
-     */
     @Override
-    public JasminParser visitBlock(NimbleParser.BlockContext ctx) {
-        return super.visitBlock(ctx);
-    }
+    public ValueInfo visitVariableDeclaration(NimbleParser.VariableDeclarationContext ctx) {
 
-    /**
-     * Visit a parse tree produced by {@link NimbleParser#statement}.
-     *
-     * @param ctx the parse tree
-     * @return the visitor result
-     */
-    @Override
-    public JasminParser visitStatement(NimbleParser.StatementContext ctx) {
-        return super.visitStatement(ctx);
-    }
+        String id = ctx.IDENTIFIER().getText();
+        String type = ctx.variableType().getText();
 
-    /**
-     * Visit a parse tree produced by {@link NimbleParser#variableDeclaration}.
-     *
-     * @param ctx the parse tree
-     * @return the visitor result
-     */
-    @Override
-    public JasminParser visitVariableDeclaration(NimbleParser.VariableDeclarationContext ctx) {
-        variables.put(ctx.IDENTIFIER().getText(), ctx.variableType().getText());
+        if (ctx.expression() == null) {
+            variables.put(id, null);
+
+        } else {
+//            assignVariable(id, type, this.visit(ctx.expression()));
+            ValueInfo value = this.visit(ctx.expression());
+            variables.put(id, value);
+
+            switch (type) {
+                case "string":
+                    String str = value.toString();
+                    System.out.println("String: " + str);
+                    break;
+                case "bool":
+                    boolean bool = value.asBoolean();
+                    System.out.println("Bool: " + bool);
+                    break;
+                case "int":
+                    Integer integer = value.asInteger();
+                    System.out.println("Int: " + integer);
+                    break;
+            }
+        }
+
 
         return super.visitVariableDeclaration(ctx);
+    }
+
+    private ValueInfo getVariable(String identifier) {
+        ValueInfo valueInfo = variables.get(identifier);
+
+        if(valueInfo == null) {
+            throw new RuntimeException("Variable: " + identifier + " has been assigned before being declared");
+        }
+
+        return valueInfo;
+    }
+
+    /**
+     *
+     * @param id
+     * @param type
+     * @param expressionValue value from expression.
+     * @return
+     */
+    private ValueInfo assignVariable(String id, String type, ValueInfo expressionValue) {
+        variables.put(id, expressionValue);
+
+        switch (type) {
+            case "string":
+                String str = expressionValue.toString();
+                System.out.println("String: " + str);
+                break;
+            case "bool":
+                boolean bool = expressionValue.asBoolean();
+                System.out.println("Bool: " + bool);
+                break;
+            case "int":
+                Integer integer = expressionValue.asInteger();
+                System.out.println("Int: " + integer);
+                break;
+            default:
+                System.err.println("Unknown type: " + type);
+        }
     }
 
     /**
@@ -64,15 +100,9 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<JasminParser> {
      * @return
      */
     @Override
-    public JasminParser visitVariableAssignment(NimbleParser.VariableAssignmentContext ctx) {
-        String varIdentifier = ctx.IDENTIFIER().getText();
-        String var = variables.get(varIdentifier);
+    public ValueInfo visitVariableAssignment(NimbleParser.VariableAssignmentContext ctx) {
+        ValueInfo valueInfo = getVariable(ctx.IDENTIFIER().getText());
 
-        if(var == null) {
-            throw new RuntimeException("Variable: " + varIdentifier + " has been assigned before being declared");
-        }
-
-        return super.visitVariableAssignment(ctx);
     }
 
     /**
@@ -82,7 +112,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<JasminParser> {
      * @return the visitor result
      */
     @Override
-    public JasminParser visitIfStatement(NimbleParser.IfStatementContext ctx) {
+    public ValueInfo visitIfStatement(NimbleParser.IfStatementContext ctx) {
         return super.visitIfStatement(ctx);
     }
 
@@ -93,17 +123,17 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<JasminParser> {
      * @return the visitor result
      */
     @Override
-    public JasminParser visitFunctionCall(NimbleParser.FunctionCallContext ctx) {
+    public ValueInfo visitFunctionCall(NimbleParser.FunctionCallContext ctx) {
         return super.visitFunctionCall(ctx);
     }
 
     @Override
-    public JasminParser visitFunction(NimbleParser.FunctionContext ctx) {
+    public ValueInfo visitFunction(NimbleParser.FunctionContext ctx) {
         return super.visitFunction(ctx);
     }
 
     @Override
-    public JasminParser visitReturnValue(NimbleParser.ReturnValueContext ctx) {
+    public ValueInfo visitReturnValue(NimbleParser.ReturnValueContext ctx) {
         return super.visitReturnValue(ctx);
     }
 
@@ -114,7 +144,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<JasminParser> {
      * @return the visitor result
      */
     @Override
-    public JasminParser visitWhileLoop(NimbleParser.WhileLoopContext ctx) {
+    public ValueInfo visitWhileLoop(NimbleParser.WhileLoopContext ctx) {
         return super.visitWhileLoop(ctx);
     }
 
@@ -125,7 +155,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<JasminParser> {
      * @return the visitor result
      */
     @Override
-    public JasminParser visitConditionBlock(NimbleParser.ConditionBlockContext ctx) {
+    public ValueInfo visitConditionBlock(NimbleParser.ConditionBlockContext ctx) {
         return super.visitConditionBlock(ctx);
     }
 
@@ -136,19 +166,8 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<JasminParser> {
      * @return the visitor result
      */
     @Override
-    public JasminParser visitModifier(NimbleParser.ModifierContext ctx) {
+    public ValueInfo visitModifier(NimbleParser.ModifierContext ctx) {
         return super.visitModifier(ctx);
-    }
-
-    /**
-     * Visit a parse tree produced by {@link NimbleParser#variableType}.
-     *
-     * @param ctx the parse tree
-     * @return the visitor result
-     */
-    @Override
-    public JasminParser visitVariableType(NimbleParser.VariableTypeContext ctx) {
-        return super.visitVariableType(ctx);
     }
 
     /**
@@ -158,7 +177,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<JasminParser> {
      * @return the visitor result
      */
     @Override
-    public JasminParser visitConstructorDeclaration(NimbleParser.ConstructorDeclarationContext ctx) {
+    public ValueInfo visitConstructorDeclaration(NimbleParser.ConstructorDeclarationContext ctx) {
         return super.visitConstructorDeclaration(ctx);
     }
 
@@ -169,7 +188,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<JasminParser> {
      * @return the visitor result
      */
     @Override
-    public JasminParser visitConstructorParameters(NimbleParser.ConstructorParametersContext ctx) {
+    public ValueInfo visitConstructorParameters(NimbleParser.ConstructorParametersContext ctx) {
         return super.visitConstructorParameters(ctx);
     }
 
@@ -181,7 +200,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<JasminParser> {
      * @return the visitor result
      */
     @Override
-    public JasminParser visitOrExpression(NimbleParser.OrExpressionContext ctx) {
+    public ValueInfo visitOrExpression(NimbleParser.OrExpressionContext ctx) {
         return super.visitOrExpression(ctx);
     }
 
@@ -193,20 +212,8 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<JasminParser> {
      * @return the visitor result
      */
     @Override
-    public JasminParser visitAndExpression(NimbleParser.AndExpressionContext ctx) {
+    public ValueInfo visitAndExpression(NimbleParser.AndExpressionContext ctx) {
         return super.visitAndExpression(ctx);
-    }
-
-    /**
-     * Visit a parse tree produced by the {@code atomExpression}
-     * labeled alternative in {@link NimbleParser#expression}.
-     *
-     * @param ctx the parse tree
-     * @return the visitor result
-     */
-    @Override
-    public JasminParser visitAtomExpression(NimbleParser.AtomExpressionContext ctx) {
-        return super.visitAtomExpression(ctx);
     }
 
     /**
@@ -217,7 +224,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<JasminParser> {
      * @return the visitor result
      */
     @Override
-    public JasminParser visitAdditiveExpression(NimbleParser.AdditiveExpressionContext ctx) {
+    public ValueInfo visitAdditiveExpression(NimbleParser.AdditiveExpressionContext ctx) {
         return super.visitAdditiveExpression(ctx);
     }
 
@@ -229,7 +236,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<JasminParser> {
      * @return the visitor result
      */
     @Override
-    public JasminParser visitRelationalExpression(NimbleParser.RelationalExpressionContext ctx) {
+    public ValueInfo visitRelationalExpression(NimbleParser.RelationalExpressionContext ctx) {
         return super.visitRelationalExpression(ctx);
     }
 
@@ -241,7 +248,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<JasminParser> {
      * @return the visitor result
      */
     @Override
-    public JasminParser visitEqualityExpression(NimbleParser.EqualityExpressionContext ctx) {
+    public ValueInfo visitEqualityExpression(NimbleParser.EqualityExpressionContext ctx) {
         return super.visitEqualityExpression(ctx);
     }
 
@@ -253,7 +260,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<JasminParser> {
      * @return the visitor result
      */
     @Override
-    public JasminParser visitNotExpression(NimbleParser.NotExpressionContext ctx) {
+    public ValueInfo visitNotExpression(NimbleParser.NotExpressionContext ctx) {
         return super.visitNotExpression(ctx);
     }
 
@@ -265,96 +272,42 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<JasminParser> {
      * @return the visitor result
      */
     @Override
-    public JasminParser visitMultiplicationExpression(NimbleParser.MultiplicationExpressionContext ctx) {
+    public ValueInfo visitMultiplicationExpression(NimbleParser.MultiplicationExpressionContext ctx) {
         return super.visitMultiplicationExpression(ctx);
     }
 
-    /**
-     * Visit a parse tree produced by the {@code parantheseExpression}
-     * labeled alternative in {@link NimbleParser#atom}.
-     *
-     * @param ctx the parse tree
-     * @return the visitor result
-     */
     @Override
-    public JasminParser visitParantheseExpression(NimbleParser.ParantheseExpressionContext ctx) {
-        return super.visitParantheseExpression(ctx);
+    public ValueInfo visitIntegerAtom(NimbleParser.IntegerAtomContext ctx) {
+        return new ValueInfo(ctx.getText());
     }
 
-    /**
-     * Visit a parse tree produced by the {@code numberAtom}
-     * labeled alternative in {@link NimbleParser#atom}.
-     *
-     * @param ctx the parse tree
-     * @return the visitor result
-     */
     @Override
-    public JasminParser visitNumberAtom(NimbleParser.NumberAtomContext ctx) {
-        return super.visitNumberAtom(ctx);
+    public ValueInfo visitStringAtom(NimbleParser.StringAtomContext ctx) {
+        return new ValueInfo(ctx.getText());
     }
 
-    /**
-     * Visit a parse tree produced by the {@code booleanAtom}
-     * labeled alternative in {@link NimbleParser#atom}.
-     *
-     * @param ctx the parse tree
-     * @return the visitor result
-     */
     @Override
-    public JasminParser visitBooleanAtom(NimbleParser.BooleanAtomContext ctx) {
-        String test;
-        return super.visitBooleanAtom(ctx);
+    public ValueInfo visitBooleanAtom(NimbleParser.BooleanAtomContext ctx) {
+        return new ValueInfo(ctx.getText());
     }
 
-    /**
-     * Visit a parse tree produced by the {@code identifierAtom}
-     * labeled alternative in {@link NimbleParser#atom}.
-     *
-     * @param ctx the parse tree
-     * @return the visitor result
-     */
     @Override
-    public JasminParser visitIdentifierAtom(NimbleParser.IdentifierAtomContext ctx) {
-        String id = ctx.IDENTIFIER().getText();
-        return super.visitIdentifierAtom(ctx);
+    public ValueInfo visitIdentifierAtom(NimbleParser.IdentifierAtomContext ctx) {
+        return getVariable(ctx.getText());
     }
 
-    /**
-     * Visit a parse tree produced by the {@code stringAtom}
-     * labeled alternative in {@link NimbleParser#atom}.
-     *
-     * @param ctx the parse tree
-     * @return the visitor result
-     */
     @Override
-    public JasminParser visitStringAtom(NimbleParser.StringAtomContext ctx) {
-        return super.visitStringAtom(ctx);
-    }
-
-    /**
-     * Visit a parse tree produced by the {@code nullAtom}
-     * labeled alternative in {@link NimbleParser#atom}.
-     *
-     * @param ctx the parse tree
-     * @return the visitor result
-     */
-    @Override
-    public JasminParser visitNullAtom(NimbleParser.NullAtomContext ctx) {
+    public ValueInfo visitNullAtom(NimbleParser.NullAtomContext ctx) {
         return super.visitNullAtom(ctx);
     }
 
     @Override
-    public JasminParser visitChildren(RuleNode node) {
-        return super.visitChildren(node);
-    }
-
-    @Override
-    public JasminParser visitTerminal(TerminalNode terminalNode) {
+    public ValueInfo visitTerminal(TerminalNode terminalNode) {
         return super.visitTerminal(terminalNode);
     }
 
     @Override
-    public JasminParser visitErrorNode(ErrorNode errorNode) {
+    public ValueInfo visitErrorNode(ErrorNode errorNode) {
         return super.visitErrorNode(errorNode);
     }
 }
