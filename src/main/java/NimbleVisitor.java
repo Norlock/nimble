@@ -11,8 +11,8 @@ import java.util.Map;
 
 public class NimbleVisitor extends NimbleParserBaseVisitor<Value> {
 
-    // store variables (there's only one global scope!)
-    private Map<String, Value> identifiers = new HashMap<String, Value>();
+    // store variables
+    private Map<String, Value> variables = new HashMap<String, Value>();
 
     /**
      * Visit a parse tree produced by {@link NimbleParser#main}.
@@ -32,12 +32,6 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Value> {
             return null;
         }
 
-    }
-
-    @Override
-    public Value visitVariableAssignment(NimbleParser.VariableAssignmentContext ctx) {
-        String varAssignment = ctx.getText();
-        return super.visitVariableAssignment(ctx);
     }
 
     /**
@@ -70,8 +64,26 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Value> {
      */
     @Override
     public Value visitVariableDeclaration(NimbleParser.VariableDeclarationContext ctx) {
-        String test = ctx.getText();
+        variables.put(ctx.IDENTIFIER().getText(), new Value(0));
+
         return super.visitVariableDeclaration(ctx);
+    }
+
+    /**
+     * Visit variable assignment
+     * @param ctx
+     * @return
+     */
+    @Override
+    public Value visitVariableAssignment(NimbleParser.VariableAssignmentContext ctx) {
+        String varIdentifier = ctx.IDENTIFIER().getText();
+        Value var = variables.get(varIdentifier);
+
+        if(var == null) {
+            throw new RuntimeException("Variable: " + varIdentifier + " has been assigned before being declared");
+        }
+
+        return super.visitVariableAssignment(ctx);
     }
 
     /**
