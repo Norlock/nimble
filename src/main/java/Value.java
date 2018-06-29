@@ -1,5 +1,4 @@
 public class Value {
-    public static Value VOID = new Value(new Object());
 
     final Object value;
 

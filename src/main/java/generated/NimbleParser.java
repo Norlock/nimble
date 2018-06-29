@@ -24,18 +24,18 @@ public class NimbleParser extends Parser {
 		GREATER=22, EQUAL=23, NOT_EQUAL=24, LESSER_OR_EQUAL=25, GREATER_OR_EQUAL=26, 
 		AND=27, OR=28, INCREMENT=29, DECREMENT=30, ADD=31, SUBSTRACT=32, MULTIPLY=33, 
 		DIVIDE=34, MODULO=35, NOT=36, IF=37, ELSE=38, GOTO=39, RETURN=40, FOR=41, 
-		WHILE=42, CLASS=43, BOOLEAN=44, INTEGER=45, DOUBLE=46, STRING=47, IDENTIFIER=48, 
-		WS=49, COMMENT=50, LINE_COMMENT=51;
+		WHILE=42, CLASS=43, TRUE=44, FALSE=45, INTEGER=46, DOUBLE=47, STRING=48, 
+		IDENTIFIER=49, WS=50, COMMENT=51, LINE_COMMENT=52;
 	public static final int
-		RULE_main = 0, RULE_block = 1, RULE_statement = 2, RULE_variableDeclaration = 3, 
-		RULE_ifStatement = 4, RULE_functionCall = 5, RULE_functionDeclaration = 6, 
-		RULE_functionType = 7, RULE_whileLoop = 8, RULE_conditionBlock = 9, RULE_modifier = 10, 
-		RULE_variableType = 11, RULE_constructorDeclaration = 12, RULE_constructorParameters = 13, 
-		RULE_expression = 14, RULE_atom = 15;
+		RULE_main = 0, RULE_block = 1, RULE_variableDeclaration = 2, RULE_variableAssignment = 3, 
+		RULE_constructorDeclaration = 4, RULE_statement = 5, RULE_ifStatement = 6, 
+		RULE_functionCall = 7, RULE_function = 8, RULE_returnValue = 9, RULE_whileLoop = 10, 
+		RULE_conditionBlock = 11, RULE_modifier = 12, RULE_variableType = 13, 
+		RULE_constructorParameters = 14, RULE_expression = 15, RULE_atom = 16;
 	public static final String[] ruleNames = {
-		"main", "block", "statement", "variableDeclaration", "ifStatement", "functionCall", 
-		"functionDeclaration", "functionType", "whileLoop", "conditionBlock", 
-		"modifier", "variableType", "constructorDeclaration", "constructorParameters", 
+		"main", "block", "variableDeclaration", "variableAssignment", "constructorDeclaration", 
+		"statement", "ifStatement", "functionCall", "function", "returnValue", 
+		"whileLoop", "conditionBlock", "modifier", "variableType", "constructorParameters", 
 		"expression", "atom"
 	};
 
@@ -44,7 +44,8 @@ public class NimbleParser extends Parser {
 		"'package'", "'internal'", "'main'", "';'", "','", "'.'", "'('", "')'", 
 		"'{'", "'}'", "'['", "']'", "'='", "'<'", "'>'", "'=='", "'!='", "'<='", 
 		"'>='", "'&&'", "'||'", "'++'", "'--'", "'+'", "'-'", "'*'", "'/'", "'%'", 
-		"'!'", "'if'", "'else'", "'goto'", "'return'", "'for'", "'while'", "'class'"
+		"'!'", "'if'", "'else'", "'goto'", "'return'", "'for'", "'while'", "'class'", 
+		"'true'", "'false'"
 	};
 	private static final String[] _SYMBOLIC_NAMES = {
 		null, "STRING_TYPE", "INTEGER_TYPE", "DOUBLE_TYPE", "BOOLEAN_TYPE", "VOID", 
@@ -53,8 +54,9 @@ public class NimbleParser extends Parser {
 		"LEFT_SQUARE_BRACKET", "RIGHT_SQUARE_BRACKET", "ASSIGN", "LESSER", "GREATER", 
 		"EQUAL", "NOT_EQUAL", "LESSER_OR_EQUAL", "GREATER_OR_EQUAL", "AND", "OR", 
 		"INCREMENT", "DECREMENT", "ADD", "SUBSTRACT", "MULTIPLY", "DIVIDE", "MODULO", 
-		"NOT", "IF", "ELSE", "GOTO", "RETURN", "FOR", "WHILE", "CLASS", "BOOLEAN", 
-		"INTEGER", "DOUBLE", "STRING", "IDENTIFIER", "WS", "COMMENT", "LINE_COMMENT"
+		"NOT", "IF", "ELSE", "GOTO", "RETURN", "FOR", "WHILE", "CLASS", "TRUE", 
+		"FALSE", "INTEGER", "DOUBLE", "STRING", "IDENTIFIER", "WS", "COMMENT", 
+		"LINE_COMMENT"
 	};
 	public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
 
@@ -114,6 +116,12 @@ public class NimbleParser extends Parser {
 			return getRuleContext(BlockContext.class,0);
 		}
 		public TerminalNode EOF() { return getToken(NimbleParser.EOF, 0); }
+		public List<FunctionContext> function() {
+			return getRuleContexts(FunctionContext.class);
+		}
+		public FunctionContext function(int i) {
+			return getRuleContext(FunctionContext.class,i);
+		}
 		public MainContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -136,16 +144,31 @@ public class NimbleParser extends Parser {
 	public final MainContext main() throws RecognitionException {
 		MainContext _localctx = new MainContext(_ctx, getState());
 		enterRule(_localctx, 0, RULE_main);
+		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(32);
-			match(MAIN);
-			setState(33);
-			constructorDeclaration();
 			setState(34);
-			block();
+			match(MAIN);
 			setState(35);
+			constructorDeclaration();
+			setState(36);
+			block();
+			setState(40);
+			_errHandler.sync(this);
+			_la = _input.LA(1);
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << GLOBAL) | (1L << PACKAGE) | (1L << INTERNAL))) != 0)) {
+				{
+				{
+				setState(37);
+				function();
+				}
+				}
+				setState(42);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+			}
+			setState(43);
 			match(EOF);
 			}
 		}
@@ -195,24 +218,201 @@ public class NimbleParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(37);
+			setState(45);
 			match(LEFT_BRACE);
-			setState(41);
+			setState(49);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << STRING_TYPE) | (1L << INTEGER_TYPE) | (1L << BOOLEAN_TYPE) | (1L << IF) | (1L << WHILE) | (1L << IDENTIFIER))) != 0)) {
 				{
 				{
-				setState(38);
+				setState(46);
 				statement();
 				}
 				}
-				setState(43);
+				setState(51);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			setState(44);
+			setState(52);
 			match(RIGHT_BRACE);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class VariableDeclarationContext extends ParserRuleContext {
+		public VariableTypeContext variableType() {
+			return getRuleContext(VariableTypeContext.class,0);
+		}
+		public TerminalNode IDENTIFIER() { return getToken(NimbleParser.IDENTIFIER, 0); }
+		public TerminalNode SEMICOLON() { return getToken(NimbleParser.SEMICOLON, 0); }
+		public TerminalNode ASSIGN() { return getToken(NimbleParser.ASSIGN, 0); }
+		public ExpressionContext expression() {
+			return getRuleContext(ExpressionContext.class,0);
+		}
+		public VariableDeclarationContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_variableDeclaration; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof NimbleParserListener ) ((NimbleParserListener)listener).enterVariableDeclaration(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof NimbleParserListener ) ((NimbleParserListener)listener).exitVariableDeclaration(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NimbleParserVisitor ) return ((NimbleParserVisitor<? extends T>)visitor).visitVariableDeclaration(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public final VariableDeclarationContext variableDeclaration() throws RecognitionException {
+		VariableDeclarationContext _localctx = new VariableDeclarationContext(_ctx, getState());
+		enterRule(_localctx, 4, RULE_variableDeclaration);
+		int _la;
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(54);
+			variableType();
+			setState(55);
+			match(IDENTIFIER);
+			setState(58);
+			_la = _input.LA(1);
+			if (_la==ASSIGN) {
+				{
+				setState(56);
+				match(ASSIGN);
+				setState(57);
+				expression(0);
+				}
+			}
+
+			setState(60);
+			match(SEMICOLON);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class VariableAssignmentContext extends ParserRuleContext {
+		public TerminalNode IDENTIFIER() { return getToken(NimbleParser.IDENTIFIER, 0); }
+		public TerminalNode ASSIGN() { return getToken(NimbleParser.ASSIGN, 0); }
+		public ExpressionContext expression() {
+			return getRuleContext(ExpressionContext.class,0);
+		}
+		public TerminalNode SEMICOLON() { return getToken(NimbleParser.SEMICOLON, 0); }
+		public VariableAssignmentContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_variableAssignment; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof NimbleParserListener ) ((NimbleParserListener)listener).enterVariableAssignment(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof NimbleParserListener ) ((NimbleParserListener)listener).exitVariableAssignment(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NimbleParserVisitor ) return ((NimbleParserVisitor<? extends T>)visitor).visitVariableAssignment(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public final VariableAssignmentContext variableAssignment() throws RecognitionException {
+		VariableAssignmentContext _localctx = new VariableAssignmentContext(_ctx, getState());
+		enterRule(_localctx, 6, RULE_variableAssignment);
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(62);
+			match(IDENTIFIER);
+			setState(63);
+			match(ASSIGN);
+			setState(64);
+			expression(0);
+			setState(65);
+			match(SEMICOLON);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class ConstructorDeclarationContext extends ParserRuleContext {
+		public TerminalNode LEFT_PARENTHESE() { return getToken(NimbleParser.LEFT_PARENTHESE, 0); }
+		public TerminalNode RIGHT_PARENTHESE() { return getToken(NimbleParser.RIGHT_PARENTHESE, 0); }
+		public ConstructorParametersContext constructorParameters() {
+			return getRuleContext(ConstructorParametersContext.class,0);
+		}
+		public ConstructorDeclarationContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_constructorDeclaration; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof NimbleParserListener ) ((NimbleParserListener)listener).enterConstructorDeclaration(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof NimbleParserListener ) ((NimbleParserListener)listener).exitConstructorDeclaration(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NimbleParserVisitor ) return ((NimbleParserVisitor<? extends T>)visitor).visitConstructorDeclaration(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public final ConstructorDeclarationContext constructorDeclaration() throws RecognitionException {
+		ConstructorDeclarationContext _localctx = new ConstructorDeclarationContext(_ctx, getState());
+		enterRule(_localctx, 8, RULE_constructorDeclaration);
+		int _la;
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(67);
+			match(LEFT_PARENTHESE);
+			setState(69);
+			_la = _input.LA(1);
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << STRING_TYPE) | (1L << INTEGER_TYPE) | (1L << BOOLEAN_TYPE))) != 0)) {
+				{
+				setState(68);
+				constructorParameters();
+				}
+			}
+
+			setState(71);
+			match(RIGHT_PARENTHESE);
 			}
 		}
 		catch (RecognitionException re) {
@@ -229,6 +429,9 @@ public class NimbleParser extends Parser {
 	public static class StatementContext extends ParserRuleContext {
 		public VariableDeclarationContext variableDeclaration() {
 			return getRuleContext(VariableDeclarationContext.class,0);
+		}
+		public VariableAssignmentContext variableAssignment() {
+			return getRuleContext(VariableAssignmentContext.class,0);
 		}
 		public IfStatementContext ifStatement() {
 			return getRuleContext(IfStatementContext.class,0);
@@ -260,100 +463,45 @@ public class NimbleParser extends Parser {
 
 	public final StatementContext statement() throws RecognitionException {
 		StatementContext _localctx = new StatementContext(_ctx, getState());
-		enterRule(_localctx, 4, RULE_statement);
+		enterRule(_localctx, 10, RULE_statement);
 		try {
-			setState(50);
-			switch (_input.LA(1)) {
-			case STRING_TYPE:
-			case INTEGER_TYPE:
-			case BOOLEAN_TYPE:
+			setState(78);
+			switch ( getInterpreter().adaptivePredict(_input,4,_ctx) ) {
+			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(46);
+				setState(73);
 				variableDeclaration();
 				}
 				break;
-			case IF:
+			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(47);
+				setState(74);
+				variableAssignment();
+				}
+				break;
+			case 3:
+				enterOuterAlt(_localctx, 3);
+				{
+				setState(75);
 				ifStatement();
 				}
 				break;
-			case IDENTIFIER:
-				enterOuterAlt(_localctx, 3);
+			case 4:
+				enterOuterAlt(_localctx, 4);
 				{
-				setState(48);
+				setState(76);
 				functionCall();
 				}
 				break;
-			case WHILE:
-				enterOuterAlt(_localctx, 4);
+			case 5:
+				enterOuterAlt(_localctx, 5);
 				{
-				setState(49);
+				setState(77);
 				whileLoop();
 				}
 				break;
-			default:
-				throw new NoViableAltException(this);
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
-
-	public static class VariableDeclarationContext extends ParserRuleContext {
-		public VariableTypeContext variableType() {
-			return getRuleContext(VariableTypeContext.class,0);
-		}
-		public TerminalNode IDENTIFIER() { return getToken(NimbleParser.IDENTIFIER, 0); }
-		public TerminalNode ASSIGN() { return getToken(NimbleParser.ASSIGN, 0); }
-		public ExpressionContext expression() {
-			return getRuleContext(ExpressionContext.class,0);
-		}
-		public TerminalNode SEMICOLON() { return getToken(NimbleParser.SEMICOLON, 0); }
-		public VariableDeclarationContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_variableDeclaration; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NimbleParserListener ) ((NimbleParserListener)listener).enterVariableDeclaration(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NimbleParserListener ) ((NimbleParserListener)listener).exitVariableDeclaration(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NimbleParserVisitor ) return ((NimbleParserVisitor<? extends T>)visitor).visitVariableDeclaration(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-
-	public final VariableDeclarationContext variableDeclaration() throws RecognitionException {
-		VariableDeclarationContext _localctx = new VariableDeclarationContext(_ctx, getState());
-		enterRule(_localctx, 6, RULE_variableDeclaration);
-		try {
-			enterOuterAlt(_localctx, 1);
-			{
-			setState(52);
-			variableType();
-			setState(53);
-			match(IDENTIFIER);
-			setState(54);
-			match(ASSIGN);
-			setState(55);
-			expression(0);
-			setState(56);
-			match(SEMICOLON);
 			}
 		}
 		catch (RecognitionException re) {
@@ -406,43 +554,43 @@ public class NimbleParser extends Parser {
 
 	public final IfStatementContext ifStatement() throws RecognitionException {
 		IfStatementContext _localctx = new IfStatementContext(_ctx, getState());
-		enterRule(_localctx, 8, RULE_ifStatement);
+		enterRule(_localctx, 12, RULE_ifStatement);
 		int _la;
 		try {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(58);
+			setState(80);
 			match(IF);
-			setState(59);
+			setState(81);
 			conditionBlock();
-			setState(65);
+			setState(87);
 			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,2,_ctx);
+			_alt = getInterpreter().adaptivePredict(_input,5,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					{
 					{
-					setState(60);
+					setState(82);
 					match(ELSE);
-					setState(61);
+					setState(83);
 					match(IF);
-					setState(62);
+					setState(84);
 					conditionBlock();
 					}
 					} 
 				}
-				setState(67);
+				setState(89);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,2,_ctx);
+				_alt = getInterpreter().adaptivePredict(_input,5,_ctx);
 			}
-			setState(70);
+			setState(92);
 			_la = _input.LA(1);
 			if (_la==ELSE) {
 				{
-				setState(68);
+				setState(90);
 				match(ELSE);
-				setState(69);
+				setState(91);
 				block();
 				}
 			}
@@ -489,19 +637,19 @@ public class NimbleParser extends Parser {
 
 	public final FunctionCallContext functionCall() throws RecognitionException {
 		FunctionCallContext _localctx = new FunctionCallContext(_ctx, getState());
-		enterRule(_localctx, 10, RULE_functionCall);
+		enterRule(_localctx, 14, RULE_functionCall);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(72);
+			setState(94);
 			match(IDENTIFIER);
-			setState(73);
+			setState(95);
 			match(LEFT_PARENTHESE);
-			setState(74);
+			setState(96);
 			atom();
-			setState(75);
+			setState(97);
 			match(RIGHT_PARENTHESE);
-			setState(76);
+			setState(98);
 			match(SEMICOLON);
 			}
 		}
@@ -516,42 +664,55 @@ public class NimbleParser extends Parser {
 		return _localctx;
 	}
 
-	public static class FunctionDeclarationContext extends ParserRuleContext {
+	public static class FunctionContext extends ParserRuleContext {
 		public ModifierContext modifier() {
 			return getRuleContext(ModifierContext.class,0);
 		}
-		public VariableTypeContext variableType() {
-			return getRuleContext(VariableTypeContext.class,0);
+		public ReturnValueContext returnValue() {
+			return getRuleContext(ReturnValueContext.class,0);
 		}
-		public FunctionDeclarationContext(ParserRuleContext parent, int invokingState) {
+		public TerminalNode IDENTIFIER() { return getToken(NimbleParser.IDENTIFIER, 0); }
+		public ConstructorDeclarationContext constructorDeclaration() {
+			return getRuleContext(ConstructorDeclarationContext.class,0);
+		}
+		public BlockContext block() {
+			return getRuleContext(BlockContext.class,0);
+		}
+		public FunctionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_functionDeclaration; }
+		@Override public int getRuleIndex() { return RULE_function; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NimbleParserListener ) ((NimbleParserListener)listener).enterFunctionDeclaration(this);
+			if ( listener instanceof NimbleParserListener ) ((NimbleParserListener)listener).enterFunction(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NimbleParserListener ) ((NimbleParserListener)listener).exitFunctionDeclaration(this);
+			if ( listener instanceof NimbleParserListener ) ((NimbleParserListener)listener).exitFunction(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NimbleParserVisitor ) return ((NimbleParserVisitor<? extends T>)visitor).visitFunctionDeclaration(this);
+			if ( visitor instanceof NimbleParserVisitor ) return ((NimbleParserVisitor<? extends T>)visitor).visitFunction(this);
 			else return visitor.visitChildren(this);
 		}
 	}
 
-	public final FunctionDeclarationContext functionDeclaration() throws RecognitionException {
-		FunctionDeclarationContext _localctx = new FunctionDeclarationContext(_ctx, getState());
-		enterRule(_localctx, 12, RULE_functionDeclaration);
+	public final FunctionContext function() throws RecognitionException {
+		FunctionContext _localctx = new FunctionContext(_ctx, getState());
+		enterRule(_localctx, 16, RULE_function);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(78);
+			setState(100);
 			modifier();
-			setState(79);
-			variableType();
+			setState(101);
+			returnValue();
+			setState(102);
+			match(IDENTIFIER);
+			setState(103);
+			constructorDeclaration();
+			setState(104);
+			block();
 			}
 		}
 		catch (RecognitionException re) {
@@ -565,49 +726,49 @@ public class NimbleParser extends Parser {
 		return _localctx;
 	}
 
-	public static class FunctionTypeContext extends ParserRuleContext {
+	public static class ReturnValueContext extends ParserRuleContext {
 		public VariableTypeContext variableType() {
 			return getRuleContext(VariableTypeContext.class,0);
 		}
 		public TerminalNode VOID() { return getToken(NimbleParser.VOID, 0); }
-		public FunctionTypeContext(ParserRuleContext parent, int invokingState) {
+		public ReturnValueContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_functionType; }
+		@Override public int getRuleIndex() { return RULE_returnValue; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NimbleParserListener ) ((NimbleParserListener)listener).enterFunctionType(this);
+			if ( listener instanceof NimbleParserListener ) ((NimbleParserListener)listener).enterReturnValue(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NimbleParserListener ) ((NimbleParserListener)listener).exitFunctionType(this);
+			if ( listener instanceof NimbleParserListener ) ((NimbleParserListener)listener).exitReturnValue(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NimbleParserVisitor ) return ((NimbleParserVisitor<? extends T>)visitor).visitFunctionType(this);
+			if ( visitor instanceof NimbleParserVisitor ) return ((NimbleParserVisitor<? extends T>)visitor).visitReturnValue(this);
 			else return visitor.visitChildren(this);
 		}
 	}
 
-	public final FunctionTypeContext functionType() throws RecognitionException {
-		FunctionTypeContext _localctx = new FunctionTypeContext(_ctx, getState());
-		enterRule(_localctx, 14, RULE_functionType);
+	public final ReturnValueContext returnValue() throws RecognitionException {
+		ReturnValueContext _localctx = new ReturnValueContext(_ctx, getState());
+		enterRule(_localctx, 18, RULE_returnValue);
 		try {
-			setState(83);
+			setState(108);
 			switch (_input.LA(1)) {
 			case STRING_TYPE:
 			case INTEGER_TYPE:
 			case BOOLEAN_TYPE:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(81);
+				setState(106);
 				variableType();
 				}
 				break;
 			case VOID:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(82);
+				setState(107);
 				match(VOID);
 				}
 				break;
@@ -652,13 +813,13 @@ public class NimbleParser extends Parser {
 
 	public final WhileLoopContext whileLoop() throws RecognitionException {
 		WhileLoopContext _localctx = new WhileLoopContext(_ctx, getState());
-		enterRule(_localctx, 16, RULE_whileLoop);
+		enterRule(_localctx, 20, RULE_whileLoop);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(85);
+			setState(110);
 			match(WHILE);
-			setState(86);
+			setState(111);
 			conditionBlock();
 			}
 		}
@@ -703,17 +864,17 @@ public class NimbleParser extends Parser {
 
 	public final ConditionBlockContext conditionBlock() throws RecognitionException {
 		ConditionBlockContext _localctx = new ConditionBlockContext(_ctx, getState());
-		enterRule(_localctx, 18, RULE_conditionBlock);
+		enterRule(_localctx, 22, RULE_conditionBlock);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(88);
+			setState(113);
 			match(LEFT_PARENTHESE);
-			setState(89);
+			setState(114);
 			expression(0);
-			setState(90);
+			setState(115);
 			match(RIGHT_PARENTHESE);
-			setState(91);
+			setState(116);
 			block();
 			}
 		}
@@ -753,12 +914,12 @@ public class NimbleParser extends Parser {
 
 	public final ModifierContext modifier() throws RecognitionException {
 		ModifierContext _localctx = new ModifierContext(_ctx, getState());
-		enterRule(_localctx, 20, RULE_modifier);
+		enterRule(_localctx, 24, RULE_modifier);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(93);
+			setState(118);
 			_la = _input.LA(1);
 			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << GLOBAL) | (1L << PACKAGE) | (1L << INTERNAL))) != 0)) ) {
 			_errHandler.recoverInline(this);
@@ -803,76 +964,18 @@ public class NimbleParser extends Parser {
 
 	public final VariableTypeContext variableType() throws RecognitionException {
 		VariableTypeContext _localctx = new VariableTypeContext(_ctx, getState());
-		enterRule(_localctx, 22, RULE_variableType);
+		enterRule(_localctx, 26, RULE_variableType);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(95);
+			setState(120);
 			_la = _input.LA(1);
 			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << STRING_TYPE) | (1L << INTEGER_TYPE) | (1L << BOOLEAN_TYPE))) != 0)) ) {
 			_errHandler.recoverInline(this);
 			} else {
 				consume();
 			}
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
-
-	public static class ConstructorDeclarationContext extends ParserRuleContext {
-		public TerminalNode LEFT_PARENTHESE() { return getToken(NimbleParser.LEFT_PARENTHESE, 0); }
-		public TerminalNode RIGHT_PARENTHESE() { return getToken(NimbleParser.RIGHT_PARENTHESE, 0); }
-		public ConstructorParametersContext constructorParameters() {
-			return getRuleContext(ConstructorParametersContext.class,0);
-		}
-		public ConstructorDeclarationContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_constructorDeclaration; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NimbleParserListener ) ((NimbleParserListener)listener).enterConstructorDeclaration(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NimbleParserListener ) ((NimbleParserListener)listener).exitConstructorDeclaration(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NimbleParserVisitor ) return ((NimbleParserVisitor<? extends T>)visitor).visitConstructorDeclaration(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-
-	public final ConstructorDeclarationContext constructorDeclaration() throws RecognitionException {
-		ConstructorDeclarationContext _localctx = new ConstructorDeclarationContext(_ctx, getState());
-		enterRule(_localctx, 24, RULE_constructorDeclaration);
-		int _la;
-		try {
-			enterOuterAlt(_localctx, 1);
-			{
-			setState(97);
-			match(LEFT_PARENTHESE);
-			setState(99);
-			_la = _input.LA(1);
-			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << STRING_TYPE) | (1L << INTEGER_TYPE) | (1L << BOOLEAN_TYPE))) != 0)) {
-				{
-				setState(98);
-				constructorParameters();
-				}
-			}
-
-			setState(101);
-			match(RIGHT_PARENTHESE);
 			}
 		}
 		catch (RecognitionException re) {
@@ -918,30 +1021,30 @@ public class NimbleParser extends Parser {
 
 	public final ConstructorParametersContext constructorParameters() throws RecognitionException {
 		ConstructorParametersContext _localctx = new ConstructorParametersContext(_ctx, getState());
-		enterRule(_localctx, 26, RULE_constructorParameters);
+		enterRule(_localctx, 28, RULE_constructorParameters);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(103);
+			setState(122);
 			variableType();
-			setState(104);
+			setState(123);
 			match(IDENTIFIER);
-			setState(111);
+			setState(130);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while (_la==COMMA) {
 				{
 				{
-				setState(105);
+				setState(124);
 				match(COMMA);
-				setState(106);
+				setState(125);
 				variableType();
-				setState(107);
+				setState(126);
 				match(IDENTIFIER);
 				}
 				}
-				setState(113);
+				setState(132);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
@@ -1167,14 +1270,14 @@ public class NimbleParser extends Parser {
 		int _parentState = getState();
 		ExpressionContext _localctx = new ExpressionContext(_ctx, _parentState);
 		ExpressionContext _prevctx = _localctx;
-		int _startState = 28;
-		enterRecursionRule(_localctx, 28, RULE_expression, _p);
+		int _startState = 30;
+		enterRecursionRule(_localctx, 30, RULE_expression, _p);
 		int _la;
 		try {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(118);
+			setState(137);
 			switch (_input.LA(1)) {
 			case NOT:
 				{
@@ -1182,15 +1285,16 @@ public class NimbleParser extends Parser {
 				_ctx = _localctx;
 				_prevctx = _localctx;
 
-				setState(115);
+				setState(134);
 				match(NOT);
-				setState(116);
+				setState(135);
 				expression(8);
 				}
 				break;
 			case NULL:
 			case LEFT_PARENTHESE:
-			case BOOLEAN:
+			case TRUE:
+			case FALSE:
 			case INTEGER:
 			case STRING:
 			case IDENTIFIER:
@@ -1198,7 +1302,7 @@ public class NimbleParser extends Parser {
 				_localctx = new AtomExpressionContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(117);
+				setState(136);
 				atom();
 				}
 				break;
@@ -1206,23 +1310,23 @@ public class NimbleParser extends Parser {
 				throw new NoViableAltException(this);
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(140);
+			setState(159);
 			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,9,_ctx);
+			_alt = getInterpreter().adaptivePredict(_input,11,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
 					_prevctx = _localctx;
 					{
-					setState(138);
-					switch ( getInterpreter().adaptivePredict(_input,8,_ctx) ) {
+					setState(157);
+					switch ( getInterpreter().adaptivePredict(_input,10,_ctx) ) {
 					case 1:
 						{
 						_localctx = new AdditiveExpressionContext(new ExpressionContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expression);
-						setState(120);
+						setState(139);
 						if (!(precpred(_ctx, 7))) throw new FailedPredicateException(this, "precpred(_ctx, 7)");
-						setState(121);
+						setState(140);
 						((AdditiveExpressionContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
 						if ( !(_la==ADD || _la==SUBSTRACT) ) {
@@ -1230,7 +1334,7 @@ public class NimbleParser extends Parser {
 						} else {
 							consume();
 						}
-						setState(122);
+						setState(141);
 						expression(8);
 						}
 						break;
@@ -1238,9 +1342,9 @@ public class NimbleParser extends Parser {
 						{
 						_localctx = new MultiplicationExpressionContext(new ExpressionContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expression);
-						setState(123);
+						setState(142);
 						if (!(precpred(_ctx, 6))) throw new FailedPredicateException(this, "precpred(_ctx, 6)");
-						setState(124);
+						setState(143);
 						((MultiplicationExpressionContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
 						if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << MULTIPLY) | (1L << DIVIDE) | (1L << MODULO))) != 0)) ) {
@@ -1248,7 +1352,7 @@ public class NimbleParser extends Parser {
 						} else {
 							consume();
 						}
-						setState(125);
+						setState(144);
 						expression(7);
 						}
 						break;
@@ -1256,9 +1360,9 @@ public class NimbleParser extends Parser {
 						{
 						_localctx = new RelationalExpressionContext(new ExpressionContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expression);
-						setState(126);
+						setState(145);
 						if (!(precpred(_ctx, 5))) throw new FailedPredicateException(this, "precpred(_ctx, 5)");
-						setState(127);
+						setState(146);
 						((RelationalExpressionContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
 						if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << LESSER) | (1L << GREATER) | (1L << LESSER_OR_EQUAL) | (1L << GREATER_OR_EQUAL))) != 0)) ) {
@@ -1266,7 +1370,7 @@ public class NimbleParser extends Parser {
 						} else {
 							consume();
 						}
-						setState(128);
+						setState(147);
 						expression(6);
 						}
 						break;
@@ -1274,9 +1378,9 @@ public class NimbleParser extends Parser {
 						{
 						_localctx = new EqualityExpressionContext(new ExpressionContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expression);
-						setState(129);
+						setState(148);
 						if (!(precpred(_ctx, 4))) throw new FailedPredicateException(this, "precpred(_ctx, 4)");
-						setState(130);
+						setState(149);
 						((EqualityExpressionContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
 						if ( !(_la==EQUAL || _la==NOT_EQUAL) ) {
@@ -1284,7 +1388,7 @@ public class NimbleParser extends Parser {
 						} else {
 							consume();
 						}
-						setState(131);
+						setState(150);
 						expression(5);
 						}
 						break;
@@ -1292,11 +1396,11 @@ public class NimbleParser extends Parser {
 						{
 						_localctx = new AndExpressionContext(new ExpressionContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expression);
-						setState(132);
+						setState(151);
 						if (!(precpred(_ctx, 3))) throw new FailedPredicateException(this, "precpred(_ctx, 3)");
-						setState(133);
+						setState(152);
 						match(AND);
-						setState(134);
+						setState(153);
 						expression(4);
 						}
 						break;
@@ -1304,20 +1408,20 @@ public class NimbleParser extends Parser {
 						{
 						_localctx = new OrExpressionContext(new ExpressionContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expression);
-						setState(135);
+						setState(154);
 						if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
-						setState(136);
+						setState(155);
 						match(OR);
-						setState(137);
+						setState(156);
 						expression(3);
 						}
 						break;
 					}
 					} 
 				}
-				setState(142);
+				setState(161);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,9,_ctx);
+				_alt = getInterpreter().adaptivePredict(_input,11,_ctx);
 			}
 			}
 		}
@@ -1344,7 +1448,9 @@ public class NimbleParser extends Parser {
 		}
 	}
 	public static class BooleanAtomContext extends AtomContext {
-		public TerminalNode BOOLEAN() { return getToken(NimbleParser.BOOLEAN, 0); }
+		public Token type;
+		public TerminalNode TRUE() { return getToken(NimbleParser.TRUE, 0); }
+		public TerminalNode FALSE() { return getToken(NimbleParser.FALSE, 0); }
 		public BooleanAtomContext(AtomContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
@@ -1452,19 +1558,20 @@ public class NimbleParser extends Parser {
 
 	public final AtomContext atom() throws RecognitionException {
 		AtomContext _localctx = new AtomContext(_ctx, getState());
-		enterRule(_localctx, 30, RULE_atom);
+		enterRule(_localctx, 32, RULE_atom);
+		int _la;
 		try {
-			setState(152);
+			setState(171);
 			switch (_input.LA(1)) {
 			case LEFT_PARENTHESE:
 				_localctx = new ParantheseExpressionContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(143);
+				setState(162);
 				match(LEFT_PARENTHESE);
-				setState(144);
+				setState(163);
 				expression(0);
-				setState(145);
+				setState(164);
 				match(RIGHT_PARENTHESE);
 				}
 				break;
@@ -1472,23 +1579,30 @@ public class NimbleParser extends Parser {
 				_localctx = new NumberAtomContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(147);
+				setState(166);
 				match(INTEGER);
 				}
 				break;
-			case BOOLEAN:
+			case TRUE:
+			case FALSE:
 				_localctx = new BooleanAtomContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(148);
-				match(BOOLEAN);
+				setState(167);
+				((BooleanAtomContext)_localctx).type = _input.LT(1);
+				_la = _input.LA(1);
+				if ( !(_la==TRUE || _la==FALSE) ) {
+					((BooleanAtomContext)_localctx).type = (Token)_errHandler.recoverInline(this);
+				} else {
+					consume();
+				}
 				}
 				break;
 			case IDENTIFIER:
 				_localctx = new IdentifierAtomContext(_localctx);
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(149);
+				setState(168);
 				match(IDENTIFIER);
 				}
 				break;
@@ -1496,7 +1610,7 @@ public class NimbleParser extends Parser {
 				_localctx = new StringAtomContext(_localctx);
 				enterOuterAlt(_localctx, 5);
 				{
-				setState(150);
+				setState(169);
 				match(STRING);
 				}
 				break;
@@ -1504,7 +1618,7 @@ public class NimbleParser extends Parser {
 				_localctx = new NullAtomContext(_localctx);
 				enterOuterAlt(_localctx, 6);
 				{
-				setState(151);
+				setState(170);
 				match(NULL);
 				}
 				break;
@@ -1525,7 +1639,7 @@ public class NimbleParser extends Parser {
 
 	public boolean sempred(RuleContext _localctx, int ruleIndex, int predIndex) {
 		switch (ruleIndex) {
-		case 14:
+		case 15:
 			return expression_sempred((ExpressionContext)_localctx, predIndex);
 		}
 		return true;
@@ -1549,51 +1663,58 @@ public class NimbleParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\65\u009d\4\2\t\2"+
+		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\66\u00b0\4\2\t\2"+
 		"\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13"+
-		"\t\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\4\21\t\21\3\2\3\2"+
-		"\3\2\3\2\3\2\3\3\3\3\7\3*\n\3\f\3\16\3-\13\3\3\3\3\3\3\4\3\4\3\4\3\4\5"+
-		"\4\65\n\4\3\5\3\5\3\5\3\5\3\5\3\5\3\6\3\6\3\6\3\6\3\6\7\6B\n\6\f\6\16"+
-		"\6E\13\6\3\6\3\6\5\6I\n\6\3\7\3\7\3\7\3\7\3\7\3\7\3\b\3\b\3\b\3\t\3\t"+
-		"\5\tV\n\t\3\n\3\n\3\n\3\13\3\13\3\13\3\13\3\13\3\f\3\f\3\r\3\r\3\16\3"+
-		"\16\5\16f\n\16\3\16\3\16\3\17\3\17\3\17\3\17\3\17\3\17\7\17p\n\17\f\17"+
-		"\16\17s\13\17\3\20\3\20\3\20\3\20\5\20y\n\20\3\20\3\20\3\20\3\20\3\20"+
-		"\3\20\3\20\3\20\3\20\3\20\3\20\3\20\3\20\3\20\3\20\3\20\3\20\3\20\7\20"+
-		"\u008d\n\20\f\20\16\20\u0090\13\20\3\21\3\21\3\21\3\21\3\21\3\21\3\21"+
-		"\3\21\3\21\5\21\u009b\n\21\3\21\2\3\36\22\2\4\6\b\n\f\16\20\22\24\26\30"+
-		"\32\34\36 \2\b\3\2\t\13\4\2\3\4\6\6\3\2!\"\3\2#%\4\2\27\30\33\34\3\2\31"+
-		"\32\u00a1\2\"\3\2\2\2\4\'\3\2\2\2\6\64\3\2\2\2\b\66\3\2\2\2\n<\3\2\2\2"+
-		"\fJ\3\2\2\2\16P\3\2\2\2\20U\3\2\2\2\22W\3\2\2\2\24Z\3\2\2\2\26_\3\2\2"+
-		"\2\30a\3\2\2\2\32c\3\2\2\2\34i\3\2\2\2\36x\3\2\2\2 \u009a\3\2\2\2\"#\7"+
-		"\f\2\2#$\5\32\16\2$%\5\4\3\2%&\7\2\2\3&\3\3\2\2\2\'+\7\22\2\2(*\5\6\4"+
-		"\2)(\3\2\2\2*-\3\2\2\2+)\3\2\2\2+,\3\2\2\2,.\3\2\2\2-+\3\2\2\2./\7\23"+
-		"\2\2/\5\3\2\2\2\60\65\5\b\5\2\61\65\5\n\6\2\62\65\5\f\7\2\63\65\5\22\n"+
-		"\2\64\60\3\2\2\2\64\61\3\2\2\2\64\62\3\2\2\2\64\63\3\2\2\2\65\7\3\2\2"+
-		"\2\66\67\5\30\r\2\678\7\62\2\289\7\26\2\29:\5\36\20\2:;\7\r\2\2;\t\3\2"+
-		"\2\2<=\7\'\2\2=C\5\24\13\2>?\7(\2\2?@\7\'\2\2@B\5\24\13\2A>\3\2\2\2BE"+
-		"\3\2\2\2CA\3\2\2\2CD\3\2\2\2DH\3\2\2\2EC\3\2\2\2FG\7(\2\2GI\5\4\3\2HF"+
-		"\3\2\2\2HI\3\2\2\2I\13\3\2\2\2JK\7\62\2\2KL\7\20\2\2LM\5 \21\2MN\7\21"+
-		"\2\2NO\7\r\2\2O\r\3\2\2\2PQ\5\26\f\2QR\5\30\r\2R\17\3\2\2\2SV\5\30\r\2"+
-		"TV\7\7\2\2US\3\2\2\2UT\3\2\2\2V\21\3\2\2\2WX\7,\2\2XY\5\24\13\2Y\23\3"+
-		"\2\2\2Z[\7\20\2\2[\\\5\36\20\2\\]\7\21\2\2]^\5\4\3\2^\25\3\2\2\2_`\t\2"+
-		"\2\2`\27\3\2\2\2ab\t\3\2\2b\31\3\2\2\2ce\7\20\2\2df\5\34\17\2ed\3\2\2"+
-		"\2ef\3\2\2\2fg\3\2\2\2gh\7\21\2\2h\33\3\2\2\2ij\5\30\r\2jq\7\62\2\2kl"+
-		"\7\16\2\2lm\5\30\r\2mn\7\62\2\2np\3\2\2\2ok\3\2\2\2ps\3\2\2\2qo\3\2\2"+
-		"\2qr\3\2\2\2r\35\3\2\2\2sq\3\2\2\2tu\b\20\1\2uv\7&\2\2vy\5\36\20\nwy\5"+
-		" \21\2xt\3\2\2\2xw\3\2\2\2y\u008e\3\2\2\2z{\f\t\2\2{|\t\4\2\2|\u008d\5"+
-		"\36\20\n}~\f\b\2\2~\177\t\5\2\2\177\u008d\5\36\20\t\u0080\u0081\f\7\2"+
-		"\2\u0081\u0082\t\6\2\2\u0082\u008d\5\36\20\b\u0083\u0084\f\6\2\2\u0084"+
-		"\u0085\t\7\2\2\u0085\u008d\5\36\20\7\u0086\u0087\f\5\2\2\u0087\u0088\7"+
-		"\35\2\2\u0088\u008d\5\36\20\6\u0089\u008a\f\4\2\2\u008a\u008b\7\36\2\2"+
-		"\u008b\u008d\5\36\20\5\u008cz\3\2\2\2\u008c}\3\2\2\2\u008c\u0080\3\2\2"+
-		"\2\u008c\u0083\3\2\2\2\u008c\u0086\3\2\2\2\u008c\u0089\3\2\2\2\u008d\u0090"+
-		"\3\2\2\2\u008e\u008c\3\2\2\2\u008e\u008f\3\2\2\2\u008f\37\3\2\2\2\u0090"+
-		"\u008e\3\2\2\2\u0091\u0092\7\20\2\2\u0092\u0093\5\36\20\2\u0093\u0094"+
-		"\7\21\2\2\u0094\u009b\3\2\2\2\u0095\u009b\7/\2\2\u0096\u009b\7.\2\2\u0097"+
-		"\u009b\7\62\2\2\u0098\u009b\7\61\2\2\u0099\u009b\7\b\2\2\u009a\u0091\3"+
-		"\2\2\2\u009a\u0095\3\2\2\2\u009a\u0096\3\2\2\2\u009a\u0097\3\2\2\2\u009a"+
-		"\u0098\3\2\2\2\u009a\u0099\3\2\2\2\u009b!\3\2\2\2\r+\64CHUeqx\u008c\u008e"+
-		"\u009a";
+		"\t\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22"+
+		"\3\2\3\2\3\2\3\2\7\2)\n\2\f\2\16\2,\13\2\3\2\3\2\3\3\3\3\7\3\62\n\3\f"+
+		"\3\16\3\65\13\3\3\3\3\3\3\4\3\4\3\4\3\4\5\4=\n\4\3\4\3\4\3\5\3\5\3\5\3"+
+		"\5\3\5\3\6\3\6\5\6H\n\6\3\6\3\6\3\7\3\7\3\7\3\7\3\7\5\7Q\n\7\3\b\3\b\3"+
+		"\b\3\b\3\b\7\bX\n\b\f\b\16\b[\13\b\3\b\3\b\5\b_\n\b\3\t\3\t\3\t\3\t\3"+
+		"\t\3\t\3\n\3\n\3\n\3\n\3\n\3\n\3\13\3\13\5\13o\n\13\3\f\3\f\3\f\3\r\3"+
+		"\r\3\r\3\r\3\r\3\16\3\16\3\17\3\17\3\20\3\20\3\20\3\20\3\20\3\20\7\20"+
+		"\u0083\n\20\f\20\16\20\u0086\13\20\3\21\3\21\3\21\3\21\5\21\u008c\n\21"+
+		"\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21"+
+		"\3\21\3\21\3\21\3\21\7\21\u00a0\n\21\f\21\16\21\u00a3\13\21\3\22\3\22"+
+		"\3\22\3\22\3\22\3\22\3\22\3\22\3\22\5\22\u00ae\n\22\3\22\2\3 \23\2\4\6"+
+		"\b\n\f\16\20\22\24\26\30\32\34\36 \"\2\t\3\2\t\13\4\2\3\4\6\6\3\2!\"\3"+
+		"\2#%\4\2\27\30\33\34\3\2\31\32\3\2./\u00b6\2$\3\2\2\2\4/\3\2\2\2\68\3"+
+		"\2\2\2\b@\3\2\2\2\nE\3\2\2\2\fP\3\2\2\2\16R\3\2\2\2\20`\3\2\2\2\22f\3"+
+		"\2\2\2\24n\3\2\2\2\26p\3\2\2\2\30s\3\2\2\2\32x\3\2\2\2\34z\3\2\2\2\36"+
+		"|\3\2\2\2 \u008b\3\2\2\2\"\u00ad\3\2\2\2$%\7\f\2\2%&\5\n\6\2&*\5\4\3\2"+
+		"\')\5\22\n\2(\'\3\2\2\2),\3\2\2\2*(\3\2\2\2*+\3\2\2\2+-\3\2\2\2,*\3\2"+
+		"\2\2-.\7\2\2\3.\3\3\2\2\2/\63\7\22\2\2\60\62\5\f\7\2\61\60\3\2\2\2\62"+
+		"\65\3\2\2\2\63\61\3\2\2\2\63\64\3\2\2\2\64\66\3\2\2\2\65\63\3\2\2\2\66"+
+		"\67\7\23\2\2\67\5\3\2\2\289\5\34\17\29<\7\63\2\2:;\7\26\2\2;=\5 \21\2"+
+		"<:\3\2\2\2<=\3\2\2\2=>\3\2\2\2>?\7\r\2\2?\7\3\2\2\2@A\7\63\2\2AB\7\26"+
+		"\2\2BC\5 \21\2CD\7\r\2\2D\t\3\2\2\2EG\7\20\2\2FH\5\36\20\2GF\3\2\2\2G"+
+		"H\3\2\2\2HI\3\2\2\2IJ\7\21\2\2J\13\3\2\2\2KQ\5\6\4\2LQ\5\b\5\2MQ\5\16"+
+		"\b\2NQ\5\20\t\2OQ\5\26\f\2PK\3\2\2\2PL\3\2\2\2PM\3\2\2\2PN\3\2\2\2PO\3"+
+		"\2\2\2Q\r\3\2\2\2RS\7\'\2\2SY\5\30\r\2TU\7(\2\2UV\7\'\2\2VX\5\30\r\2W"+
+		"T\3\2\2\2X[\3\2\2\2YW\3\2\2\2YZ\3\2\2\2Z^\3\2\2\2[Y\3\2\2\2\\]\7(\2\2"+
+		"]_\5\4\3\2^\\\3\2\2\2^_\3\2\2\2_\17\3\2\2\2`a\7\63\2\2ab\7\20\2\2bc\5"+
+		"\"\22\2cd\7\21\2\2de\7\r\2\2e\21\3\2\2\2fg\5\32\16\2gh\5\24\13\2hi\7\63"+
+		"\2\2ij\5\n\6\2jk\5\4\3\2k\23\3\2\2\2lo\5\34\17\2mo\7\7\2\2nl\3\2\2\2n"+
+		"m\3\2\2\2o\25\3\2\2\2pq\7,\2\2qr\5\30\r\2r\27\3\2\2\2st\7\20\2\2tu\5 "+
+		"\21\2uv\7\21\2\2vw\5\4\3\2w\31\3\2\2\2xy\t\2\2\2y\33\3\2\2\2z{\t\3\2\2"+
+		"{\35\3\2\2\2|}\5\34\17\2}\u0084\7\63\2\2~\177\7\16\2\2\177\u0080\5\34"+
+		"\17\2\u0080\u0081\7\63\2\2\u0081\u0083\3\2\2\2\u0082~\3\2\2\2\u0083\u0086"+
+		"\3\2\2\2\u0084\u0082\3\2\2\2\u0084\u0085\3\2\2\2\u0085\37\3\2\2\2\u0086"+
+		"\u0084\3\2\2\2\u0087\u0088\b\21\1\2\u0088\u0089\7&\2\2\u0089\u008c\5 "+
+		"\21\n\u008a\u008c\5\"\22\2\u008b\u0087\3\2\2\2\u008b\u008a\3\2\2\2\u008c"+
+		"\u00a1\3\2\2\2\u008d\u008e\f\t\2\2\u008e\u008f\t\4\2\2\u008f\u00a0\5 "+
+		"\21\n\u0090\u0091\f\b\2\2\u0091\u0092\t\5\2\2\u0092\u00a0\5 \21\t\u0093"+
+		"\u0094\f\7\2\2\u0094\u0095\t\6\2\2\u0095\u00a0\5 \21\b\u0096\u0097\f\6"+
+		"\2\2\u0097\u0098\t\7\2\2\u0098\u00a0\5 \21\7\u0099\u009a\f\5\2\2\u009a"+
+		"\u009b\7\35\2\2\u009b\u00a0\5 \21\6\u009c\u009d\f\4\2\2\u009d\u009e\7"+
+		"\36\2\2\u009e\u00a0\5 \21\5\u009f\u008d\3\2\2\2\u009f\u0090\3\2\2\2\u009f"+
+		"\u0093\3\2\2\2\u009f\u0096\3\2\2\2\u009f\u0099\3\2\2\2\u009f\u009c\3\2"+
+		"\2\2\u00a0\u00a3\3\2\2\2\u00a1\u009f\3\2\2\2\u00a1\u00a2\3\2\2\2\u00a2"+
+		"!\3\2\2\2\u00a3\u00a1\3\2\2\2\u00a4\u00a5\7\20\2\2\u00a5\u00a6\5 \21\2"+
+		"\u00a6\u00a7\7\21\2\2\u00a7\u00ae\3\2\2\2\u00a8\u00ae\7\60\2\2\u00a9\u00ae"+
+		"\t\b\2\2\u00aa\u00ae\7\63\2\2\u00ab\u00ae\7\62\2\2\u00ac\u00ae\7\b\2\2"+
+		"\u00ad\u00a4\3\2\2\2\u00ad\u00a8\3\2\2\2\u00ad\u00a9\3\2\2\2\u00ad\u00aa"+
+		"\3\2\2\2\u00ad\u00ab\3\2\2\2\u00ad\u00ac\3\2\2\2\u00ae#\3\2\2\2\17*\63"+
+		"<GPY^n\u0084\u008b\u009f\u00a1\u00ad";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

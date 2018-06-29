@@ -3,22 +3,31 @@ parser grammar NimbleParser;
 options { tokenVocab=NimbleLexer; }
 
 main
-    : MAIN constructorDeclaration block EOF
+    : MAIN constructorDeclaration block function*  EOF
     ;
 
 block
     : LEFT_BRACE statement* RIGHT_BRACE
     ;
 
+variableDeclaration
+    : variableType IDENTIFIER (ASSIGN expression)? SEMICOLON
+    ;
+
+variableAssignment
+    : IDENTIFIER ASSIGN expression SEMICOLON
+    ;
+
+constructorDeclaration
+    : LEFT_PARENTHESE constructorParameters? RIGHT_PARENTHESE
+    ;
+
 statement
     : variableDeclaration
+    | variableAssignment
     | ifStatement
     | functionCall
     | whileLoop
-    ;
-
-variableDeclaration
-    : variableType IDENTIFIER ASSIGN expression SEMICOLON
     ;
 
 ifStatement
@@ -29,11 +38,11 @@ functionCall
     : IDENTIFIER LEFT_PARENTHESE atom RIGHT_PARENTHESE SEMICOLON
     ;
 
-functionDeclaration
-    : modifier variableType
+function
+    : modifier returnValue IDENTIFIER constructorDeclaration block
     ;
 
-functionType
+returnValue
     : variableType
     | VOID
     ;
@@ -50,9 +59,6 @@ modifier: GLOBAL | PACKAGE | INTERNAL ;
 
 variableType: INTEGER_TYPE | STRING_TYPE | BOOLEAN_TYPE ;
 
-constructorDeclaration
-    : LEFT_PARENTHESE constructorParameters? RIGHT_PARENTHESE
-    ;
 
 constructorParameters
     : variableType IDENTIFIER (',' variableType IDENTIFIER)*
@@ -72,7 +78,7 @@ expression
 atom
     : LEFT_PARENTHESE expression RIGHT_PARENTHESE   #parantheseExpression
     | INTEGER                                       #numberAtom
-    | BOOLEAN                                       #booleanAtom
+    | type=(TRUE | FALSE)                           #booleanAtom
     | IDENTIFIER                                    #identifierAtom
     | STRING                                        #stringAtom
     | NULL                                          #nullAtom

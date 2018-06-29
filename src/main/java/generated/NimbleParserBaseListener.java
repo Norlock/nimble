@@ -40,18 +40,6 @@ public class NimbleParserBaseListener implements NimbleParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterStatement(NimbleParser.StatementContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitStatement(NimbleParser.StatementContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterVariableDeclaration(NimbleParser.VariableDeclarationContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -59,6 +47,42 @@ public class NimbleParserBaseListener implements NimbleParserListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitVariableDeclaration(NimbleParser.VariableDeclarationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterVariableAssignment(NimbleParser.VariableAssignmentContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitVariableAssignment(NimbleParser.VariableAssignmentContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterConstructorDeclaration(NimbleParser.ConstructorDeclarationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitConstructorDeclaration(NimbleParser.ConstructorDeclarationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterStatement(NimbleParser.StatementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitStatement(NimbleParser.StatementContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -88,25 +112,25 @@ public class NimbleParserBaseListener implements NimbleParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterFunctionDeclaration(NimbleParser.FunctionDeclarationContext ctx) { }
+	@Override public void enterFunction(NimbleParser.FunctionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitFunctionDeclaration(NimbleParser.FunctionDeclarationContext ctx) { }
+	@Override public void exitFunction(NimbleParser.FunctionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterFunctionType(NimbleParser.FunctionTypeContext ctx) { }
+	@Override public void enterReturnValue(NimbleParser.ReturnValueContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitFunctionType(NimbleParser.FunctionTypeContext ctx) { }
+	@Override public void exitReturnValue(NimbleParser.ReturnValueContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -155,18 +179,6 @@ public class NimbleParserBaseListener implements NimbleParserListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitVariableType(NimbleParser.VariableTypeContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterConstructorDeclaration(NimbleParser.ConstructorDeclarationContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitConstructorDeclaration(NimbleParser.ConstructorDeclarationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

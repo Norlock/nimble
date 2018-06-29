@@ -56,11 +56,8 @@ FOR: 'for';
 WHILE: 'while';
 CLASS: 'class';
 
-BOOLEAN
-    : 'true'
-    | 'false'
-    ;
-
+TRUE: 'true';
+FALSE: 'false';
 INTEGER: [0-9]+;
 
 DOUBLE: INTEGER+ ',' INTEGER+;

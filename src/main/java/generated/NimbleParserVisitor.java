@@ -23,17 +23,29 @@ public interface NimbleParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitBlock(NimbleParser.BlockContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link NimbleParser#statement}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitStatement(NimbleParser.StatementContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link NimbleParser#variableDeclaration}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitVariableDeclaration(NimbleParser.VariableDeclarationContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link NimbleParser#variableAssignment}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitVariableAssignment(NimbleParser.VariableAssignmentContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link NimbleParser#constructorDeclaration}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitConstructorDeclaration(NimbleParser.ConstructorDeclarationContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link NimbleParser#statement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStatement(NimbleParser.StatementContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link NimbleParser#ifStatement}.
 	 * @param ctx the parse tree
@@ -47,17 +59,17 @@ public interface NimbleParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitFunctionCall(NimbleParser.FunctionCallContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link NimbleParser#functionDeclaration}.
+	 * Visit a parse tree produced by {@link NimbleParser#function}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitFunctionDeclaration(NimbleParser.FunctionDeclarationContext ctx);
+	T visitFunction(NimbleParser.FunctionContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link NimbleParser#functionType}.
+	 * Visit a parse tree produced by {@link NimbleParser#returnValue}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitFunctionType(NimbleParser.FunctionTypeContext ctx);
+	T visitReturnValue(NimbleParser.ReturnValueContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link NimbleParser#whileLoop}.
 	 * @param ctx the parse tree
@@ -82,12 +94,6 @@ public interface NimbleParserVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitVariableType(NimbleParser.VariableTypeContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link NimbleParser#constructorDeclaration}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitConstructorDeclaration(NimbleParser.ConstructorDeclarationContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link NimbleParser#constructorParameters}.
 	 * @param ctx the parse tree

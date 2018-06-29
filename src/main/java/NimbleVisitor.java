@@ -6,7 +6,14 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.RuleNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class NimbleVisitor extends NimbleParserBaseVisitor<Value> {
+
+    // store variables (there's only one global scope!)
+    private Map<String, Value> identifiers = new HashMap<String, Value>();
+
     /**
      * Visit a parse tree produced by {@link NimbleParser#main}.
      *
@@ -25,6 +32,12 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Value> {
             return null;
         }
 
+    }
+
+    @Override
+    public Value visitVariableAssignment(NimbleParser.VariableAssignmentContext ctx) {
+        String varAssignment = ctx.getText();
+        return super.visitVariableAssignment(ctx);
     }
 
     /**
@@ -57,6 +70,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Value> {
      */
     @Override
     public Value visitVariableDeclaration(NimbleParser.VariableDeclarationContext ctx) {
+        String test = ctx.getText();
         return super.visitVariableDeclaration(ctx);
     }
 
@@ -82,26 +96,15 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Value> {
         return super.visitFunctionCall(ctx);
     }
 
-    /**
-     * Visit a parse tree produced by {@link NimbleParser#functionDeclaration}.
-     *
-     * @param ctx the parse tree
-     * @return the visitor result
-     */
+
     @Override
-    public Value visitFunctionDeclaration(NimbleParser.FunctionDeclarationContext ctx) {
-        return super.visitFunctionDeclaration(ctx);
+    public Value visitFunction(NimbleParser.FunctionContext ctx) {
+        return super.visitFunction(ctx);
     }
 
-    /**
-     * Visit a parse tree produced by {@link NimbleParser#functionType}.
-     *
-     * @param ctx the parse tree
-     * @return the visitor result
-     */
     @Override
-    public Value visitFunctionType(NimbleParser.FunctionTypeContext ctx) {
-        return super.visitFunctionType(ctx);
+    public Value visitReturnValue(NimbleParser.ReturnValueContext ctx) {
+        return super.visitReturnValue(ctx);
     }
 
     /**
@@ -299,8 +302,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Value> {
      */
     @Override
     public Value visitBooleanAtom(NimbleParser.BooleanAtomContext ctx) {
-        Value value = new Value(Boolean.valueOf(ctx.getText()));
-        return value;
+        return super.visitBooleanAtom(ctx);
     }
 
     /**
