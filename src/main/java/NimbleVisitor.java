@@ -1,11 +1,12 @@
 import generated.NimbleParser;
+import generated.NimbleParserBaseVisitor;
 import generated.NimbleParserVisitor;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.RuleNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-public class NimbleVisitor implements NimbleParserVisitor<Value> {
+public class NimbleVisitor extends NimbleParserBaseVisitor<Value> {
     /**
      * Visit a parse tree produced by {@link NimbleParser#main}.
      *
@@ -15,13 +16,15 @@ public class NimbleVisitor implements NimbleParserVisitor<Value> {
     @Override
     public Value visitMain(NimbleParser.MainContext ctx) {
 
-        System.out.println(ctx.getText());
-
         if(ctx.getChild(0).getText().equals("main")) {
             System.out.println("Starting nimble application");
-            // TODO
+            return super.visitMain(ctx);
         }
-        return null;
+        else {
+            System.out.println("Can't detect main closing app");
+            return null;
+        }
+
     }
 
     /**
@@ -32,7 +35,7 @@ public class NimbleVisitor implements NimbleParserVisitor<Value> {
      */
     @Override
     public Value visitBlock(NimbleParser.BlockContext ctx) {
-        return null;
+        return super.visitBlock(ctx);
     }
 
     /**
@@ -43,7 +46,7 @@ public class NimbleVisitor implements NimbleParserVisitor<Value> {
      */
     @Override
     public Value visitStatement(NimbleParser.StatementContext ctx) {
-        return null;
+        return super.visitStatement(ctx);
     }
 
     /**
@@ -54,7 +57,7 @@ public class NimbleVisitor implements NimbleParserVisitor<Value> {
      */
     @Override
     public Value visitVariableDeclaration(NimbleParser.VariableDeclarationContext ctx) {
-        return null;
+        return super.visitVariableDeclaration(ctx);
     }
 
     /**
@@ -65,7 +68,7 @@ public class NimbleVisitor implements NimbleParserVisitor<Value> {
      */
     @Override
     public Value visitIfStatement(NimbleParser.IfStatementContext ctx) {
-        return null;
+        return super.visitIfStatement(ctx);
     }
 
     /**
@@ -76,7 +79,7 @@ public class NimbleVisitor implements NimbleParserVisitor<Value> {
      */
     @Override
     public Value visitFunctionCall(NimbleParser.FunctionCallContext ctx) {
-        return null;
+        return super.visitFunctionCall(ctx);
     }
 
     /**
@@ -87,7 +90,7 @@ public class NimbleVisitor implements NimbleParserVisitor<Value> {
      */
     @Override
     public Value visitFunctionDeclaration(NimbleParser.FunctionDeclarationContext ctx) {
-        return null;
+        return super.visitFunctionDeclaration(ctx);
     }
 
     /**
@@ -98,7 +101,7 @@ public class NimbleVisitor implements NimbleParserVisitor<Value> {
      */
     @Override
     public Value visitFunctionType(NimbleParser.FunctionTypeContext ctx) {
-        return null;
+        return super.visitFunctionType(ctx);
     }
 
     /**
@@ -109,7 +112,7 @@ public class NimbleVisitor implements NimbleParserVisitor<Value> {
      */
     @Override
     public Value visitWhileLoop(NimbleParser.WhileLoopContext ctx) {
-        return null;
+        return super.visitWhileLoop(ctx);
     }
 
     /**
@@ -120,7 +123,7 @@ public class NimbleVisitor implements NimbleParserVisitor<Value> {
      */
     @Override
     public Value visitConditionBlock(NimbleParser.ConditionBlockContext ctx) {
-        return null;
+        return super.visitConditionBlock(ctx);
     }
 
     /**
@@ -131,7 +134,7 @@ public class NimbleVisitor implements NimbleParserVisitor<Value> {
      */
     @Override
     public Value visitModifier(NimbleParser.ModifierContext ctx) {
-        return null;
+        return super.visitModifier(ctx);
     }
 
     /**
@@ -142,7 +145,7 @@ public class NimbleVisitor implements NimbleParserVisitor<Value> {
      */
     @Override
     public Value visitVariableType(NimbleParser.VariableTypeContext ctx) {
-        return null;
+        return super.visitVariableType(ctx);
     }
 
     /**
@@ -153,7 +156,7 @@ public class NimbleVisitor implements NimbleParserVisitor<Value> {
      */
     @Override
     public Value visitConstructorDeclaration(NimbleParser.ConstructorDeclarationContext ctx) {
-        return null;
+        return super.visitConstructorDeclaration(ctx);
     }
 
     /**
@@ -164,7 +167,7 @@ public class NimbleVisitor implements NimbleParserVisitor<Value> {
      */
     @Override
     public Value visitConstructorParameters(NimbleParser.ConstructorParametersContext ctx) {
-        return null;
+        return super.visitConstructorParameters(ctx);
     }
 
     /**
@@ -176,7 +179,7 @@ public class NimbleVisitor implements NimbleParserVisitor<Value> {
      */
     @Override
     public Value visitOrExpression(NimbleParser.OrExpressionContext ctx) {
-        return null;
+        return super.visitOrExpression(ctx);
     }
 
     /**
@@ -188,7 +191,7 @@ public class NimbleVisitor implements NimbleParserVisitor<Value> {
      */
     @Override
     public Value visitAndExpression(NimbleParser.AndExpressionContext ctx) {
-        return null;
+        return super.visitAndExpression(ctx);
     }
 
     /**
@@ -200,7 +203,7 @@ public class NimbleVisitor implements NimbleParserVisitor<Value> {
      */
     @Override
     public Value visitAtomExpression(NimbleParser.AtomExpressionContext ctx) {
-        return null;
+        return super.visitAtomExpression(ctx);
     }
 
     /**
@@ -212,7 +215,7 @@ public class NimbleVisitor implements NimbleParserVisitor<Value> {
      */
     @Override
     public Value visitAdditiveExpression(NimbleParser.AdditiveExpressionContext ctx) {
-        return null;
+        return super.visitAdditiveExpression(ctx);
     }
 
     /**
@@ -224,7 +227,7 @@ public class NimbleVisitor implements NimbleParserVisitor<Value> {
      */
     @Override
     public Value visitRelationalExpression(NimbleParser.RelationalExpressionContext ctx) {
-        return null;
+        return super.visitRelationalExpression(ctx);
     }
 
     /**
@@ -236,7 +239,7 @@ public class NimbleVisitor implements NimbleParserVisitor<Value> {
      */
     @Override
     public Value visitEqualityExpression(NimbleParser.EqualityExpressionContext ctx) {
-        return null;
+        return super.visitEqualityExpression(ctx);
     }
 
     /**
@@ -248,7 +251,7 @@ public class NimbleVisitor implements NimbleParserVisitor<Value> {
      */
     @Override
     public Value visitNotExpression(NimbleParser.NotExpressionContext ctx) {
-        return null;
+        return super.visitNotExpression(ctx);
     }
 
     /**
@@ -260,7 +263,7 @@ public class NimbleVisitor implements NimbleParserVisitor<Value> {
      */
     @Override
     public Value visitMultiplicationExpression(NimbleParser.MultiplicationExpressionContext ctx) {
-        return null;
+        return super.visitMultiplicationExpression(ctx);
     }
 
     /**
@@ -272,7 +275,7 @@ public class NimbleVisitor implements NimbleParserVisitor<Value> {
      */
     @Override
     public Value visitParantheseExpression(NimbleParser.ParantheseExpressionContext ctx) {
-        return null;
+        return super.visitParantheseExpression(ctx);
     }
 
     /**
@@ -284,7 +287,7 @@ public class NimbleVisitor implements NimbleParserVisitor<Value> {
      */
     @Override
     public Value visitNumberAtom(NimbleParser.NumberAtomContext ctx) {
-        return null;
+        return super.visitNumberAtom(ctx);
     }
 
     /**
@@ -296,7 +299,8 @@ public class NimbleVisitor implements NimbleParserVisitor<Value> {
      */
     @Override
     public Value visitBooleanAtom(NimbleParser.BooleanAtomContext ctx) {
-        return null;
+        Value value = new Value(Boolean.valueOf(ctx.getText()));
+        return value;
     }
 
     /**
@@ -308,7 +312,7 @@ public class NimbleVisitor implements NimbleParserVisitor<Value> {
      */
     @Override
     public Value visitIdentifierAtom(NimbleParser.IdentifierAtomContext ctx) {
-        return null;
+        return super.visitIdentifierAtom(ctx);
     }
 
     /**
@@ -320,7 +324,7 @@ public class NimbleVisitor implements NimbleParserVisitor<Value> {
      */
     @Override
     public Value visitStringAtom(NimbleParser.StringAtomContext ctx) {
-        return null;
+        return super.visitStringAtom(ctx);
     }
 
     /**
@@ -332,28 +336,21 @@ public class NimbleVisitor implements NimbleParserVisitor<Value> {
      */
     @Override
     public Value visitNullAtom(NimbleParser.NullAtomContext ctx) {
-        return null;
+        return super.visitNullAtom(ctx);
     }
 
     @Override
-    public Value visit(ParseTree parseTree) {
-
-        System.out.println(parseTree.getText());
-        return null;
-    }
-
-    @Override
-    public Value visitChildren(RuleNode ruleNode) {
-        return null;
+    public Value visitChildren(RuleNode node) {
+        return super.visitChildren(node);
     }
 
     @Override
     public Value visitTerminal(TerminalNode terminalNode) {
-        return null;
+        return super.visitTerminal(terminalNode);
     }
 
     @Override
     public Value visitErrorNode(ErrorNode errorNode) {
-        return null;
+        return super.visitErrorNode(errorNode);
     }
 }
