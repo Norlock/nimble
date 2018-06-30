@@ -9,7 +9,7 @@ import java.util.Map;
 public class NimbleVisitor extends NimbleParserBaseVisitor<ValueInfo> {
 
     // store variables
-    private Map<String, ValueInfo> variables = new HashMap<>();
+    private Map<String, TypeValue> variables = new HashMap<>();
 
     /**
      * Visit a parse tree produced by {@link NimbleParser#main}.
@@ -30,68 +30,52 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ValueInfo> {
 
         if (ctx.expression() == null) {
             variables.put(id, null);
-
         } else {
-//            assignVariable(id, type, this.visit(ctx.expression()));
             ValueInfo value = this.visit(ctx.expression());
-            variables.put(id, value);
-
-            switch (type) {
-                case "string":
-                    String str = value.toString();
-                    System.out.println("String: " + str);
-                    break;
-                case "bool":
-                    boolean bool = value.asBoolean();
-                    System.out.println("Bool: " + bool);
-                    break;
-                case "int":
-                    Integer integer = value.asInteger();
-                    System.out.println("Int: " + integer);
-                    break;
-            }
+            TypeValue typeValue = new TypeValue(type, value);
+            assignVariable(id, typeValue);
         }
-
 
         return super.visitVariableDeclaration(ctx);
     }
 
-    private ValueInfo getVariable(String identifier) {
-        ValueInfo valueInfo = variables.get(identifier);
+    private void assignVariable(String id, TypeValue typeValue) {
+        try {
+            ValueInfo value = typeValue.getValueInfo();
+            switch (Constants.VarType.findVarType(typeValue.getType())) {
+                case STRING:
+                    String str = value.asString();
+                    System.out.println("String: " + str);
+                    break;
+                case BOOLEAN:
+                    boolean bool = value.asBoolean();
+                    System.out.println("Bool: " + bool);
+                    break;
+                case INTEGER:
+                    Integer integer = value.asInteger();
+                    System.out.println("Int: " + integer);
+                    break;
+                default:
+                    throw new RuntimeException("Variable type: "
+                            + typeValue.getType() + " unknown");
+            }
 
-        if(valueInfo == null) {
+            variables.put(id, typeValue);
+        } catch (Exception e) {
+            System.err.println("Can't assign variable: " + id);
+            e.printStackTrace();
+        }
+    }
+
+    private TypeValue getVariable(String identifier) {
+        TypeValue typeValue = variables.get(identifier);
+
+        if(typeValue == null) {
             throw new RuntimeException("Variable: " + identifier + " has been assigned before being declared");
         }
 
-        return valueInfo;
-    }
 
-    /**
-     *
-     * @param id
-     * @param type
-     * @param expressionValue value from expression.
-     * @return
-     */
-    private ValueInfo assignVariable(String id, String type, ValueInfo expressionValue) {
-        variables.put(id, expressionValue);
-
-        switch (type) {
-            case "string":
-                String str = expressionValue.toString();
-                System.out.println("String: " + str);
-                break;
-            case "bool":
-                boolean bool = expressionValue.asBoolean();
-                System.out.println("Bool: " + bool);
-                break;
-            case "int":
-                Integer integer = expressionValue.asInteger();
-                System.out.println("Int: " + integer);
-                break;
-            default:
-                System.err.println("Unknown type: " + type);
-        }
+        return typeValue;
     }
 
     /**
@@ -101,8 +85,13 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ValueInfo> {
      */
     @Override
     public ValueInfo visitVariableAssignment(NimbleParser.VariableAssignmentContext ctx) {
-        ValueInfo valueInfo = getVariable(ctx.IDENTIFIER().getText());
+        String id = ctx.IDENTIFIER().getText();
 
+        ValueInfo value = this.visit(ctx.expression());
+        TypeValue typeValue = new TypeValue(getVariable(id).getType(), value);
+        assignVariable(id, typeValue);
+
+        return value;
     }
 
     /**
@@ -293,7 +282,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ValueInfo> {
 
     @Override
     public ValueInfo visitIdentifierAtom(NimbleParser.IdentifierAtomContext ctx) {
-        return getVariable(ctx.getText());
+        return getVariable(ctx.getText()).getValueInfo();
     }
 
     @Override
