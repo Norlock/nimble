@@ -58,4 +58,22 @@ public class ValueData extends Data {
     public boolean getValueBool() {
         return valueBool;
     }
+
+    @Override
+    public String toString() {
+        switch (typeToken) {
+            case NimbleParser.INTEGER_TYPE:
+                return "" + valueInt;
+            case NimbleParser.DOUBLE_TYPE:
+                return "" + valueDouble;
+            case NimbleParser.BOOLEAN_TYPE:
+                return "" + valueBool;
+            case NimbleParser.STRING_TYPE:
+                return valueStr;
+                default:
+                    throw new RuntimeException("Token: "
+                            + NimbleParser.VOCABULARY.getLiteralName(typeToken)
+                            + " is not recognised");
+        }
+    }
 }

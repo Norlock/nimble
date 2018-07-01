@@ -51,7 +51,6 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
             throw new RuntimeException("NimbleVariable: " + identifier + " has been assigned before being declared");
         }
 
-
         return nimbleVariable;
     }
 

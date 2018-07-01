@@ -28,13 +28,7 @@ public class NimbleVariable {
      * Throws runtime exception if incorrect
      */
     public void validate() {
-        int token = tokenData.getType();
-        switch (token) {
-            case NimbleParser.INTEGER_TYPE:
-                valueData.asInteger();
-                break;
-            case NimbleParser.BOOLEAN_TYPE:
-                valueData.asBoolean();
-        }
+        if(valueData.getTypeToken() != tokenData.getType())
+            throw new RuntimeException("Value: " + valueData.toString());
     }
 }
