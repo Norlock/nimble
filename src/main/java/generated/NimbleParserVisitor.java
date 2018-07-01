@@ -29,6 +29,12 @@ public interface NimbleParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitMain(NimbleParser.MainContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link NimbleParser#function}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFunction(NimbleParser.FunctionContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link NimbleParser#field}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -82,12 +88,6 @@ public interface NimbleParserVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitPrintStatement(NimbleParser.PrintStatementContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link NimbleParser#function}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitFunction(NimbleParser.FunctionContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link NimbleParser#returnValue}.
 	 * @param ctx the parse tree

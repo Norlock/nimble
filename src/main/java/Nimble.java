@@ -23,7 +23,7 @@ public class Nimble {
             NimbleLexer nimbleLexer = new NimbleLexer(new ANTLRFileStream(args[0]));
             NimbleParser nimbleParser = new NimbleParser(new CommonTokenStream(nimbleLexer));
             NimbleVisitor nimbleVisitor = new NimbleVisitor();
-            ParseTree tree = nimbleParser.main();
+            ParseTree tree = nimbleParser.parse();
             nimbleVisitor.visit(tree);
 
 //            CodeGenerator codeGenerator = new CodeGenerator(Grammar.load(args[0]));

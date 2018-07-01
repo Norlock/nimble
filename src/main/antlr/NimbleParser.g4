@@ -3,16 +3,17 @@ parser grammar NimbleParser;
 options { tokenVocab=NimbleLexer; }
 
 // functies en fields mogen boven de main bevinden.
-parse: declarations*;
+parse: declarations* main declarations* EOF;
 
 declarations
-    : main
-    | field
+    : field
     | function
     ;
 
-main
-    : MAIN block EOF
+main: MAIN block ;
+
+function
+    : modifier returnValue IDENTIFIER constructorDeclaration block
     ;
 
 field
@@ -55,10 +56,6 @@ functionCall
 
 printStatement
     : PRINT condition SEMICOLON
-    ;
-
-function
-    : modifier returnValue IDENTIFIER constructorDeclaration block
     ;
 
 returnValue

@@ -23,7 +23,6 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
      */
     @Override
     public Data visitMain(NimbleParser.MainContext ctx) {
-        String a = NimbleParser.VOCABULARY.getLiteralName(NimbleParser.ADD);
         return super.visitMain(ctx);
     }
 
