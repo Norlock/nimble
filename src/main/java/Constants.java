@@ -51,11 +51,13 @@ public final class Constants {
 
     public static String loadBooleanOnStack(boolean value) {
         if(value)
-            return JasminKeywords.INTEGER_CONST;
+            return JasminKeywords.INTEGER_CONST + JasminKeywords.TRUE;
+        else
+            return JasminKeywords.INTEGER_CONST + JasminKeywords.FALSE;
     }
 
     public static String loadDoubleOnStack(double value) {
-        return "TODO";
+        return JasminKeywords.DOUBLE_ADD;
     }
 
     private static String getFileFooter() {
@@ -103,25 +105,49 @@ public final class Constants {
         public static final String INTEGER_CONST = "iconst_";
 
         // Used for integers
-        public static final String INTEGER_ADD = "ldc";
+        public static final String INTEGER_ADD = "ldc", STRING_ADD = "ldc", DOUBLE_ADD="ldc2_w";
+
+        // Compares doubles
+        public static final String COMPARE_DOUBLE = "dcmpl";
+
+        // Compares if integers are equal or not equal
+        public static final String COMPARE_INTEGER_EQUAL = "if_icmpeq"
+                , COMPARE_INTEGER_NOT_EQUAL = "if_icmpne";
+
+        // Left int >= right int
+        public static final String COMPARE_INTEGER_LEFT_GREATER_OR_EQUAL = "if_icmpge";
+
+        // Left int > right int
+        public static final String COMPARE_INTEGER_LEFT_GREATER = "if_icmpgt";
+
+        // Left int <= right int
+        public static final String COMPARE_INTEGER_RIGHT_GREATER_OR_EQUAL = "if_icmple";
+
+        // Left int < right int
+        public static final String COMPARE_INTEGER_RIGHT_GREATER =  "if_icmplt";
 
         // Return method
-        public static final String RETURN = "return";
+        public static final String END_METHOD_RETURN = "return";
 
-        public static final String INTEGER_ADD = "";
-        public static final String INTEGER_ADD = "";
-        public static final String INTEGER_ADD = "";
-        public static final String INTEGER_ADD = "";
-        public static final String INTEGER_ADD = "";
-        public static final String INTEGER_ADD = "";
-        public static final String INTEGER_ADD = "";
-        public static final String INTEGER_ADD = "";
-        public static final String INTEGER_ADD = "";
-        public static final String INTEGER_ADD = "";
-        public static final String INTEGER_ADD = "";
-        public static final String INTEGER_ADD = "";
-        public static final String INTEGER_ADD = "";
-        public static final String INTEGER_ADD = "";
+        //Invoke methods that are not bound to this class
+        public static final String INVOKE_SPECIAL = "invokespecial";
+
+        //Invoke methods that are not bound to this class
+        public static final String INVOKE_VIRTUAL = "invokevirtual";
+
+        public static final String INVOKE_STATIC = "invokestatic";
+
+        // Print
+        public static final String PRINT = (INVOKE_VIRTUAL + " java/io/PrintStream/println(Ljava/lang/String;)V");
+
+        // Go to (+ label)
+        public static final String GO_TO = "goto";
+
+        // If != true go to label
+        public static final String IF_NOT_TRUE = "ifne";
+
+        // If else != true go to label
+        public static final String IF_ELSE_NOT_TRUE = "ifge";
 
     }
 }
