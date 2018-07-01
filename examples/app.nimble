@@ -5,7 +5,7 @@ main {
     int intB = 1;
     bool test = false;
     bool c = test;
-    //b = 2;
+    int c = 2;
     print(intA);
 
 }

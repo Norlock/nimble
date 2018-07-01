@@ -27,23 +27,6 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
         return super.visitMain(ctx);
     }
 
-    @Override
-    public Data visitVariableDeclaration(NimbleParser.VariableDeclarationContext ctx) {
-
-        String id = ctx.IDENTIFIER().getText();
-        int tokenType = ctx.variableType().start.getType();
-        TokenData tokenData = new TokenData(tokenType);
-
-        if (ctx.expression() == null) {
-            variables.put(id, null);
-        } else {
-            ValueData value = (ValueData) this.visit(ctx.expression());
-            variables.put(id, new NimbleVariable(tokenData, value));
-        }
-
-        return super.visitVariableDeclaration(ctx);
-    }
-
     private NimbleVariable getVariable(String identifier) {
         NimbleVariable nimbleVariable = variables.get(identifier);
 
@@ -52,6 +35,26 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
         }
 
         return nimbleVariable;
+    }
+
+    @Override
+    public Data visitVariableDeclaration(NimbleParser.VariableDeclarationContext ctx) {
+        String id = ctx.IDENTIFIER().getText();
+
+        if (variables.get(id) != null)
+            throw new RuntimeException("Identifier " + id + " has already been declared");
+
+        int tokenType = ctx.variableType().start.getType();
+        TokenData tokenData = new TokenData(tokenType);
+
+        if (ctx.expression() == null) {
+            variables.put(id, new NimbleVariable(tokenData, id));
+        } else {
+            ValueData value = (ValueData) this.visit(ctx.expression());
+            variables.put(id, new NimbleVariable(tokenData, id));
+        }
+
+        return super.visitVariableDeclaration(ctx);
     }
 
     /**
@@ -64,7 +67,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
         String id = ctx.IDENTIFIER().getText();
         NimbleVariable variable = getVariable(id);
 
-        ValueData value = (ValueData)this.visit(ctx.expression());
+        ValueData value = (ValueData) this.visit(ctx.expression());
         variable.setValueData(value);
         variables.put(id, variable);
 

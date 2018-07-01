@@ -9,7 +9,7 @@ public class TokenData extends Data {
         this.type = type;
     }
 
-    public int getType() {
+    public int getTypeToken() {
         return type;
     }
 }

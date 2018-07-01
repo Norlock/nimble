@@ -11,6 +11,18 @@ import org.antlr.v4.runtime.tree.ParseTreeVisitor;
  */
 public interface NimbleParserVisitor<T> extends ParseTreeVisitor<T> {
 	/**
+	 * Visit a parse tree produced by {@link NimbleParser#parse}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitParse(NimbleParser.ParseContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link NimbleParser#declarations}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitDeclarations(NimbleParser.DeclarationsContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link NimbleParser#main}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

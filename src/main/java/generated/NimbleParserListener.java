@@ -8,6 +8,26 @@ import org.antlr.v4.runtime.tree.ParseTreeListener;
  */
 public interface NimbleParserListener extends ParseTreeListener {
 	/**
+	 * Enter a parse tree produced by {@link NimbleParser#parse}.
+	 * @param ctx the parse tree
+	 */
+	void enterParse(NimbleParser.ParseContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NimbleParser#parse}.
+	 * @param ctx the parse tree
+	 */
+	void exitParse(NimbleParser.ParseContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link NimbleParser#declarations}.
+	 * @param ctx the parse tree
+	 */
+	void enterDeclarations(NimbleParser.DeclarationsContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NimbleParser#declarations}.
+	 * @param ctx the parse tree
+	 */
+	void exitDeclarations(NimbleParser.DeclarationsContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link NimbleParser#main}.
 	 * @param ctx the parse tree
 	 */

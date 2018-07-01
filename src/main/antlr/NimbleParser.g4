@@ -2,9 +2,17 @@ parser grammar NimbleParser;
 
 options { tokenVocab=NimbleLexer; }
 
-// functies mogen boven de main bevinden.
+// functies en fields mogen boven de main bevinden.
+parse: declarations*;
+
+declarations
+    : main
+    | field
+    | function
+    ;
+
 main
-    : field* function* MAIN block field* function*  EOF
+    : MAIN block EOF
     ;
 
 field
