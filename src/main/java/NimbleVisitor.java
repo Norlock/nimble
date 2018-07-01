@@ -1,15 +1,19 @@
 import generated.NimbleParser;
 import generated.NimbleParserBaseVisitor;
+import model.Data;
+import model.NimbleVariable;
+import model.TokenData;
+import model.ValueData;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class NimbleVisitor extends NimbleParserBaseVisitor<ValueInfo> {
+public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
 
     // store variables
-    private Map<String, TypeValue> variables = new HashMap<>();
+    private Map<String, NimbleVariable> variables = new HashMap<>();
 
     /**
      * Visit a parse tree produced by {@link NimbleParser#main}.
@@ -18,64 +22,37 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ValueInfo> {
      * @return the visitor result
      */
     @Override
-    public ValueInfo visitMain(NimbleParser.MainContext ctx) {
+    public Data visitMain(NimbleParser.MainContext ctx) {
+        String a = NimbleParser.VOCABULARY.getLiteralName(NimbleParser.ADD);
         return super.visitMain(ctx);
     }
 
     @Override
-    public ValueInfo visitVariableDeclaration(NimbleParser.VariableDeclarationContext ctx) {
+    public Data visitVariableDeclaration(NimbleParser.VariableDeclarationContext ctx) {
 
         String id = ctx.IDENTIFIER().getText();
-        String type = ctx.variableType().getText();
+        int tokenType = ctx.variableType().start.getType();
+        TokenData tokenData = new TokenData(tokenType);
 
         if (ctx.expression() == null) {
             variables.put(id, null);
         } else {
-            ValueInfo value = this.visit(ctx.expression());
-            TypeValue typeValue = new TypeValue(type, value);
-            assignVariable(id, typeValue);
+            ValueData value = (ValueData) this.visit(ctx.expression());
+            variables.put(id, new NimbleVariable(tokenData, value));
         }
 
         return super.visitVariableDeclaration(ctx);
     }
 
-    private void assignVariable(String id, TypeValue typeValue) {
-        try {
-            ValueInfo value = typeValue.getValueInfo();
-            switch (Constants.VarType.findVarType(typeValue.getType())) {
-                case STRING:
-                    String str = value.asString();
-                    System.out.println("String: " + str);
-                    break;
-                case BOOLEAN:
-                    boolean bool = value.asBoolean();
-                    System.out.println("Bool: " + bool);
-                    break;
-                case INTEGER:
-                    Integer integer = value.asInteger();
-                    System.out.println("Int: " + integer);
-                    break;
-                default:
-                    throw new RuntimeException("Variable type: "
-                            + typeValue.getType() + " unknown");
-            }
+    private NimbleVariable getVariable(String identifier) {
+        NimbleVariable nimbleVariable = variables.get(identifier);
 
-            variables.put(id, typeValue);
-        } catch (Exception e) {
-            System.err.println("Can't assign variable: " + id);
-            e.printStackTrace();
-        }
-    }
-
-    private TypeValue getVariable(String identifier) {
-        TypeValue typeValue = variables.get(identifier);
-
-        if(typeValue == null) {
-            throw new RuntimeException("Variable: " + identifier + " has been assigned before being declared");
+        if(nimbleVariable == null) {
+            throw new RuntimeException("NimbleVariable: " + identifier + " has been assigned before being declared");
         }
 
 
-        return typeValue;
+        return nimbleVariable;
     }
 
     /**
@@ -84,12 +61,13 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ValueInfo> {
      * @return
      */
     @Override
-    public ValueInfo visitVariableAssignment(NimbleParser.VariableAssignmentContext ctx) {
+    public Data visitVariableAssignment(NimbleParser.VariableAssignmentContext ctx) {
         String id = ctx.IDENTIFIER().getText();
+        NimbleVariable variable = getVariable(id);
 
-        ValueInfo value = this.visit(ctx.expression());
-        TypeValue typeValue = new TypeValue(getVariable(id).getType(), value);
-        assignVariable(id, typeValue);
+        ValueData value = (ValueData)this.visit(ctx.expression());
+        variable.setValueData(value);
+        variables.put(id, variable);
 
         return value;
     }
@@ -101,7 +79,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ValueInfo> {
      * @return the visitor result
      */
     @Override
-    public ValueInfo visitIfStatement(NimbleParser.IfStatementContext ctx) {
+    public Data visitIfStatement(NimbleParser.IfStatementContext ctx) {
         return super.visitIfStatement(ctx);
     }
 
@@ -112,17 +90,17 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ValueInfo> {
      * @return the visitor result
      */
     @Override
-    public ValueInfo visitFunctionCall(NimbleParser.FunctionCallContext ctx) {
+    public Data visitFunctionCall(NimbleParser.FunctionCallContext ctx) {
         return super.visitFunctionCall(ctx);
     }
 
     @Override
-    public ValueInfo visitFunction(NimbleParser.FunctionContext ctx) {
+    public Data visitFunction(NimbleParser.FunctionContext ctx) {
         return super.visitFunction(ctx);
     }
 
     @Override
-    public ValueInfo visitReturnValue(NimbleParser.ReturnValueContext ctx) {
+    public Data visitReturnValue(NimbleParser.ReturnValueContext ctx) {
         return super.visitReturnValue(ctx);
     }
 
@@ -133,7 +111,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ValueInfo> {
      * @return the visitor result
      */
     @Override
-    public ValueInfo visitWhileLoop(NimbleParser.WhileLoopContext ctx) {
+    public Data visitWhileLoop(NimbleParser.WhileLoopContext ctx) {
         return super.visitWhileLoop(ctx);
     }
 
@@ -144,7 +122,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ValueInfo> {
      * @return the visitor result
      */
     @Override
-    public ValueInfo visitConditionBlock(NimbleParser.ConditionBlockContext ctx) {
+    public Data visitConditionBlock(NimbleParser.ConditionBlockContext ctx) {
         return super.visitConditionBlock(ctx);
     }
 
@@ -155,7 +133,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ValueInfo> {
      * @return the visitor result
      */
     @Override
-    public ValueInfo visitModifier(NimbleParser.ModifierContext ctx) {
+    public Data visitModifier(NimbleParser.ModifierContext ctx) {
         return super.visitModifier(ctx);
     }
 
@@ -166,7 +144,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ValueInfo> {
      * @return the visitor result
      */
     @Override
-    public ValueInfo visitConstructorDeclaration(NimbleParser.ConstructorDeclarationContext ctx) {
+    public Data visitConstructorDeclaration(NimbleParser.ConstructorDeclarationContext ctx) {
         return super.visitConstructorDeclaration(ctx);
     }
 
@@ -177,7 +155,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ValueInfo> {
      * @return the visitor result
      */
     @Override
-    public ValueInfo visitConstructorParameters(NimbleParser.ConstructorParametersContext ctx) {
+    public Data visitConstructorParameters(NimbleParser.ConstructorParametersContext ctx) {
         return super.visitConstructorParameters(ctx);
     }
 
@@ -189,7 +167,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ValueInfo> {
      * @return the visitor result
      */
     @Override
-    public ValueInfo visitOrExpression(NimbleParser.OrExpressionContext ctx) {
+    public Data visitOrExpression(NimbleParser.OrExpressionContext ctx) {
         return super.visitOrExpression(ctx);
     }
 
@@ -201,7 +179,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ValueInfo> {
      * @return the visitor result
      */
     @Override
-    public ValueInfo visitAndExpression(NimbleParser.AndExpressionContext ctx) {
+    public Data visitAndExpression(NimbleParser.AndExpressionContext ctx) {
         return super.visitAndExpression(ctx);
     }
 
@@ -213,7 +191,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ValueInfo> {
      * @return the visitor result
      */
     @Override
-    public ValueInfo visitAdditiveExpression(NimbleParser.AdditiveExpressionContext ctx) {
+    public Data visitAdditiveExpression(NimbleParser.AdditiveExpressionContext ctx) {
         return super.visitAdditiveExpression(ctx);
     }
 
@@ -225,7 +203,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ValueInfo> {
      * @return the visitor result
      */
     @Override
-    public ValueInfo visitRelationalExpression(NimbleParser.RelationalExpressionContext ctx) {
+    public Data visitRelationalExpression(NimbleParser.RelationalExpressionContext ctx) {
         return super.visitRelationalExpression(ctx);
     }
 
@@ -237,7 +215,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ValueInfo> {
      * @return the visitor result
      */
     @Override
-    public ValueInfo visitEqualityExpression(NimbleParser.EqualityExpressionContext ctx) {
+    public Data visitEqualityExpression(NimbleParser.EqualityExpressionContext ctx) {
         return super.visitEqualityExpression(ctx);
     }
 
@@ -249,7 +227,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ValueInfo> {
      * @return the visitor result
      */
     @Override
-    public ValueInfo visitNotExpression(NimbleParser.NotExpressionContext ctx) {
+    public Data visitNotExpression(NimbleParser.NotExpressionContext ctx) {
         return super.visitNotExpression(ctx);
     }
 
@@ -261,42 +239,53 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ValueInfo> {
      * @return the visitor result
      */
     @Override
-    public ValueInfo visitMultiplicationExpression(NimbleParser.MultiplicationExpressionContext ctx) {
+    public Data visitMultiplicationExpression(NimbleParser.MultiplicationExpressionContext ctx) {
         return super.visitMultiplicationExpression(ctx);
     }
 
     @Override
-    public ValueInfo visitIntegerAtom(NimbleParser.IntegerAtomContext ctx) {
-        return new ValueInfo(ctx.getText());
+    public Data visitIntegerAtom(NimbleParser.IntegerAtomContext ctx) {
+        try {
+            return  new ValueData(Integer.parseInt(ctx.getText()));
+        } catch (NumberFormatException e) {
+            throw new RuntimeException("Can't format: " + ctx.getText() + " to an integer");
+        }
     }
 
     @Override
-    public ValueInfo visitStringAtom(NimbleParser.StringAtomContext ctx) {
-        return new ValueInfo(ctx.getText());
+    public Data visitStringAtom(NimbleParser.StringAtomContext ctx) {
+        return new ValueData(ctx.getText());
     }
 
     @Override
-    public ValueInfo visitBooleanAtom(NimbleParser.BooleanAtomContext ctx) {
-        return new ValueInfo(ctx.getText());
+    public Data visitBooleanAtom(NimbleParser.BooleanAtomContext ctx) {
+        String boolStr = ctx.getText();
+        boolean result;
+        if(boolStr.equals("true") || boolStr.equals("false")) {
+           return new ValueData(Boolean.parseBoolean(boolStr));
+        } else {
+            throw new RuntimeException("Value: " + boolStr + " is not a string.");
+        }
     }
 
     @Override
-    public ValueInfo visitIdentifierAtom(NimbleParser.IdentifierAtomContext ctx) {
-        return getVariable(ctx.getText()).getValueInfo();
+    public Data visitIdentifierAtom(NimbleParser.IdentifierAtomContext ctx) {
+        NimbleVariable nimbleVariable = getVariable(ctx.getText());
+        return nimbleVariable.getValueData();
     }
 
     @Override
-    public ValueInfo visitNullAtom(NimbleParser.NullAtomContext ctx) {
+    public Data visitNullAtom(NimbleParser.NullAtomContext ctx) {
         return super.visitNullAtom(ctx);
     }
 
     @Override
-    public ValueInfo visitTerminal(TerminalNode terminalNode) {
+    public Data visitTerminal(TerminalNode terminalNode) {
         return super.visitTerminal(terminalNode);
     }
 
     @Override
-    public ValueInfo visitErrorNode(ErrorNode errorNode) {
+    public Data visitErrorNode(ErrorNode errorNode) {
         return super.visitErrorNode(errorNode);
     }
 }

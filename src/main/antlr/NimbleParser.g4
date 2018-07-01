@@ -74,7 +74,6 @@ modifier: GLOBAL | PACKAGE | INTERNAL ;
 
 variableType: INTEGER_TYPE | STRING_TYPE | BOOLEAN_TYPE ;
 
-
 constructorParameters
     : variableType IDENTIFIER (',' variableType IDENTIFIER)*
     ;
