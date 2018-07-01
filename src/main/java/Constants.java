@@ -41,29 +41,57 @@ public final class Constants {
     public static String loadIntegerOnStack(int value) {
 
         if (0 <= value && value <= 5) {
-            return JasminKeywords.INTEGER_CONST + value + JasminKeywords.SEMICOLON;
+            return JasminKeywords.INTEGER_CONST + value;
         } else if (value == -1) {
-            return JasminKeywords.INTEGER_CONST + "m1" + JasminKeywords.SEMICOLON;
+            return JasminKeywords.INTEGER_CONST + "m1";
         } else {
-            return JasminKeywords.INTEGER_ADD + " " + value + JasminKeywords.SEMICOLON;
+            return JasminKeywords.INTEGER_ADD + " " + value;
         }
+    }
+
+    public static String loadBooleanOnStack(boolean value) {
+        if(value)
+            return JasminKeywords.INTEGER_CONST;
     }
 
     public static String loadDoubleOnStack(double value) {
         return "TODO";
     }
 
-    public static String getFileHeader() {
-        // TODO returnen
+    private static String getFileFooter() {
+        return  "        return\n" +
+                "    .end method";
+    }
+
+    private static String getFileHeader(int stackSize, int varAndParamsCount) {
+        if(stackSize == 0)
+            stackSize = 99;
+        if(varAndParamsCount == 0)
+            varAndParamsCount = 99;
+
+        return ".class public NimbleProject\n" +
+                "    .super java/lang/Object\n" +
+                "\n" +
+                "    ; Default constructor (empty constructor)\n" +
+                "    .method public <init>()V\n" +
+                "        aload_0                                     ; Loads \"this\" on the stack\n" +
+                "        invokenonvirtual java/lang/Object/<init>()V ; Call super constructor\n" +
+                "        return                                      ; Terminate method\n" +
+                "    .end method\n" +
+                "    \n" +
+                "    ; Method definition for public static void main(String[] args)\n" +
+                "    .method public static main([Ljava/lang/String;)V\n" +
+                "        .limit stack " + stackSize + "\n" +
+                "        .limit locals " + varAndParamsCount + "\n\n";
     }
 
     public final class JasminKeywords {
 
-        // Used to end commands
-        public static final String SEMICOLON = ";";
-        
         // Put before the commands
         public static final String INTEGER = "i", DOUBLE = "d", FLOAT = "f";
+
+        // Boolean values
+        public static final String TRUE = "1", FALSE = "0";
 
         // Used to add two integers on the stack
         public static final String ADD = "add", SUB = "sub", MULTIPLY = "mul", DIVIDE = "div";
