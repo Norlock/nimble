@@ -184,15 +184,12 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
         return super.visitAndExpression(ctx);
     }
 
-    /**
-     * Visit a parse tree produced by the {@code additiveExpression}
-     * labeled alternative in {@link NimbleParser#expression}.
-     *
-     * @param ctx the parse tree
-     * @return the visitor result
-     */
     @Override
     public Data visitAdditiveExpression(NimbleParser.AdditiveExpressionContext ctx) {
+        // Get left + get right
+        ValueData valueDataLeft = (ValueData) this.visit(ctx.expression(0));
+        ValueData valueDataRight = (ValueData) this.visit(ctx.expression(1));
+        ctx
         return super.visitAdditiveExpression(ctx);
     }
 

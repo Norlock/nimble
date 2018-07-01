@@ -1406,6 +1406,7 @@ public class NimbleParser extends Parser {
 		}
 	}
 	public static class AdditiveExpressionContext extends ExpressionContext {
+		public Token op;
 		public List<ExpressionContext> expression() {
 			return getRuleContexts(ExpressionContext.class);
 		}
@@ -1594,9 +1595,10 @@ public class NimbleParser extends Parser {
 						setState(170);
 						if (!(precpred(_ctx, 7))) throw new FailedPredicateException(this, "precpred(_ctx, 7)");
 						setState(171);
+						((AdditiveExpressionContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
 						if ( !(_la==ADD || _la==SUBSTRACT) ) {
-						_errHandler.recoverInline(this);
+							((AdditiveExpressionContext)_localctx).op = (Token)_errHandler.recoverInline(this);
 						} else {
 							consume();
 						}
