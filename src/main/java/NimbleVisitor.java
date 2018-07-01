@@ -50,7 +50,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
             variables.put(id, new NimbleVariable(tokenData, id));
         } else {
             ValueData value = (ValueData) this.visit(ctx.expression());
-            variables.put(id, new NimbleVariable(tokenData, id));
+            variables.put(id, new NimbleVariable(tokenData, value, id));
         }
 
         return super.visitVariableDeclaration(ctx);
