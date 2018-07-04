@@ -34,7 +34,7 @@ public class NimbleVariable {
     }
 
     /**
-     * Throws runtime exception if incorrect
+     * Throws runtime exception if for example integer is assigned to a string
      */
     private void validate() {
         int valueToken = valueData.getTypeToken();

@@ -59,6 +59,22 @@ public class ValueData extends Data {
         return valueBool;
     }
 
+    public boolean isInteger() {
+        return typeToken == NimbleParser.INTEGER_TYPE;
+    }
+
+    public boolean isDouble() {
+        return typeToken == NimbleParser.DOUBLE_TYPE;
+    }
+
+    public boolean isString() {
+        return typeToken == NimbleParser.STRING_TYPE;
+    }
+
+    public boolean isBoolean() {
+        return typeToken == NimbleParser.BOOLEAN_TYPE;
+    }
+
     @Override
     public String toString() {
         switch (typeToken) {

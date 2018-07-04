@@ -4,6 +4,7 @@ import model.Data;
 import model.NimbleVariable;
 import model.TokenData;
 import model.ValueData;
+import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
@@ -15,22 +16,11 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
     // store variables
     private Map<String, NimbleVariable> variables = new HashMap<>();
 
-    /**
-     * Visit a parse tree produced by {@link NimbleParser#main}.
-     *
-     * @param ctx the parse tree
-     * @return the visitor result
-     */
-    @Override
-    public Data visitMain(NimbleParser.MainContext ctx) {
-        return super.visitMain(ctx);
-    }
-
-    private NimbleVariable getVariable(String identifier) {
+    private NimbleVariable getVariable(String identifier, ParserRuleContext ctx) {
         NimbleVariable nimbleVariable = variables.get(identifier);
 
-        if(nimbleVariable == null) {
-            throw new RuntimeException("NimbleVariable: " + identifier + " has been assigned before being declared");
+        if (nimbleVariable == null) {
+            throw new ParseException(ctx, "NimbleVariable: " + identifier + " has been assigned before being declared");
         }
 
         return nimbleVariable;
@@ -41,30 +31,32 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
         String id = ctx.IDENTIFIER().getText();
 
         if (variables.get(id) != null)
-            throw new RuntimeException("Identifier " + id + " has already been declared");
+            throw new ParseException(ctx, "Identifier " + id + " has already been declared");
 
         int tokenType = ctx.variableType().start.getType();
         TokenData tokenData = new TokenData(tokenType);
 
         if (ctx.expression() == null) {
             variables.put(id, new NimbleVariable(tokenData, id));
+            return tokenData;
         } else {
             ValueData value = (ValueData) this.visit(ctx.expression());
             variables.put(id, new NimbleVariable(tokenData, value, id));
+            return value;
         }
 
-        return super.visitVariableDeclaration(ctx);
     }
 
     /**
      * Visit variable assignment
+     *
      * @param ctx
      * @return
      */
     @Override
     public Data visitVariableAssignment(NimbleParser.VariableAssignmentContext ctx) {
         String id = ctx.IDENTIFIER().getText();
-        NimbleVariable variable = getVariable(id);
+        NimbleVariable variable = getVariable(id, ctx);
 
         ValueData value = (ValueData) this.visit(ctx.expression());
         variable.setValueData(value);
@@ -116,6 +108,15 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
         return super.visitWhileLoop(ctx);
     }
 
+    @Override
+    public Data visitPrintStatement(NimbleParser.PrintStatementContext ctx) {
+        ValueData value = (ValueData) this.visit(ctx.condition());
+        if (value == null) {
+            throw new ParseException(ctx, "Can't print uninitialized variable.");
+        }
+        return super.visitPrintStatement(ctx);
+    }
+
     /**
      * Visit a parse tree produced by {@link NimbleParser#conditionBlock}.
      *
@@ -125,6 +126,11 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
     @Override
     public Data visitConditionBlock(NimbleParser.ConditionBlockContext ctx) {
         return super.visitConditionBlock(ctx);
+    }
+
+    @Override
+    public Data visitCondition(NimbleParser.ConditionContext ctx) {
+        return visit(ctx.expression());
     }
 
     /**
@@ -186,20 +192,77 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
 
     @Override
     public Data visitAdditiveExpression(NimbleParser.AdditiveExpressionContext ctx) {
-        // Get left + get right
-        ValueData valueDataLeft = (ValueData) this.visit(ctx.expression(0));
-        ValueData valueDataRight = (ValueData) this.visit(ctx.expression(1));
-        ctx
-        return super.visitAdditiveExpression(ctx);
+
+        // Left is dominant (e.g. "test" + 3) -> "test3" || (3 + "test") -> Exception
+        System.out.println(ctx.expression().size());
+        ValueData left = (ValueData) this.visit(ctx.expression(0));
+        ValueData right = (ValueData) this.visit(ctx.expression(1));
+
+        final boolean add;
+
+        switch (ctx.op.getType()) {
+            case NimbleParser.ADD:
+                add = true;
+                break;
+            case NimbleParser.SUBSTRACT:
+                add = false;
+                break;
+            default:
+                throw new RuntimeException("Additive expression has unknown token: "
+                        + NimbleParser.VOCABULARY.getLiteralName(ctx.op.getType()));
+        }
+
+        if(add) {
+            if (left.isString()) {
+                return new ValueData(left.getValueStr() + right.toString());
+            } else if (left.isBoolean() || right.isBoolean()) { // Moet na left.isString blijven
+                throw new RuntimeException("Can't add or substract from a boolean");
+            } else if (right.isString()) {
+                throw new RuntimeException("Can't add or substract with a string");
+            } else if (left.isDouble()) {
+                if (right.isDouble()) {
+                    return new ValueData(left.getValueDouble() + right.getValueDouble());
+                } else if (right.isInteger()) {
+                    return new ValueData(left.getValueDouble() + right.getValueInt());
+                }
+            } else if (left.isInteger()) {
+                if(right.isDouble()) {
+                    return new ValueData(left.getValueInt() + left.getValueDouble());
+                } else if (right.isInteger()) {
+                    return  new ValueData(left.getValueInt() + right.getValueInt());
+                }
+            }
+        }
+        else {
+            if(left.isString() || right.isString())
+                throw new RuntimeException("Can't substract from a String");
+            else if (left.isBoolean() || right.isBoolean())
+                throw new RuntimeException("Can't substract from a boolean");
+            else if (left.isDouble()) {
+                if(right.isDouble()) {
+                    return new ValueData(left.getValueDouble() - right.getValueDouble());
+                } else if (right.isInteger()) {
+                    return new ValueData(left.getValueDouble() - right.getValueInt());
+                }
+            } else {
+                if(right.isInteger()) {
+                    return new ValueData(left.getValueInt() - right.getValueInt());
+                } else if(right.isDouble()) {
+                    return new ValueData(left.getValueInt() - right.getValueDouble());
+                }
+            }
+        }
+        throw new RuntimeException("Unknown type in additive expression");
     }
 
-    /**
-     * Visit a parse tree produced by the {@code relationalExpression}
-     * labeled alternative in {@link NimbleParser#expression}.
-     *
-     * @param ctx the parse tree
-     * @return the visitor result
-     */
+
+/**
+ * Visit a parse tree produced by the {@code relationalExpression}
+ * labeled alternative in {@link NimbleParser#expression}.
+ *
+ * @param ctx the parse tree
+ * @return the visitor result
+ */
     @Override
     public Data visitRelationalExpression(NimbleParser.RelationalExpressionContext ctx) {
         return super.visitRelationalExpression(ctx);
@@ -244,7 +307,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
     @Override
     public Data visitIntegerAtom(NimbleParser.IntegerAtomContext ctx) {
         try {
-            return  new ValueData(Integer.parseInt(ctx.getText()));
+            return new ValueData(Integer.parseInt(ctx.getText()));
         } catch (NumberFormatException e) {
             throw new RuntimeException("Can't format: " + ctx.getText() + " to an integer");
         }
@@ -258,9 +321,8 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
     @Override
     public Data visitBooleanAtom(NimbleParser.BooleanAtomContext ctx) {
         String boolStr = ctx.getText();
-        boolean result;
-        if(boolStr.equals("true") || boolStr.equals("false")) {
-           return new ValueData(Boolean.parseBoolean(boolStr));
+        if (boolStr.equals("true") || boolStr.equals("false")) {
+            return new ValueData(Boolean.parseBoolean(boolStr));
         } else {
             throw new RuntimeException("Value: " + boolStr + " is not a string.");
         }
@@ -268,7 +330,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
 
     @Override
     public Data visitIdentifierAtom(NimbleParser.IdentifierAtomContext ctx) {
-        NimbleVariable nimbleVariable = getVariable(ctx.getText());
+        NimbleVariable nimbleVariable = getVariable(ctx.getText(), ctx);
         return nimbleVariable.getValueData();
     }
 
