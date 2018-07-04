@@ -1,12 +1,10 @@
+package main;
+
 import generated.NimbleLexer;
 import generated.NimbleParser;
-import generated.NimbleParserVisitor;
-import org.antlr.v4.codegen.CodeGenerator;
 import org.antlr.v4.runtime.ANTLRFileStream;
-import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.tool.Grammar;
 
 import java.io.IOException;
 

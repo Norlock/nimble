@@ -1,13 +1,13 @@
+package main;
+
 import generated.NimbleParser;
 import generated.NimbleParserBaseVisitor;
-import model.Data;
-import model.NimbleVariable;
-import model.TokenData;
-import model.ValueData;
+import model.*;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,7 +44,6 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
             variables.put(id, new NimbleVariable(tokenData, value, id));
             return value;
         }
-
     }
 
     /**
@@ -73,6 +72,10 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
      */
     @Override
     public Data visitIfStatement(NimbleParser.IfStatementContext ctx) {
+        ValueData valueData = (ValueData) this.visit(ctx.conditionBlock(0)); // 0 { 1: condition 2: }
+        if(!valueData.isBoolean()) {
+            throw new ParseException(ctx.conditionBlock(1).condition(), "If statement has to contain a boolean expression");
+        }
         return super.visitIfStatement(ctx);
     }
 
@@ -125,12 +128,12 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
      */
     @Override
     public Data visitConditionBlock(NimbleParser.ConditionBlockContext ctx) {
-        return super.visitConditionBlock(ctx);
+        return this.visit(ctx.condition());
     }
 
     @Override
     public Data visitCondition(NimbleParser.ConditionContext ctx) {
-        return visit(ctx.expression());
+        return this.visit(ctx.expression());
     }
 
     /**
@@ -277,7 +280,32 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
      */
     @Override
     public Data visitEqualityExpression(NimbleParser.EqualityExpressionContext ctx) {
-        return super.visitEqualityExpression(ctx);
+        ValueData valueLeft = (ValueData) this.visit(ctx.expression(0));
+        ValueData valueRight = (ValueData) this.visit(ctx.expression(1));
+        if(valueLeft.getType() != valueRight.getType()) {
+            throw new ParseException(ctx, "Equality expression does not compare the same type of variable");
+        }
+
+        // isEqual and isEqualOperator
+        boolean isEqualOperator = ctx.op.getType() == NimbleParser.EQUAL;
+        boolean isEqual;
+
+        ArrayList<String> jasminCode = new ArrayList<>();
+        if(valueLeft.getType() == NimbleParser.INTEGER_TYPE) {
+            isEqual = valueLeft.getValueInt() == valueRight.getValueInt();
+            ParserData parserData = new ParserData();
+            ArrayList<String> list = parserData.getIntegerCompare(valueLeft.getValueInt(), valueRight.getValueInt(), isEqualOperator, "");
+            return new ValueData(isEqualOperator && isEqual); // If equal and supposed to be equal
+        } else if(valueLeft.getType() == NimbleParser.DOUBLE_TYPE) {
+            isEqual = valueLeft.getValueDouble() == valueRight.getValueDouble();
+            return new ValueData(isEqualOperator && isEqual); // If equal and supposed to be equal
+        } else if (valueLeft.getType() == NimbleParser.BOOLEAN_TYPE){
+            isEqual = (valueLeft.getValueBool() == valueRight.getValueBool());
+            return new ValueData(isEqualOperator && isEqual);
+        } else {
+            isEqual = valueLeft.getValueStr().equals(valueRight.getValueStr());
+        }
+        return null;
     }
 
     /**

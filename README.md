@@ -1,6 +1,6 @@
-# Compiler *Nimble*
+# Compiler *main.Nimble*
 
-Nimble, wat vlug en licht in beweging betekend, is een programmeertaal die is ontwikkeld om vlugger en eenvoudiger code
+main.Nimble, wat vlug en licht in beweging betekend, is een programmeertaal die is ontwikkeld om vlugger en eenvoudiger code
 te kunnen schrijven. 
 
 Er zijn verschillende class modifiers:

@@ -1,3 +1,5 @@
+package model;
+
 public final class JasminConstants {
 
     // Put before the commands
@@ -38,8 +40,8 @@ public final class JasminConstants {
     public static final String IF_LEFT_IS_LESSER_OR_EQUAL = "ifle";
 
     // Jasmin will use opposition!
-    public static final String COMPARE_INTEGER_EQUAL = "if_icmpeq";
-    public static final String COMPARE_INTEGER_NOT_EQUAL = "if_icmpne";
+    public static final String IF_INTEGER_COMPARE_EQUAL = "if_icmpeq";
+    public static final String IF_INTEGER_COMPARE_NOT_EQUAL = "if_icmpne";
 
     // Jasmin will use opposition!
     public static final String IF_INTEGER_LEFT_IS_GREATER = "if_icmpgt";

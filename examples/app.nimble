@@ -5,9 +5,10 @@ main {
     int intB = 1;
     int addResult = 1 + 4 + 3 + 2;
     bool test = false;
-    bool c;
-    print(c);
+    print("This is a test, it has to be a test otherwise i can't go onnn");
+    if(intA == intB) {
 
+    }
 }
 
 global void test(int a, int b) {

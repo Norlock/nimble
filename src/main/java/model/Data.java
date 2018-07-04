@@ -1,5 +1,3 @@
 package model;
 
-public abstract class Data {
-
-}
+public abstract class Data { }

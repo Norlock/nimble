@@ -1268,6 +1268,10 @@ public class NimbleParser extends Parser {
 		public TerminalNode IDENTIFIER(int i) {
 			return getToken(NimbleParser.IDENTIFIER, i);
 		}
+		public List<TerminalNode> COMMA() { return getTokens(NimbleParser.COMMA); }
+		public TerminalNode COMMA(int i) {
+			return getToken(NimbleParser.COMMA, i);
+		}
 		public ConstructorParametersContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}

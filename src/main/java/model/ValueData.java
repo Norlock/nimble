@@ -9,7 +9,7 @@ public class ValueData extends Data {
     private double valueDouble;
     private int valueInt;
 
-    private final int typeToken;
+    private final int type;
 
     /**
      * Constructor for string
@@ -17,7 +17,7 @@ public class ValueData extends Data {
      */
     public ValueData(String value) {
         this.valueStr = value;
-        this.typeToken = NimbleParser.STRING_TYPE;
+        this.type = NimbleParser.STRING_TYPE;
     }
 
     /**
@@ -26,21 +26,21 @@ public class ValueData extends Data {
      */
     public ValueData(boolean value) {
         this.valueBool = value;
-        this.typeToken = NimbleParser.BOOLEAN_TYPE;
+        this.type = NimbleParser.BOOLEAN_TYPE;
     }
 
     public ValueData(double value) {
         this.valueDouble = value;
-        this.typeToken = NimbleParser.DOUBLE_TYPE;
+        this.type = NimbleParser.DOUBLE_TYPE;
     }
 
     public ValueData(int value) {
         this.valueInt = value;
-        this.typeToken = NimbleParser.INTEGER_TYPE;
+        this.type = NimbleParser.INTEGER_TYPE;
     }
 
-    public int getTypeToken() {
-        return typeToken;
+    public int getType() {
+        return type;
     }
 
     public double getValueDouble() {
@@ -60,24 +60,24 @@ public class ValueData extends Data {
     }
 
     public boolean isInteger() {
-        return typeToken == NimbleParser.INTEGER_TYPE;
+        return type == NimbleParser.INTEGER_TYPE;
     }
 
     public boolean isDouble() {
-        return typeToken == NimbleParser.DOUBLE_TYPE;
+        return type == NimbleParser.DOUBLE_TYPE;
     }
 
     public boolean isString() {
-        return typeToken == NimbleParser.STRING_TYPE;
+        return type == NimbleParser.STRING_TYPE;
     }
 
     public boolean isBoolean() {
-        return typeToken == NimbleParser.BOOLEAN_TYPE;
+        return type == NimbleParser.BOOLEAN_TYPE;
     }
 
     @Override
     public String toString() {
-        switch (typeToken) {
+        switch (type) {
             case NimbleParser.INTEGER_TYPE:
                 return "" + valueInt;
             case NimbleParser.DOUBLE_TYPE:
@@ -88,7 +88,7 @@ public class ValueData extends Data {
                 return valueStr;
                 default:
                     throw new RuntimeException("Token: "
-                            + NimbleParser.VOCABULARY.getLiteralName(typeToken)
+                            + NimbleParser.VOCABULARY.getLiteralName(type)
                             + " is not recognised");
         }
     }
