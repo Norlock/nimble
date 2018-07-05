@@ -61,6 +61,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
         variable.setValueData(value);
         variables.put(id, variable);
 
+
         return value;
     }
 
@@ -72,10 +73,6 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
      */
     @Override
     public Data visitIfStatement(NimbleParser.IfStatementContext ctx) {
-        ValueData valueData = (ValueData) this.visit(ctx.conditionBlock(0)); // 0 { 1: condition 2: }
-        if(!valueData.isBoolean()) {
-            throw new ParseException(ctx.conditionBlock(1).condition(), "If statement has to contain a boolean expression");
-        }
         return super.visitIfStatement(ctx);
     }
 
@@ -128,7 +125,10 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
      */
     @Override
     public Data visitConditionBlock(NimbleParser.ConditionBlockContext ctx) {
-        return this.visit(ctx.condition());
+        ParserData condition = (ParserData) this.visit(ctx.condition());
+        ParserData block = (ParserData) this.visit(ctx.block());
+        condition.getJasminCode().addAll(block.getJasminCode());
+        return condition;
     }
 
     @Override
@@ -282,30 +282,33 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
     public Data visitEqualityExpression(NimbleParser.EqualityExpressionContext ctx) {
         ValueData valueLeft = (ValueData) this.visit(ctx.expression(0));
         ValueData valueRight = (ValueData) this.visit(ctx.expression(1));
+
         if(valueLeft.getType() != valueRight.getType()) {
-            throw new ParseException(ctx, "Equality expression does not compare the same type of variable");
+            throw new ParseException(ctx, "Equality expression only compares similar types of variables");
         }
 
         // isEqual and isEqualOperator
-        boolean isEqualOperator = ctx.op.getType() == NimbleParser.EQUAL;
-        boolean isEqual;
+        final int equalOperator = ctx.op.getType();
+        ParserData parserData = new ParserData();
 
-        ArrayList<String> jasminCode = new ArrayList<>();
         if(valueLeft.getType() == NimbleParser.INTEGER_TYPE) {
-            isEqual = valueLeft.getValueInt() == valueRight.getValueInt();
-            ParserData parserData = new ParserData();
-            ArrayList<String> list = parserData.getIntegerCompare(valueLeft.getValueInt(), valueRight.getValueInt(), isEqualOperator, "");
-            return new ValueData(isEqualOperator && isEqual); // If equal and supposed to be equal
-        } else if(valueLeft.getType() == NimbleParser.DOUBLE_TYPE) {
-            isEqual = valueLeft.getValueDouble() == valueRight.getValueDouble();
-            return new ValueData(isEqualOperator && isEqual); // If equal and supposed to be equal
-        } else if (valueLeft.getType() == NimbleParser.BOOLEAN_TYPE){
-            isEqual = (valueLeft.getValueBool() == valueRight.getValueBool());
-            return new ValueData(isEqualOperator && isEqual);
-        } else {
-            isEqual = valueLeft.getValueStr().equals(valueRight.getValueStr());
+            parserData.setIntegerCompare(valueLeft.getValueInt(), valueRight.getValueInt(),
+                    equalOperator);
+            return parserData;
+        } else if (valueLeft.getType() == NimbleParser.DOUBLE_TYPE) {
+            parserData.setDoubleCompare(valueLeft.getValueDouble(), valueRight.getValueDouble(),
+                    equalOperator);
+
         }
-        return null;
+//        } else if(valueLeft.getType() == NimbleParser.DOUBLE_TYPE) {
+//            isEqual = valueLeft.getValueDouble() == valueRight.getValueDouble();
+//            return new ValueData(isEqualOperator && isEqual); // If equal and supposed to be equal
+//        } else if (valueLeft.getType() == NimbleParser.BOOLEAN_TYPE){
+//            isEqual = (valueLeft.getValueBool() == valueRight.getValueBool());
+//            return new ValueData(isEqualOperator && isEqual);
+//        } else {
+//            isEqual = valueLeft.getValueStr().equals(valueRight.getValueStr());
+        return parserData;
     }
 
     /**

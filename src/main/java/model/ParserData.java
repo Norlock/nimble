@@ -7,6 +7,7 @@ import java.util.ArrayList;
 public class ParserData extends Data {
 
     private ArrayList<String> jasminCode = new ArrayList<>();
+    private String label;
 
     public ParserData() {
     }
@@ -19,6 +20,10 @@ public class ParserData extends Data {
         return jasminCode;
     }
 
+    public String getGoToLabel() {
+        return label;
+    }
+
     /**
      *
      * @param tokenType (Integer / Double / String)
@@ -29,15 +34,23 @@ public class ParserData extends Data {
         if(storePosition < 1) {
             throw new IndexOutOfBoundsException("Store position 1 and higher");
         }
-        if(tokenType == NimbleParser.INTEGER) {
-            return JasminConstants.INTEGER + JasminConstants.STORE_VAR + storePosition;
+        if(tokenType == NimbleParser.INTEGER_TYPE) {
+            if(0 <= storePosition && storePosition <= 3) {
+                return JasminConstants.INTEGER + JasminConstants.STORE_VAl_SMALL + storePosition;
+            } else {
+                return JasminConstants.INTEGER + JasminConstants.STORE_VAL + " " + storePosition;
+            }
+        } else if (tokenType == NimbleParser.DOUBLE_TYPE) {
+
         }
         return "";
     }
 
     private static String loadValueFromVariable(int tokenType, int storePosition) {
-        if(tokenType == NimbleParser.INTEGER) {
-            return JasminConstants.INTEGER + JasminConstants.LOAD_VAR + storePosition;
+        if(tokenType == NimbleParser.INTEGER_TYPE) {
+            return JasminConstants.INTEGER + JasminConstants.LOAD_VAL_SMALL + storePosition;
+        } else if (tokenType == NimbleParser.DOUBLE_TYPE) {
+            return  JasminConstants.DOUBLE + JasminConstants.LOAD_VAL_SMALL + storePosition;
         }
         return "";
     }
@@ -48,7 +61,6 @@ public class ParserData extends Data {
      * @return
      */
     private static String loadIntegerValueOntoStack(int value) {
-
         if (0 <= value && value <= 5) {
             return JasminConstants.INTEGER_CONST + value;
         } else if (value == -1) {
@@ -58,21 +70,50 @@ public class ParserData extends Data {
         }
     }
 
-    public ArrayList<String> getIntegerCompare(int valueLeft, int valueRight, boolean isEqualOperator, String label) {
-        ArrayList<String> code = new ArrayList<>();
-        code.add(loadIntegerValueOntoStack(valueLeft));
-        code.add(storeVariableReference(NimbleParser.INTEGER, 1));
-        code.add(loadIntegerValueOntoStack(valueRight));
-        code.add(storeVariableReference(NimbleParser.INTEGER, 2));
-        code.add(loadValueFromVariable(NimbleParser.INTEGER, 1));
-        code.add(loadValueFromVariable(NimbleParser.INTEGER, 2));
-        if(isEqualOperator) {
-            code.add(JasminConstants.IF_INTEGER_COMPARE_NOT_EQUAL + " Label1"); //
-        } else {
-            code.add(JasminConstants.IF_INTEGER_COMPARE_EQUAL + " " + label);
-        }
+    private static String loadDoubleValueOntoStack(double value) {
+        return JasminConstants.DOUBLE_ADD + " " + value;
+    }
 
-        return  code;
+    /**
+     *
+     * @param valueLeft
+     * @param valueRight
+     * @param equalOperator
+     * @return generated label
+     */
+    public void setIntegerCompare(final int valueLeft, final int valueRight, final int equalOperator) {
+        jasminCode.add(loadIntegerValueOntoStack(valueLeft));
+        int varIndexLeft = JasminConstants.incrementIntegerVariableIndex();
+        jasminCode.add(storeVariableReference(NimbleParser.INTEGER_TYPE, varIndexLeft));
+        jasminCode.add(loadIntegerValueOntoStack(valueRight));
+        int varIndexRight = JasminConstants.incrementIntegerVariableIndex();
+        jasminCode.add(storeVariableReference(NimbleParser.INTEGER_TYPE, varIndexRight));
+        jasminCode.add(loadValueFromVariable(NimbleParser.INTEGER_TYPE, varIndexLeft));
+        jasminCode.add(loadValueFromVariable(NimbleParser.INTEGER_TYPE, varIndexRight));
+        label = JasminConstants.getNewLabel();
+        if(equalOperator == NimbleParser.EQUAL) { // Jasmin uses opposition.
+            jasminCode.add(JasminConstants.IF_INTEGER_COMPARE_NOT_EQUAL + " " + label);
+        } else {
+            jasminCode.add(JasminConstants.IF_INTEGER_COMPARE_EQUAL + " " + label);
+        }
+    }
+
+    public void setDoubleCompare(final double valueLeft, final double valueRight, final int equalOperator) {
+        jasminCode.add(loadDoubleValueOntoStack(valueLeft));
+        int varIndexLeft = JasminConstants.incrementDoubleVariableIndex();
+        jasminCode.add(storeVariableReference(NimbleParser.DOUBLE_TYPE, varIndexLeft));
+        jasminCode.add(loadDoubleValueOntoStack(valueRight));
+        int varIndexRight = JasminConstants.incrementDoubleVariableIndex();
+        jasminCode.add(storeVariableReference(NimbleParser.DOUBLE_TYPE, varIndexRight));
+        jasminCode.add(loadValueFromVariable(NimbleParser.DOUBLE_TYPE, varIndexLeft));
+        jasminCode.add(loadValueFromVariable(NimbleParser.DOUBLE_TYPE, varIndexRight));
+        label = JasminConstants.getNewLabel();
+        if(equalOperator == NimbleParser.EQUAL) { // Jasmin uses opposition.
+            jasminCode.add(JasminConstants.IF_NOT_EQUAL + " ");
+            // TODO
+        } else {
+            // TODO
+        }
     }
 
     public static String loadBooleanOnStack(boolean value) {
@@ -80,10 +121,6 @@ public class ParserData extends Data {
             return JasminConstants.INTEGER_CONST + JasminConstants.TRUE;
         else
             return JasminConstants.INTEGER_CONST + JasminConstants.FALSE;
-    }
-
-    public static String loadDoubleOnStack(double value) {
-        return JasminConstants.DOUBLE_ADD;
     }
 
     private static String getFileFooter() {
