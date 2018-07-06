@@ -3,33 +3,41 @@ package model;
 import generated.NimbleParser;
 import main.Nimble;
 
+/**
+ * In couple class for type and variable, so String variables will only accept Strings.
+ */
 public class NimbleVariable {
 
-    private VarTypeData varTypeData;
     private ValueData valueData;
     private final String id;
+    private final int type;
     private int storeIndex;
 
-    public NimbleVariable(VarTypeData varTypeData, String id) {
-        this.varTypeData = varTypeData;
+    public NimbleVariable(int tokenType, String id) {
         this.id = id;
+        this.type = tokenType;
         setStoreIndex();
     }
 
-    public NimbleVariable(VarTypeData varTypeData, ValueData valueData, String id) {
-        this.varTypeData = varTypeData;
+    public NimbleVariable(int tokenType, ValueData valueData, String id) {
+        this.type = tokenType;
         this.valueData = valueData;
         this.id = id;
         setStoreIndex();
         validate();
+        writeJasminCode();
+    }
+
+    private void writeJasminCode() {
+
     }
 
     private void setStoreIndex() {
-        if(varTypeData.getType() == NimbleParser.INTEGER_TYPE
-                || varTypeData.getType() == NimbleParser.BOOLEAN_TYPE
-                || varTypeData.getType() == NimbleParser.STRING_TYPE) {
+        if(type == NimbleParser.INTEGER_TYPE
+                || type == NimbleParser.BOOLEAN_TYPE
+                || type == NimbleParser.STRING_TYPE) {
             storeIndex = JasminHelper.incrementVariableIndex();
-        } else if(varTypeData.getType() == NimbleParser.DOUBLE_TYPE) {
+        } else if(type == NimbleParser.DOUBLE_TYPE) {
             storeIndex = JasminHelper.incrementDoubleVariableIndex();
         } else {
             throw new RuntimeException("Shit niet gemaakt nog");
@@ -43,10 +51,11 @@ public class NimbleVariable {
     public void setValueData(ValueData valueData) {
         this.valueData = valueData;
         validate();
+        writeJasminCode();
     }
 
-    public VarTypeData getVarTypeData() {
-        return varTypeData;
+    public int getType() {
+        return type;
     }
 
     public ValueData getValueData() {
@@ -58,11 +67,10 @@ public class NimbleVariable {
      */
     private void validate() {
         int valueToken = valueData.getType();
-        int typeToken = varTypeData.getType();
 
-        if (valueToken != typeToken) {
+        if (valueToken != type) {
             String errorMsg = "\n\t\tCannot assign " + valueData.toString()
-                    + " to type " + NimbleParser.VOCABULARY.getLiteralName(typeToken).replace("'","")
+                    + " to type " + NimbleParser.VOCABULARY.getLiteralName(type).replace("'","")
                     + " for identifier " + id;
 
 

@@ -373,7 +373,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
     }
 
     @Override
-    public Data visitIdentifierAtom(NimbleParser.IdentifierAtomContext ctx) {
+    public Data visitIdentifierAtom(NimbleParser.IdentifierAtomContext ctx) { // TODO (return parserdata variable kan veranderen!)
         NimbleVariable nimbleVariable = getVariable(ctx.getText(), ctx);
         return nimbleVariable.getValueData();
     }
