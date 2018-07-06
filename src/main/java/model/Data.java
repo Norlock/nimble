@@ -1,3 +1,6 @@
 package model;
 
-public abstract class Data { }
+import java.util.ArrayList;
+
+public abstract class Data {
+}

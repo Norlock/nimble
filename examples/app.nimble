@@ -8,7 +8,7 @@ main {
     if(intA == intB) {
         print("This is a test, it has to be a test otherwise i can't go onnn");
     } else if (addResult == intB) {
-        print("jee minee");
+        print(test);
     } else {
 
     }

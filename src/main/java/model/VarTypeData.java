@@ -2,14 +2,14 @@ package model;
 
 import model.Data;
 
-public class TokenData extends Data {
+public class VarTypeData extends Data {
     private final int type;
 
-    public TokenData(int type) {
+    public VarTypeData(int type) {
         this.type = type;
     }
 
-    public int getTypeToken() {
+    public int getType() {
         return type;
     }
 }

@@ -7,7 +7,6 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,17 +32,20 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
         if (variables.get(id) != null)
             throw new ParseException(ctx, "Identifier " + id + " has already been declared");
 
-        int tokenType = ctx.variableType().start.getType();
-        TokenData tokenData = new TokenData(tokenType);
+        int type = ctx.variableType().start.getType();
+        VarTypeData varTypeData = new VarTypeData(type);
+        ParserData parserData = new ParserData();
 
         if (ctx.expression() == null) {
-            variables.put(id, new NimbleVariable(tokenData, id));
-            return tokenData;
+            NimbleVariable nimbleVariable = new NimbleVariable(varTypeData, id);
+            variables.put(id, nimbleVariable);
         } else {
             ValueData value = (ValueData) this.visit(ctx.expression());
-            variables.put(id, new NimbleVariable(tokenData, value, id));
-            return value;
+            NimbleVariable nimbleVariable = new NimbleVariable(varTypeData, value, id);
+            variables.put(id, nimbleVariable);
+            parserData.setVariableAssignment(value, nimbleVariable.getStoreIndex());
         }
+        return parserData;
     }
 
     /**
@@ -61,8 +63,10 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
         variable.setValueData(value);
         variables.put(id, variable);
 
+        ParserData parserData = new ParserData();
+        parserData.setVariableAssignment(value, variable.getStoreIndex());
 
-        return value;
+        return parserData;
     }
 
     /**
@@ -110,11 +114,21 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
 
     @Override
     public Data visitPrintStatement(NimbleParser.PrintStatementContext ctx) {
-        ValueData value = (ValueData) this.visit(ctx.condition());
-        if (value == null) {
+        Data data = this.visit(ctx.condition());
+        if (data == null) {
             throw new ParseException(ctx, "Can't print uninitialized variable.");
         }
-        return super.visitPrintStatement(ctx);
+
+        ParserData parserData = new ParserData();
+        if(data instanceof ParserData) {
+            parserData.print(((ParserData) data).getJasminCode());
+        } else if (data instanceof ValueData) {
+            parserData.print((ValueData) data);
+        } else {
+            throw new RuntimeException("Unknown data class");
+        }
+
+        return parserData;
     }
 
     /**
@@ -127,7 +141,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
     public Data visitConditionBlock(NimbleParser.ConditionBlockContext ctx) {
         ParserData condition = (ParserData) this.visit(ctx.condition());
         ParserData block = (ParserData) this.visit(ctx.block());
-        condition.getJasminCode().addAll(block.getJasminCode());
+        // TODO
         return condition;
     }
 
@@ -211,7 +225,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
                 add = false;
                 break;
             default:
-                throw new RuntimeException("Additive expression has unknown token: "
+                throw new ParseException(ctx, "Additive expression has unknown token: "
                         + NimbleParser.VOCABULARY.getLiteralName(ctx.op.getType()));
         }
 
@@ -219,9 +233,9 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
             if (left.isString()) {
                 return new ValueData(left.getValueStr() + right.toString());
             } else if (left.isBoolean() || right.isBoolean()) { // Moet na left.isString blijven
-                throw new RuntimeException("Can't add or substract from a boolean");
+                throw new ParseException(ctx, "Can't add or substract from a boolean");
             } else if (right.isString()) {
-                throw new RuntimeException("Can't add or substract with a string");
+                throw new ParseException(ctx, "Can't add or substract with a string");
             } else if (left.isDouble()) {
                 if (right.isDouble()) {
                     return new ValueData(left.getValueDouble() + right.getValueDouble());
@@ -294,16 +308,15 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
         if(valueLeft.getType() == NimbleParser.INTEGER_TYPE) {
             parserData.setIntegerCompare(valueLeft.getValueInt(), valueRight.getValueInt(),
                     equalOperator);
-            return parserData;
         } else if (valueLeft.getType() == NimbleParser.DOUBLE_TYPE) {
             parserData.setDoubleCompare(valueLeft.getValueDouble(), valueRight.getValueDouble(),
                     equalOperator);
+        } else if (valueLeft.getType() == NimbleParser.BOOLEAN_TYPE) {
+
+        } else if (valueLeft.getType() == NimbleParser.STRING_TYPE) {
 
         }
-//        } else if(valueLeft.getType() == NimbleParser.DOUBLE_TYPE) {
-//            isEqual = valueLeft.getValueDouble() == valueRight.getValueDouble();
-//            return new ValueData(isEqualOperator && isEqual); // If equal and supposed to be equal
-//        } else if (valueLeft.getType() == NimbleParser.BOOLEAN_TYPE){
+// else if (valueLeft.getType() == NimbleParser.BOOLEAN_TYPE){
 //            isEqual = (valueLeft.getValueBool() == valueRight.getValueBool());
 //            return new ValueData(isEqualOperator && isEqual);
 //        } else {
@@ -355,7 +368,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
         if (boolStr.equals("true") || boolStr.equals("false")) {
             return new ValueData(Boolean.parseBoolean(boolStr));
         } else {
-            throw new RuntimeException("Value: " + boolStr + " is not a string.");
+            throw new ParseException(ctx, "Value: " + boolStr + " is not a string.");
         }
     }
 
