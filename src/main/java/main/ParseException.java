@@ -8,6 +8,6 @@ import org.antlr.v4.runtime.ParserRuleContext;
 public class ParseException extends RuntimeException {
 
     public ParseException(ParserRuleContext context, String message) {
-        super("\nLine (" + context.getStart().getLine() + "): " + message, null, true, false);
+        super("\nLine " + context.getStart().getLine() + ": " + message, null, true, false);
     }
 }

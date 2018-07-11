@@ -222,6 +222,13 @@ public interface NimbleParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitStringAtom(NimbleParser.StringAtomContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code doubleAtom}
+	 * labeled alternative in {@link NimbleParser#atom}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitDoubleAtom(NimbleParser.DoubleAtomContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code nullAtom}
 	 * labeled alternative in {@link NimbleParser#atom}.
 	 * @param ctx the parse tree

@@ -4,12 +4,16 @@ import generated.NimbleParser;
 
 public class ValueData extends Data {
 
-    private String valueStr;
-    private boolean valueBool;
-    private double valueDouble;
-    private int valueInt;
+    protected String valueStr;
+    protected boolean valueBool;
+    protected double valueDouble;
+    protected int valueInt;
 
-    private final int type;
+    protected int type;
+    protected ParserData parserData = new ParserData();
+
+    protected ValueData() {
+    }
 
     /**
      * Constructor for string
@@ -18,12 +22,9 @@ public class ValueData extends Data {
     public ValueData(String value) {
         this.valueStr = value;
         this.type = NimbleParser.STRING_TYPE;
+
     }
 
-    /**
-     * Boolean constructor
-     * @param value
-     */
     public ValueData(boolean value) {
         this.valueBool = value;
         this.type = NimbleParser.BOOLEAN_TYPE;
@@ -37,6 +38,10 @@ public class ValueData extends Data {
     public ValueData(int value) {
         this.valueInt = value;
         this.type = NimbleParser.INTEGER_TYPE;
+    }
+
+    public ParserData convertToParserData() {
+        return parserData;
     }
 
     public int getType() {

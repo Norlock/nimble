@@ -364,6 +364,18 @@ public interface NimbleParserListener extends ParseTreeListener {
 	 */
 	void exitStringAtom(NimbleParser.StringAtomContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code doubleAtom}
+	 * labeled alternative in {@link NimbleParser#atom}.
+	 * @param ctx the parse tree
+	 */
+	void enterDoubleAtom(NimbleParser.DoubleAtomContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code doubleAtom}
+	 * labeled alternative in {@link NimbleParser#atom}.
+	 * @param ctx the parse tree
+	 */
+	void exitDoubleAtom(NimbleParser.DoubleAtomContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code nullAtom}
 	 * labeled alternative in {@link NimbleParser#atom}.
 	 * @param ctx the parse tree

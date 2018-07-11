@@ -1,13 +1,44 @@
 package model;
 
+import generated.NimbleParser;
+
 public final class JasminConstants {
 
 
     // For reading purpose
     private static final String SPACE = " ";
 
-    // Put before the commands
-    public static final String INTEGER = "i", DOUBLE = "d";
+    public enum Prefix {
+        INTEGER_OR_BOOLEAN("i"),
+        STRING("a"),
+        DOUBLE("d");
+
+        private final String value;
+
+        Prefix(String value) {
+            this.value = value;
+        }
+
+        public static Prefix getPrefixBasedOnType(int type) {
+            switch (type) {
+                case NimbleParser.INTEGER_TYPE:
+                    return Prefix.INTEGER_OR_BOOLEAN;
+                case NimbleParser.BOOLEAN_TYPE:
+                    return Prefix.INTEGER_OR_BOOLEAN;
+                case NimbleParser.DOUBLE_TYPE:
+                    return Prefix.DOUBLE;
+                case NimbleParser.STRING_TYPE:
+                    return Prefix.STRING;
+                default:
+                    throw new RuntimeException("Unknown type");
+            }
+        }
+
+        @Override
+        public String toString() {
+            return value;
+        }
+    }
 
     // Boolean values
     public static final String TRUE = "1", FALSE = "0";
@@ -67,16 +98,29 @@ public final class JasminConstants {
     public static final String INVOKE_SPECIAL = "invokespecial" + SPACE;
 
     //Invoke methods that are not bound to this class
-    public static final String INVOKE_VIRTUAL = "invokevirtual" + SPACE;
-
-    public static final String INVOKE_STATIC = "invokestatic" + SPACE;
-    public static final String GET_STATIC = "getstatic" + SPACE;
+    private static final String INVOKE_VIRTUAL = "invokevirtual" + SPACE;
+    private static final String INVOKE_STATIC = "invokestatic" + SPACE;
+    private static final String GET_STATIC = "getstatic" + SPACE;
 
     // push System.out onto the stack
     public static final String LOAD_SYSO_ONTO_STACK = GET_STATIC + "java/lang/System/out Ljava/io/PrintStream";
     // Call println
     public static final String PRINT = INVOKE_VIRTUAL + "java/io/PrintStream/println(Ljava/lang/String;)V";
 
+    public static final String COMPARE_STRING = INVOKE_VIRTUAL + "java/lang/String.equals:(Ljava/lang/Object;)Z";
+
     // Go to (+ label)
     public static final String GO_TO = "goto" + SPACE;
+
+    private static final String NEW = "new";
+    private static final String STRING_BUILDER_CLASS = "java/lang/StringBuilder";
+
+    public static final String CONSTRUCT_STRING_BUILDER = NEW + STRING_BUILDER_CLASS;
+    public static final String INIT_STRING_BUILDER = INVOKE_SPECIAL + STRING_BUILDER_CLASS + ".\"<init>\":()V";
+    public static final String APPEND_STRING_BUILDER = INVOKE_VIRTUAL + STRING_BUILDER_CLASS +
+            ".append:(Ljava/lang/String;)Ljava/lang/StringBuilder;";
+    public static final String STRING_BUILDER_TO_STRING = INVOKE_VIRTUAL + STRING_BUILDER_CLASS +
+            ".toString:()Ljava/lang/String;";
+
+    public static final String DUPLICATE_VALUE_ONTOP_OF_STACK = "dup";
 }

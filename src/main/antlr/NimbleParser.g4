@@ -100,5 +100,6 @@ atom
     | (TRUE | FALSE)                                #booleanAtom
     | IDENTIFIER                                    #identifierAtom
     | STRING                                        #stringAtom
+    | DOUBLE                                        #doubleAtom
     | NULL                                          #nullAtom
     ;
