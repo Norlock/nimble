@@ -10,7 +10,6 @@ public class ValueData extends Data {
     protected int valueInt;
 
     protected int type;
-    protected ParserData parserData = new ParserData();
 
     protected ValueData() {
     }
@@ -22,26 +21,25 @@ public class ValueData extends Data {
     public ValueData(String value) {
         this.valueStr = value;
         this.type = NimbleParser.STRING_TYPE;
-
+        loadStringOntoStack(valueStr);
     }
 
     public ValueData(boolean value) {
         this.valueBool = value;
         this.type = NimbleParser.BOOLEAN_TYPE;
+        loadBooleanOnStack(valueBool);
     }
 
     public ValueData(double value) {
         this.valueDouble = value;
         this.type = NimbleParser.DOUBLE_TYPE;
+        loadDoubleOntoStack(valueDouble);
     }
 
     public ValueData(int value) {
         this.valueInt = value;
         this.type = NimbleParser.INTEGER_TYPE;
-    }
-
-    public ParserData convertToParserData() {
-        return parserData;
+        loadIntegerOntoStack(valueInt);
     }
 
     public int getType() {

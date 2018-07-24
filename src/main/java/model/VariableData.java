@@ -1,6 +1,7 @@
 package model;
 
 import generated.NimbleParser;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
  * In couple class for type and variable, so String variables will only accept Strings.
@@ -9,15 +10,18 @@ public class VariableData extends ValueData {
 
     private final String id;
     private final int storeIndex;
+    private final ParserRuleContext ctx;
     private boolean hasValue;
 
-    public VariableData(int tokenType, String id) {
+    public VariableData(ParserRuleContext ctx, int tokenType, String id) {
+        this.ctx = ctx;
         this.type = tokenType;
         this.id = id;
         this.storeIndex = updateStoreIndex();
     }
 
-    public VariableData(int tokenType, String id, ValueData valueData) {
+    public VariableData(ParserRuleContext ctx, int tokenType, String id, ValueData valueData) {
+        this.ctx = ctx;
         this.type = tokenType;
         this.id = id;
         validate(valueData);
@@ -26,60 +30,33 @@ public class VariableData extends ValueData {
     }
 
     /**
-     * Can be set by
+     * Can be set by an expression like: int a = 3 + 2;
      * @param tokenType
      * @param id
-     * @param parserData doesn't need to be validated
+     * @param expressionData doesn't need to be validated
      */
-    public VariableData(int tokenType, String id, ParserData parserData) {
+    public VariableData(ParserRuleContext ctx, int tokenType, String id, ExpressionData expressionData) {
+        this.ctx = ctx;
         this.type = tokenType;
         this.id = id;
-        setValue(parserData);
+        validate(expressionData);
+        setValue(expressionData);
         this.storeIndex = updateStoreIndex();
     }
 
-    public void setValue(ParserData parserData) {
-        this.parserData = parserData;
-        parserData.setStore(JasminConstants.Prefix.getPrefixBasedOnType(type), storeIndex);
+    public void setValue(ExpressionData expressionData) {
+        validate(expressionData);
     }
 
     public void setValue(ValueData valueData) {
         validate(valueData);
-
         hasValue = true;
-        switch (type) {
-            case NimbleParser.STRING_TYPE:
-                this.valueStr = valueData.valueStr;
-                parserData.loadStringOntoStack(valueStr);
-                parserData.setStore(JasminConstants.Prefix.STRING, storeIndex);
-                break;
-            case NimbleParser.BOOLEAN_TYPE:
-                this.valueBool = valueData.valueBool;
-                parserData.loadBooleanOnStack(valueBool);
-                parserData.setStore(JasminConstants.Prefix.INTEGER_OR_BOOLEAN, storeIndex);
-                break;
-            case NimbleParser.INTEGER_TYPE:
-                this.valueInt = valueData.valueInt;
-                parserData.loadIntegerOntoStack(valueInt);
-                parserData.setStore(JasminConstants.Prefix.INTEGER_OR_BOOLEAN, storeIndex);
-                break;
-            case NimbleParser.DOUBLE_TYPE:
-                this.valueDouble = valueData.valueDouble;
-                parserData.loadDoubleOntoStack(valueDouble);
-                parserData.setStore(JasminConstants.Prefix.DOUBLE, storeIndex);
-                break;
-            default:
-                throw new RuntimeException("Unknown type");
-        }
+        setStore(JasminConstants.Prefix.getPrefixBasedOnType(type), storeIndex);
+
     }
 
     public boolean hasValue() {
         return hasValue;
-    }
-
-    @Override
-    public ParserData convertToParserData() {
-        return parserData;
     }
 
     private int updateStoreIndex() {
@@ -90,7 +67,7 @@ public class VariableData extends ValueData {
         } else if(type == NimbleParser.DOUBLE_TYPE) {
             return JasminHelper.incrementDoubleVariableIndex();
         } else {
-            throw new RuntimeException("Not implemented");
+            throw new RuntimeException("Unknown type");
         }
     }
 

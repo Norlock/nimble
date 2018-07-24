@@ -20,6 +20,12 @@ main {
 ```
 
 # Code architectuur
-Er is een class Data,
+Er is een class Data. 
+
+* Data    
+    * ValueData 
+        * VariableData (checked)
+        * ExpressionData (checked)
+    * ParserData (not checked)
 
 

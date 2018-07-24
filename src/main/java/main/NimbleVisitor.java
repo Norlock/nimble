@@ -120,7 +120,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
 
         ParserData parserData = new ParserData();
         if(data instanceof ParserData) {
-            parserData.print(((ParserData) data).getJasminCode());
+            parserData.print(data.getJasminCode());
         } else if (data instanceof ValueData) {
             parserData.print((ValueData) data);
         } else {
@@ -214,50 +214,16 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
         ValueData left = (ValueData) this.visit(ctx.expression(0));
         ValueData right = (ValueData) this.visit(ctx.expression(1));
 
-        ParserData parserData = new ParserData();
+        ExpressionData expressionData = new ExpressionData(ctx);
 
         int additiveOperator = ctx.op.getType();
         if(additiveOperator == NimbleParser.ADD) {
-            if (left.isString()) {
-                parserData.setAdditiveExpressionString(left.getValueStr(), right.getValueStr());
-            } else if (left.isBoolean() || right.isBoolean()) { // Moet na left.isString blijven
-                throw new ParseException(ctx, "Can't add or substract from a boolean");
-            } else if (right.isString()) {
-                throw new ParseException(ctx, "Can't add or substract with a string");
-            } else if (left.isDouble()) {
-                if (right.isDouble()) {
-                    parserData.setAdditiveExpressionDouble(left.getValueDouble(), right.getValueDouble(), additiveOperator);
-                } else if (right.isInteger()) {
-                    parserData.setAdditiveExpressionDouble(left.getValueDouble(), right.getValueInt(), additiveOperator);
-                }
-            } else if (left.isInteger()) {
-                if(right.isDouble()) {
-                    return new ValueData(left.getValueInt() + left.getValueDouble());
-                } else if (right.isInteger()) {
-                    return  new ValueData(left.getValueInt() + right.getValueInt());
-                }
-            }
+            expressionData.setAddExpression(left, right);
         }
         else {
-            if(left.isString() || right.isString())
-                throw new RuntimeException("Can't substract from a String");
-            else if (left.isBoolean() || right.isBoolean())
-                throw new RuntimeException("Can't substract from a boolean");
-            else if (left.isDouble()) {
-                if(right.isDouble()) {
-                    return new ValueData(left.getValueDouble() - right.getValueDouble());
-                } else if (right.isInteger()) {
-                    return new ValueData(left.getValueDouble() - right.getValueInt());
-                }
-            } else {
-                if(right.isInteger()) {
-                    return new ValueData(left.getValueInt() - right.getValueInt());
-                } else if(right.isDouble()) {
-                    return new ValueData(left.getValueInt() - right.getValueDouble());
-                }
-            }
+            expressionData.setSubstractExpression(left, right);
         }
-        return parserData;
+        return expressionData;
     }
 
 
