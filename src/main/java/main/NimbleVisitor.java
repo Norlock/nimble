@@ -119,16 +119,16 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
             throw new ParseException(ctx, "Can't print uninitialized variable.");
         }
 
-        ParserData parserData = new ParserData();
-        if(data instanceof ParserData) {
-            parserData.print(data.getJasminCode());
-        } else if (data instanceof ValueData) {
-            parserData.print((ValueData) data);
-        } else {
-            throw new RuntimeException("Unknown data class");
-        }
+//        ParserData parserData = new ParserData();
+//        if(data instanceof ParserData) {
+//            parserData.print(data.getJasminCode());
+//        } else if (data instanceof ValueData) {
+//            parserData.print((ValueData) data);
+//        } else {
+//            throw new RuntimeException("Unknown data class");
+//        }
 
-        return parserData;
+        return data;
     }
 
     /**
@@ -255,27 +255,12 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
         }
 
         // isEqual and isEqualOperator
-        final int isEqual = ctx.op.getType();
+        final int isEqualOperator = ctx.op.getType();
+
         ExpressionData exprData = new ExpressionData(ctx, left, right);
+        String label = exprData.setCompareExpression(isEqualOperator);
 
-        if(isEqual)
-
-        if(valueLeft.getType() == NimbleParser.INTEGER_TYPE) {
-            parserData.setIntegerCompare(valueLeft.getValueInt(), valueRight.getValueInt(),
-                    equalOperator);
-        } else if (valueLeft.getType() == NimbleParser.DOUBLE_TYPE) {
-            parserData.setDoubleCompare(valueLeft.getValueDouble(), valueRight.getValueDouble(),
-                    equalOperator);
-        } else if (valueLeft.getType() == NimbleParser.BOOLEAN_TYPE) {
-            parserData.setBooleanCompare(valueLeft.getValueBool(), valueRight.getValueBool(), equalOperator);
-        } else if (valueLeft.getType() == NimbleParser.STRING_TYPE) {
-            parserData.setStringCompare(valueLeft.getValueStr(), valueRight.getValueStr(), equalOperator);
-        } else if (valueLeft.getType() == NimbleParser.BOOLEAN_TYPE) {
-            parserData.setBooleanCompare(valueLeft.getValueBool(), valueRight.getValueBool(), equalOperator);
-        } else {
-            throw new RuntimeException("not implemented");
-        }
-        return parserData;
+        return exprData;
     }
 
     /**
@@ -305,7 +290,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
     @Override
     public ParserData visitIntegerAtom(NimbleParser.IntegerAtomContext ctx) {
         try {
-            return new ValueData(Integer.parseInt(ctx.getText()));
+            return new ValueData(ctx, Integer.parseInt(ctx.getText()));
         } catch (NumberFormatException e) {
             throw new ParseException(ctx, "Can't format: " + ctx.getText() + " to an integer");
         }
@@ -314,7 +299,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
     @Override
     public ParserData visitDoubleAtom(NimbleParser.DoubleAtomContext ctx) {
         try {
-            return new ValueData(Double.parseDouble(ctx.getText()));
+            return new ValueData(ctx, Double.parseDouble(ctx.getText()));
         } catch (NumberFormatException e) {
             throw new ParseException(ctx, "Can't format: " + ctx.getText() + " to an integer");
         }
@@ -322,14 +307,14 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
 
     @Override
     public ParserData visitStringAtom(NimbleParser.StringAtomContext ctx) {
-        return new ValueData(ctx.getText());
+        return new ValueData(ctx, ctx.getText());
     }
 
     @Override
     public ParserData visitBooleanAtom(NimbleParser.BooleanAtomContext ctx) {
         String boolStr = ctx.getText();
         if (boolStr.equals("true") || boolStr.equals("false")) {
-            return new ValueData(Boolean.parseBoolean(boolStr));
+            return new ValueData(ctx, Boolean.parseBoolean(boolStr));
         } else {
             throw new ParseException(ctx, "Value: " + boolStr + " is not a string.");
         }

@@ -1,9 +1,12 @@
 global string testStr = "test";
 
 main {
-    string a = "test";
-    string b = "test";
-    string c = a + b;
+    int a = 2;
+    int b = 3;
+    if(a == b) {
+
+    }
+    string c = "nog wat";
 }
 
 global void test(int a, int b) {

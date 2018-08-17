@@ -67,14 +67,37 @@ public class ExpressionData extends BaseValue {
         }
     }
 
-    public void setIsEqualExpression() {
-        if(left.isType(NimbleParser.INTEGER_TYPE)) {
-            compareIfIntegerIsEqual();
+    /**
+     * Compares two values
+     * @param operatorType (is equal / not equal)
+     */
+    public String setCompareExpression(int operatorType) {
+        boolean isEqualOperator = operatorType == NimbleParser.EQUAL;
+
+        if(!isEqualOperator && operatorType != NimbleParser.NOT_EQUAL)
+            throwError("Unknown operator type");
+
+        String label = JasminHelper.getNewLabel();
+
+        resultType = NimbleParser.BOOLEAN_TYPE; // Compare == boolean
+        left.loadDataOntoStack();
+        right.loadDataOntoStack();
+
+        switch (left.getType()) {
+            case NimbleParser.INTEGER_TYPE:
+            case NimbleParser.BOOLEAN_TYPE: // booleans are either 0 or 1
+                compareIntegers(isEqualOperator, label);
+                break;
+            case NimbleParser.DOUBLE_TYPE:
+                compareDoubles(isEqualOperator, label);
+                break;
+            case NimbleParser.STRING_TYPE:
+                compareStrings(isEqualOperator, label);
+                break;
+            default:
+                throwError("Unknown type");
         }
-    }
-
-    public void setIsNotEqualExpression() {
-
+        return label;
     }
 
     private void setSubtractExpressionInteger() {
@@ -121,45 +144,29 @@ public class ExpressionData extends BaseValue {
         addCommand(JasminConstants.STRING_BUILDER_TO_STRING);
     }
 
-    public void compareIfIntegerIsEqual() {
-        resultType = NimbleParser.BOOLEAN_TYPE; // Compare == boolean
-        loadIntegerOntoStack(left.getJasminCode());
-        label = JasminHelper.getNewLabel();
-        if(equalOperator == NimbleParser.EQUAL) { // Jasmin uses opposition.
-            jasminCode.add(JasminConstants.IF_INTEGER_COMPARE_NOT_EQUAL + label);
+    private void compareIntegers(boolean isEqualOperator, String label) {
+        if(isEqualOperator) {
+            addCommand(JasminConstants.IF_INTEGER_COMPARE_NOT_EQUAL + label);
         } else {
-            jasminCode.add(JasminConstants.IF_INTEGER_COMPARE_EQUAL + label);
+            addCommand(JasminConstants.IF_INTEGER_COMPARE_EQUAL + label);
         }
     }
 
-    public void setBooleanCompare() {
-        resultType = NimbleParser.BOOLEAN_TYPE; // Compare == boolean
-        int intLeft = left.getValueBool() ? 1 : 0;
-        int intRight = right.getValueBool() ? 1 : 0;
-        setIntegerCompare();
-    }
-
-    public void setDoubleCompare() {
-        resultType = NimbleParser.BOOLEAN_TYPE; // Compare == boolean
-        setDoubleValues(valueLeft, valueRight);
-        jasminCode.add(JasminConstants.COMPARE_DOUBLE);
-        label = JasminHelper.getNewLabel();
-        if(equalOperator == NimbleParser.EQUAL) { // Jasmin uses opposition.
-            jasminCode.add(JasminConstants.IF_NOT_EQUAL + label);
+    private void compareDoubles(boolean isEqualOperator, String label) {
+        addCommand(JasminConstants.COMPARE_DOUBLE);
+        if(isEqualOperator) { // Jasmin uses opposition.
+            addCommand(JasminConstants.IF_NOT_EQUAL + label);
         } else {
-            jasminCode.add(JasminConstants.IF_EQUAL + label);
+            addCommand(JasminConstants.IF_EQUAL + label);
         }
     }
 
-    public void setStringCompare() {
-        resultType = NimbleParser.BOOLEAN_TYPE; // Compare == boolean
-        setStringValues(valueLeft, valueRight);
-        jasminCode.add(JasminConstants.COMPARE_STRING);
-
-        if(equalOperator == NimbleParser.EQUAL) { // Jasmin uses opposition.
-            jasminCode.add(JasminConstants.IF_NOT_EQUAL + label);
+    public void compareStrings(boolean isEqualOperator, String label) {
+        addCommand(JasminConstants.COMPARE_STRING);
+        if(isEqualOperator) { // Jasmin uses opposition.
+            addCommand(JasminConstants.IF_NOT_EQUAL + label);
         } else {
-            jasminCode.add(JasminConstants.IF_EQUAL + label);
+            addCommand(JasminConstants.IF_EQUAL + label);
         }
     }
 
