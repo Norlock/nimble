@@ -1,49 +1,41 @@
 package model;
 
 import generated.NimbleParser;
+import org.antlr.v4.runtime.ParserRuleContext;
 
-public class ValueData extends Data {
+public class ValueData extends BaseValue {
 
-    protected String valueStr;
-    protected boolean valueBool;
-    protected double valueDouble;
-    protected int valueInt;
+    private String valueStr = "";
+    private boolean valueBool = false;
+    private double valueDouble = 0.0;
+    private int valueInt = 0;
 
-    protected int type;
+    private final int type;
 
-    protected ValueData() {
+    public ValueData(int type, ParserRuleContext ctx) {
+        super(ctx);
+        this.type = type;
+        loadDataOntoStack();
     }
 
-    /**
-     * Constructor for string
-     * @param value
-     */
-    public ValueData(String value) {
+    public ValueData(ParserRuleContext ctx, String value) {
+        this(NimbleParser.STRING_TYPE, ctx);
         this.valueStr = value;
-        this.type = NimbleParser.STRING_TYPE;
-        loadStringOntoStack(valueStr);
     }
 
-    public ValueData(boolean value) {
+    public ValueData(ParserRuleContext ctx, boolean value) {
+        this(NimbleParser.BOOLEAN_TYPE, ctx);
         this.valueBool = value;
-        this.type = NimbleParser.BOOLEAN_TYPE;
-        loadBooleanOnStack(valueBool);
     }
 
-    public ValueData(double value) {
+    public ValueData(ParserRuleContext ctx, double value) {
+        this(NimbleParser.DOUBLE_TYPE, ctx);
         this.valueDouble = value;
-        this.type = NimbleParser.DOUBLE_TYPE;
-        loadDoubleOntoStack(valueDouble);
     }
 
-    public ValueData(int value) {
+    public ValueData(ParserRuleContext ctx, int value) {
+        this(NimbleParser.INTEGER_TYPE, ctx);
         this.valueInt = value;
-        this.type = NimbleParser.INTEGER_TYPE;
-        loadIntegerOntoStack(valueInt);
-    }
-
-    public int getType() {
-        return type;
     }
 
     public double getValueDouble() {
@@ -54,28 +46,8 @@ public class ValueData extends Data {
         return valueInt;
     }
 
-    public String getValueStr() {
-        return valueStr;
-    }
-
     public boolean getValueBool() {
         return valueBool;
-    }
-
-    public boolean isInteger() {
-        return type == NimbleParser.INTEGER_TYPE;
-    }
-
-    public boolean isDouble() {
-        return type == NimbleParser.DOUBLE_TYPE;
-    }
-
-    public boolean isString() {
-        return type == NimbleParser.STRING_TYPE;
-    }
-
-    public boolean isBoolean() {
-        return type == NimbleParser.BOOLEAN_TYPE;
     }
 
     @Override
@@ -93,6 +65,40 @@ public class ValueData extends Data {
                     throw new RuntimeException("Token: "
                             + NimbleParser.VOCABULARY.getLiteralName(type)
                             + " is not recognised");
+        }
+    }
+
+    @Override
+    public int getType() {
+        return type;
+    }
+
+    @Override
+    public void loadDataOntoStack() {
+        loadDataOntoStack(type);
+    }
+
+    @Override
+    public void loadDataOntoStack(int asType) {
+        emptyCode();
+        switch (asType) {
+            case NimbleParser.STRING_TYPE:
+                loadStringOntoStack(toString());
+                break;
+            case NimbleParser.INTEGER_TYPE:
+                loadIntegerOntoStack(valueInt);
+                break;
+            case NimbleParser.DOUBLE_TYPE:
+                if(type == NimbleParser.INTEGER_TYPE)
+                    loadDataOntoStack(valueInt);
+                else
+                    loadDoubleOntoStack(valueDouble);
+                break;
+            case NimbleParser.BOOLEAN_TYPE:
+                loadBooleanOnStack(valueBool);
+                break;
+            default:
+                throwError("Unknown type");
         }
     }
 }

@@ -1,81 +1,77 @@
 package model;
 
 import generated.NimbleParser;
+import main.ParseException;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.ArrayList;
 
-public class ParserData extends Data {
+/**
+ * This class doesn't check for errors, but only adds Jasmin code!
+ * Checks needs to happen in the value data and variable data.
+ */
+public class ParserData {
 
-    private String label;
+    private final ParserRuleContext ctx;
+    private ArrayList<String> code = new ArrayList<>();
 
-    public ParserData() {
+    public ParserData(ParserRuleContext ctx) {
+        this.ctx = ctx;
     }
 
-    public ParserData(ArrayList<String> code) {
-        jasminCode.addAll(code);
+    public ParserData(ParserRuleContext ctx, ArrayList<String> code) {
+        this(ctx);
+        code.addAll(code);
     }
 
-    public String getGoToLabel() {
-        return label;
+    public void throwError(String errorMsg) {
+        throw new ParseException(ctx, errorMsg);
+    }
+
+    public ArrayList<String> getCode() {
+        return code;
+    }
+
+    public ParserRuleContext getCtx() {
+        return ctx;
+    }
+
+    /**
+     * Get rid of old code
+     */
+    protected void emptyCode() {
+        code = new ArrayList<>();
+    }
+
+    protected void addCode(ArrayList<String> code) {
+        code.addAll(code);
     }
 
 
-    private void setStringValues(final String valueLeft, final String valueRight) {
-        loadStringOntoStack(valueLeft);
-        int varIndexLeft = JasminHelper.incrementVariableIndex();
-        loadStringOntoStack(valueRight);
-        int varIndexRight = JasminHelper.incrementVariableIndex();
-        setLoad(JasminConstants.Prefix.STRING, varIndexLeft);
-        setLoad(JasminConstants.Prefix.STRING, varIndexRight);
+    public void addCommand(String command) {
+        code.add(command);
     }
 
-    private void setDoubleValues(final double valueLeft, final double valueRight) {
-        loadDoubleOntoStack(valueLeft);
-        int varIndexLeft = JasminHelper.incrementDoubleVariableIndex();
-        loadDoubleOntoStack(valueRight);
-        int varIndexRight = JasminHelper.incrementDoubleVariableIndex();
-        setLoad(JasminConstants.Prefix.DOUBLE, varIndexLeft);
-        setLoad(JasminConstants.Prefix.DOUBLE, varIndexRight);
-    }
-
-    private void setIntegerValues(final int valueLeft, final int valueRight) {
-        loadIntegerOntoStack(valueLeft);
-        int varIndexLeft = JasminHelper.incrementVariableIndex();
-        loadIntegerOntoStack(valueRight);
-        int varIndexRight = JasminHelper.incrementVariableIndex();
-        setLoad(JasminConstants.Prefix.INTEGER_OR_BOOLEAN, varIndexLeft);
-        setLoad(JasminConstants.Prefix.INTEGER_OR_BOOLEAN, varIndexRight);
-    }
-
-    private void setBooleanValues(final boolean valueLeft, final boolean valueRight) {
-        loadBooleanOnStack(valueLeft);
-        int varIndexLeft = JasminHelper.incrementVariableIndex();
-        loadBooleanOnStack(valueRight);
-        int varIndexRight = JasminHelper.incrementVariableIndex();
-        setLoad(JasminConstants.Prefix.INTEGER_OR_BOOLEAN, varIndexLeft);
-        setLoad(JasminConstants.Prefix.INTEGER_OR_BOOLEAN, varIndexRight);
-    }
-
-    public void print(ValueData valueData) {
-        jasminCode.add(JasminConstants.LOAD_SYSO_ONTO_STACK);
-        if(valueData.isInteger()) {
-            loadIntegerOntoStack(valueData.getValueInt());
-        } else if(valueData.isDouble()) {
-            loadDoubleOntoStack(valueData.getValueDouble());
-        } else if(valueData.isBoolean()) {
-            loadBooleanOnStack(valueData.getValueBool());
-        } else  if (valueData.isString()) {
-            loadStringOntoStack(valueData.getValueStr());
-        } else {
-            throw new RuntimeException("Not implemented");
-        }
-        jasminCode.add(JasminConstants.PRINT);
-    }
+//    public void print(ValueData valueData) {
+//        jasminCode.add(JasminConstants.LOAD_SYSO_ONTO_STACK);
+//        if(valueData.isInteger()) {
+//            loadIntegerOntoStack(valueData.getValueInt());
+//        } else if(valueData.isDouble()) {
+//            loadDoubleOntoStack(valueData.getValueDouble());
+//        } else if(valueData.isBoolean()) {
+//            loadBooleanOnStack(valueData.getValueBool());
+//        } else  if (valueData.isString()) {
+//            loadStringOntoStack(valueData.toString());
+//        } else {
+//            throw new RuntimeException("Not implemented");
+//        }
+//        jasminCode.add(JasminConstants.PRINT);
+//    }
 
     public void print(ArrayList<String> code) {
-        jasminCode.add(JasminConstants.LOAD_SYSO_ONTO_STACK);
-        jasminCode.addAll(code);
-        jasminCode.add(JasminConstants.PRINT);
+        code.add(JasminConstants.LOAD_SYSO_ONTO_STACK);
+        code.addAll(code);
+        code.add(JasminConstants.PRINT);
     }
 
 }

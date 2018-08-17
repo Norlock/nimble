@@ -13,15 +13,25 @@ public final class JasminHelper {
         return variableIndex;
     }
 
-    public static int incrementDoubleVariableIndex() {
+    private static int incrementDoubleVariableIndex() {
         return variableIndex += 2; // Double needs to spots
     }
 
-    public static int incrementVariableIndex() {
+    private static int incrementVariableIndex() {
         return variableIndex++;
     }
 
-
+    public static void updateVariableIndex(int type) {
+        if(type == NimbleParser.INTEGER_TYPE
+                || type == NimbleParser.BOOLEAN_TYPE
+                || type == NimbleParser.STRING_TYPE) {
+            incrementVariableIndex();
+        } else if(type == NimbleParser.DOUBLE_TYPE) {
+            incrementDoubleVariableIndex();
+        } else {
+            throw new RuntimeException("Unknown type");
+        }
+    }
 
     public static String getFileFooter() {
         return  "        return\n" +

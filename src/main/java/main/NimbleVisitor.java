@@ -10,7 +10,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import java.util.HashMap;
 import java.util.Map;
 
-public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
+public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
 
     // store variables
     private Map<String, VariableData> variables = new HashMap<>();
@@ -26,7 +26,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
     }
 
     @Override
-    public Data visitVariableDeclaration(NimbleParser.VariableDeclarationContext ctx) {
+    public ParserData visitVariableDeclaration(NimbleParser.VariableDeclarationContext ctx) {
         String id = ctx.IDENTIFIER().getText();
 
         if (variables.get(id) != null)
@@ -34,20 +34,21 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
 
         int type = ctx.variableType().start.getType();
         VariableData variable;
-        if (ctx.expression() == null) {
-            variable = new VariableData(type, id);
-            variables.put(id, variable);
-            return new ParserData();
-        } else {
-            Data data = this.visit(ctx.expression());
-            if(data instanceof ValueData) {
-                variable = new VariableData(type, id, (ValueData)data);
-            } else {
+        if (ctx.expression() == null) { // Use default value
+            variable = new VariableData(ctx, type, id, new ValueData(type, ctx));
 
-            }
             variables.put(id, variable);
-            return variable.convertToParserData();
+            return variable;
+        } else {
+            ParserData data = this.visit(ctx.expression());
+            if(data instanceof ValueData) {
+                variable = new VariableData(ctx, type, id, (ValueData)data);
+            } else {
+                variable = new VariableData(ctx, type, id , (ExpressionData) data);
+            }
         }
+        variables.put(id, variable);
+        return variable;
     }
 
     /**
@@ -57,15 +58,15 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
      * @return
      */
     @Override
-    public Data visitVariableAssignment(NimbleParser.VariableAssignmentContext ctx) {
+    public ParserData visitVariableAssignment(NimbleParser.VariableAssignmentContext ctx) {
         String id = ctx.IDENTIFIER().getText();
         VariableData variable = getVariable(id, ctx);
 
-        ValueData value = (ValueData) this.visit(ctx.expression());
-        variable.setValue(value);
+        BaseValue baseValue = (BaseValue) this.visit(ctx.expression());
+        variable.updateData(baseValue);
         variables.put(id, variable);
 
-        return variable.convertToParserData();
+        return variable;
     }
 
     /**
@@ -75,7 +76,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
      * @return the visitor result
      */
     @Override
-    public Data visitIfStatement(NimbleParser.IfStatementContext ctx) {
+    public ParserData visitIfStatement(NimbleParser.IfStatementContext ctx) {
         return super.visitIfStatement(ctx);
     }
 
@@ -86,17 +87,17 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
      * @return the visitor result
      */
     @Override
-    public Data visitFunctionCall(NimbleParser.FunctionCallContext ctx) {
+    public ParserData visitFunctionCall(NimbleParser.FunctionCallContext ctx) {
         return super.visitFunctionCall(ctx);
     }
 
     @Override
-    public Data visitFunction(NimbleParser.FunctionContext ctx) {
+    public ParserData visitFunction(NimbleParser.FunctionContext ctx) {
         return super.visitFunction(ctx);
     }
 
     @Override
-    public Data visitReturnValue(NimbleParser.ReturnValueContext ctx) {
+    public ParserData visitReturnValue(NimbleParser.ReturnValueContext ctx) {
         return super.visitReturnValue(ctx);
     }
 
@@ -107,13 +108,13 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
      * @return the visitor result
      */
     @Override
-    public Data visitWhileLoop(NimbleParser.WhileLoopContext ctx) {
+    public ParserData visitWhileLoop(NimbleParser.WhileLoopContext ctx) {
         return super.visitWhileLoop(ctx);
     }
 
     @Override
-    public Data visitPrintStatement(NimbleParser.PrintStatementContext ctx) {
-        Data data = this.visit(ctx.condition());
+    public ParserData visitPrintStatement(NimbleParser.PrintStatementContext ctx) {
+        ParserData data = this.visit(ctx.condition());
         if (data == null) {
             throw new ParseException(ctx, "Can't print uninitialized variable.");
         }
@@ -137,7 +138,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
      * @return the visitor result
      */
     @Override
-    public Data visitConditionBlock(NimbleParser.ConditionBlockContext ctx) {
+    public ParserData visitConditionBlock(NimbleParser.ConditionBlockContext ctx) {
         ParserData condition = (ParserData) this.visit(ctx.condition());
         ParserData block = (ParserData) this.visit(ctx.block());
         // TODO
@@ -145,7 +146,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
     }
 
     @Override
-    public Data visitCondition(NimbleParser.ConditionContext ctx) {
+    public ParserData visitCondition(NimbleParser.ConditionContext ctx) {
         return this.visit(ctx.expression());
     }
 
@@ -156,7 +157,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
      * @return the visitor result
      */
     @Override
-    public Data visitModifier(NimbleParser.ModifierContext ctx) {
+    public ParserData visitModifier(NimbleParser.ModifierContext ctx) {
         return super.visitModifier(ctx);
     }
 
@@ -167,7 +168,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
      * @return the visitor result
      */
     @Override
-    public Data visitConstructorDeclaration(NimbleParser.ConstructorDeclarationContext ctx) {
+    public ParserData visitConstructorDeclaration(NimbleParser.ConstructorDeclarationContext ctx) {
         return super.visitConstructorDeclaration(ctx);
     }
 
@@ -178,7 +179,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
      * @return the visitor result
      */
     @Override
-    public Data visitConstructorParameters(NimbleParser.ConstructorParametersContext ctx) {
+    public ParserData visitConstructorParameters(NimbleParser.ConstructorParametersContext ctx) {
         return super.visitConstructorParameters(ctx);
     }
 
@@ -190,7 +191,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
      * @return the visitor result
      */
     @Override
-    public Data visitOrExpression(NimbleParser.OrExpressionContext ctx) {
+    public ParserData visitOrExpression(NimbleParser.OrExpressionContext ctx) {
         return super.visitOrExpression(ctx);
     }
 
@@ -202,27 +203,25 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
      * @return the visitor result
      */
     @Override
-    public Data visitAndExpression(NimbleParser.AndExpressionContext ctx) {
+    public ParserData visitAndExpression(NimbleParser.AndExpressionContext ctx) {
         return super.visitAndExpression(ctx);
     }
 
     @Override
-    public Data visitAdditiveExpression(NimbleParser.AdditiveExpressionContext ctx) {
+    public ParserData visitAdditiveExpression(NimbleParser.AdditiveExpressionContext ctx) {
 
         // Left is dominant (e.g. "test" + 3) -> "test3" || (3 + "test") -> Exception
         System.out.println(ctx.expression().size());
         ValueData left = (ValueData) this.visit(ctx.expression(0));
         ValueData right = (ValueData) this.visit(ctx.expression(1));
 
-        ExpressionData expressionData = new ExpressionData(ctx);
+        ExpressionData expressionData = new ExpressionData(ctx, left, right);
 
         int additiveOperator = ctx.op.getType();
-        if(additiveOperator == NimbleParser.ADD) {
-            expressionData.setAddExpression(left, right);
-        }
-        else {
-            expressionData.setSubstractExpression(left, right);
-        }
+        if(additiveOperator == NimbleParser.ADD)
+            expressionData.setAddExpression();
+        else
+            expressionData.setSubtractExpression();
         return expressionData;
     }
 
@@ -235,7 +234,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
  * @return the visitor result
  */
     @Override
-    public Data visitRelationalExpression(NimbleParser.RelationalExpressionContext ctx) {
+    public ParserData visitRelationalExpression(NimbleParser.RelationalExpressionContext ctx) {
         return super.visitRelationalExpression(ctx);
     }
 
@@ -247,17 +246,19 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
      * @return the visitor result
      */
     @Override
-    public Data visitEqualityExpression(NimbleParser.EqualityExpressionContext ctx) {
-        ValueData valueLeft = (ValueData) this.visit(ctx.expression(0));
-        ValueData valueRight = (ValueData) this.visit(ctx.expression(1));
+    public ParserData visitEqualityExpression(NimbleParser.EqualityExpressionContext ctx) {
+        BaseValue left = (BaseValue) this.visit(ctx.expression(0));
+        BaseValue right = (BaseValue) this.visit(ctx.expression(1));
 
-        if(valueLeft.getType() != valueRight.getType()) {
+        if(left.getType() != right.getType()) {
             throw new ParseException(ctx, "Equality expression only compares similar types of variables");
         }
 
         // isEqual and isEqualOperator
-        final int equalOperator = ctx.op.getType();
-        ParserData parserData = new ParserData();
+        final int isEqual = ctx.op.getType();
+        ExpressionData exprData = new ExpressionData(ctx, left, right);
+
+        if(isEqual)
 
         if(valueLeft.getType() == NimbleParser.INTEGER_TYPE) {
             parserData.setIntegerCompare(valueLeft.getValueInt(), valueRight.getValueInt(),
@@ -285,7 +286,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
      * @return the visitor result
      */
     @Override
-    public Data visitNotExpression(NimbleParser.NotExpressionContext ctx) {
+    public ParserData visitNotExpression(NimbleParser.NotExpressionContext ctx) {
         return super.visitNotExpression(ctx);
     }
 
@@ -297,12 +298,12 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
      * @return the visitor result
      */
     @Override
-    public Data visitMultiplicationExpression(NimbleParser.MultiplicationExpressionContext ctx) {
+    public ParserData visitMultiplicationExpression(NimbleParser.MultiplicationExpressionContext ctx) {
         return super.visitMultiplicationExpression(ctx);
     }
 
     @Override
-    public Data visitIntegerAtom(NimbleParser.IntegerAtomContext ctx) {
+    public ParserData visitIntegerAtom(NimbleParser.IntegerAtomContext ctx) {
         try {
             return new ValueData(Integer.parseInt(ctx.getText()));
         } catch (NumberFormatException e) {
@@ -311,7 +312,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
     }
 
     @Override
-    public Data visitDoubleAtom(NimbleParser.DoubleAtomContext ctx) {
+    public ParserData visitDoubleAtom(NimbleParser.DoubleAtomContext ctx) {
         try {
             return new ValueData(Double.parseDouble(ctx.getText()));
         } catch (NumberFormatException e) {
@@ -320,12 +321,12 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
     }
 
     @Override
-    public Data visitStringAtom(NimbleParser.StringAtomContext ctx) {
+    public ParserData visitStringAtom(NimbleParser.StringAtomContext ctx) {
         return new ValueData(ctx.getText());
     }
 
     @Override
-    public Data visitBooleanAtom(NimbleParser.BooleanAtomContext ctx) {
+    public ParserData visitBooleanAtom(NimbleParser.BooleanAtomContext ctx) {
         String boolStr = ctx.getText();
         if (boolStr.equals("true") || boolStr.equals("false")) {
             return new ValueData(Boolean.parseBoolean(boolStr));
@@ -335,22 +336,22 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<Data> {
     }
 
     @Override
-    public Data visitIdentifierAtom(NimbleParser.IdentifierAtomContext ctx) { // TODO (return parserdata variable kan veranderen!)
+    public ParserData visitIdentifierAtom(NimbleParser.IdentifierAtomContext ctx) { // TODO (return parserdata variable kan veranderen!)
         return getVariable(ctx.getText(), ctx);
     }
 
     @Override
-    public Data visitNullAtom(NimbleParser.NullAtomContext ctx) {
+    public ParserData visitNullAtom(NimbleParser.NullAtomContext ctx) {
         return super.visitNullAtom(ctx);
     }
 
     @Override
-    public Data visitTerminal(TerminalNode terminalNode) {
+    public ParserData visitTerminal(TerminalNode terminalNode) {
         return super.visitTerminal(terminalNode);
     }
 
     @Override
-    public Data visitErrorNode(ErrorNode errorNode) {
+    public ParserData visitErrorNode(ErrorNode errorNode) {
         return super.visitErrorNode(errorNode);
     }
 }
