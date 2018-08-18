@@ -186,7 +186,6 @@ public class ExpressionData extends BaseValue {
     /**
      * Helper method, not to use as public. Will load the left and right side onto stack.
      */
-    @Override
     protected void loadDataOntoStack() {
         left.loadDataOntoStack();
         left.setIntToDoubleIfNeeded(resultType);

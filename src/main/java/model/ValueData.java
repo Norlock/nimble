@@ -82,7 +82,4 @@ public class ValueData extends BaseValue {
         return type;
     }
 
-    @Override
-    protected void loadDataOntoStack() {
-    }
 }

@@ -7,6 +7,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,6 +45,39 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
         }
         variables.put(id, variable);
         return variable;
+    }
+
+    public ArrayList<String> setVariableAssignment(int varType, BaseValue baseValue, int variableIndex) {
+        ArrayList<String> code = new ArrayList<>(baseValue.getCode());
+        validate(varType, baseValue.getVarType());
+
+        if(JasminConstants.castToDouble(baseValue.getVarType(), varType))
+            code.add(JasminConstants.INT_TO_DOUBLE);
+
+        String prefix = JasminConstants.Prefix.getPrefixBasedOnType(varType).toString();
+        if(0 <= variableIndex && variableIndex <= 3) {
+            code.add(prefix + JasminConstants.STORE_VAl_SMALL + variableIndex);
+        } else {
+            code.add(prefix + JasminConstants.STORE_VAL + variableIndex);
+        }
+
+        return code;
+    }
+
+    /**
+     * Throws exception if for example integer is assigned to a string
+     */
+    private void validate(int varType, int valueType) {
+        // If statement for readability
+        if(varType == valueType || (varType == NimbleParser.DOUBLE_TYPE && valueType == NimbleParser.INTEGER_TYPE))
+            return;
+        else {
+            String errorMsg = "Cannot assign variable"
+                    + " to varType " + NimbleParser.VOCABULARY.getLiteralName(valueType).replace("'","")
+                    + " for identifier ";
+
+            throwError(errorMsg);
+        }
     }
 
     /**

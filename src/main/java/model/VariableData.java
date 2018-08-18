@@ -23,7 +23,34 @@ public class VariableData extends BaseValue {
 
         baseValue.setIntToDoubleIfNeeded(varType);
         appendCode(baseValue);
-        storeData();
+
+        String prefix = JasminConstants.Prefix.getPrefixBasedOnType(varType).toString();
+        if(0 <= variableIndex && variableIndex <= 3) {
+            addCommand(prefix + JasminConstants.STORE_VAl_SMALL + variableIndex);
+        } else {
+            addCommand(prefix + JasminConstants.STORE_VAL + variableIndex);
+        }
+
+        JasminHelper.updateVariableIndex(varType);
+    }
+
+    public VariableData(ParserRuleContext ctx, int varType, VariableData variableData) {
+        super(ctx);
+        this.varType = varType;
+        this.variableIndex = JasminHelper.getVariableIndex();
+
+        validate(variableData.getVarType());
+
+
+        variableData.setIntToDoubleIfNeeded(varType);
+        appendCode(baseValue);
+
+        String prefix = JasminConstants.Prefix.getPrefixBasedOnType(varType).toString();
+        if(0 <= variableIndex && variableIndex <= 3) {
+            addCommand(prefix + JasminConstants.STORE_VAl_SMALL + variableIndex);
+        } else {
+            addCommand(prefix + JasminConstants.STORE_VAL + variableIndex);
+        }
 
         JasminHelper.updateVariableIndex(varType);
     }
@@ -44,26 +71,13 @@ public class VariableData extends BaseValue {
         }
     }
 
-    /**
-     * Stores the data so it can be loaded a different time
-     */
-    private void storeData() {
-        String prefix = JasminConstants.Prefix.getPrefixBasedOnType(varType).toString();
-        if(0 <= variableIndex && variableIndex <= 3) {
-            addCommand(prefix + JasminConstants.STORE_VAl_SMALL + variableIndex);
-        } else {
-            addCommand(prefix + JasminConstants.STORE_VAL + variableIndex);
-        }
-    }
-
     @Override
     public int getVarType() {
         return varType;
     }
 
-    @Override
-    protected void loadDataOntoStack() {
-        emptyCode(); // Once a variable is set
+    protected void loadVariableOntoStack() {
+        emptyCode(); // Once a variable is set it needs clean for load
         String prefix = JasminConstants.Prefix.getPrefixBasedOnType(varType).toString();
         if(0 <= variableIndex && variableIndex <= 3) {
             addCommand(prefix + JasminConstants.LOAD_VAL_SMALL + variableIndex);

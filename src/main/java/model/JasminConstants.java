@@ -40,6 +40,10 @@ public final class JasminConstants {
         }
     }
 
+    public static boolean castToDouble(int valueType, int resultType) {
+        return (valueType == NimbleParser.INTEGER_TYPE && resultType == NimbleParser.DOUBLE_TYPE);
+    }
+
     // Boolean values
     public static final String TRUE = "1", FALSE = "0";
 
