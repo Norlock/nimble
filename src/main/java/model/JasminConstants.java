@@ -58,12 +58,15 @@ public final class JasminConstants {
             STRING_ADD = "ldc" + SPACE,
             DOUBLE_ADD = "ldc2_w" + SPACE;
 
-    public static final String INTEGER_INCREMENT = "iinc";
+    public static final String INTEGER_INCREMENT = "iinc" + SPACE;
 
     // Compares doubles
-    public static final String COMPARE_DOUBLE = "dcmpl" // + IF_EQUAL || IF LESS
-            , COMPARE_DOUBLE_RIGHT_GREATER = "dcmpg" // + IF_GREATER
-            , COMPARE_DOUBLE_RIGHT_LESSER = "dmpl"; // + IF_EQ || IF LESS
+    public static final String COMPARE_DOUBLE = "dcmpl" + SPACE // + IF_EQUAL || IF LESS
+            , COMPARE_DOUBLE_RIGHT_GREATER = "dcmpg" + SPACE // + IF_GREATER
+            , COMPARE_DOUBLE_RIGHT_LESSER = "dmpl" + SPACE; // + IF_EQ || IF LESS
+
+    // Convert to double
+    public static final String INT_TO_DOUBLE = "i2d" + SPACE;
 
     // Jasmin will use opposition
     public static final String IF_EQUAL = "ifeq" + SPACE;

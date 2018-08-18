@@ -89,9 +89,10 @@ public class ValueData extends BaseValue {
                 loadIntegerOntoStack(valueInt);
                 break;
             case NimbleParser.DOUBLE_TYPE:
-                if(type == NimbleParser.INTEGER_TYPE)
-                    loadDataOntoStack(valueInt);
-                else
+                if(type == NimbleParser.INTEGER_TYPE) {
+                    loadIntegerOntoStack(valueInt);
+                    addCommand(JasminConstants.INT_TO_DOUBLE);
+                } else
                     loadDoubleOntoStack(valueDouble);
                 break;
             case NimbleParser.BOOLEAN_TYPE:

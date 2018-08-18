@@ -12,6 +12,11 @@ public class ExpressionData extends BaseValue {
     private final BaseValue left;
     private final BaseValue right;
     private int resultType;
+    private String label;
+
+    public boolean isBooleanExpression() {
+        return resultType == NimbleParser.BOOLEAN_TYPE;
+    }
 
     /**
      *
@@ -71,17 +76,16 @@ public class ExpressionData extends BaseValue {
      * Compares two values
      * @param operatorType (is equal / not equal)
      */
-    public String setCompareExpression(int operatorType) {
+    public void setCompareExpression(int operatorType) {
         boolean isEqualOperator = operatorType == NimbleParser.EQUAL;
 
         if(!isEqualOperator && operatorType != NimbleParser.NOT_EQUAL)
             throwError("Unknown operator type");
 
-        String label = JasminHelper.getNewLabel();
-
+        label = JasminHelper.getNewLabel();
         resultType = NimbleParser.BOOLEAN_TYPE; // Compare == boolean
-        left.loadDataOntoStack();
-        right.loadDataOntoStack();
+
+        loadDataOntoStack();
 
         switch (left.getType()) {
             case NimbleParser.INTEGER_TYPE:
@@ -97,14 +101,10 @@ public class ExpressionData extends BaseValue {
             default:
                 throwError("Unknown type");
         }
-        return label;
     }
 
     private void setSubtractExpressionInteger() {
         resultType = NimbleParser.INTEGER_TYPE;
-        left.loadDataOntoStack();
-        right.loadDataOntoStack();
-
         setSub(JasminConstants.Prefix.DOUBLE);
     }
 
@@ -126,8 +126,7 @@ public class ExpressionData extends BaseValue {
 
     private void setAdditiveExpressionDouble() {
         resultType = NimbleParser.DOUBLE_TYPE;
-        left.loadDataOntoStack(resultType);
-        right.loadDataOntoStack(resultType);
+        loadDataOntoStack();
 
         setAdd(JasminConstants.Prefix.DOUBLE);
     }
@@ -170,6 +169,10 @@ public class ExpressionData extends BaseValue {
         }
     }
 
+    public String getLabel() {
+        return label;
+    }
+
     @Override
     public int getType() {
         return resultType;
@@ -180,7 +183,14 @@ public class ExpressionData extends BaseValue {
     }
 
     @Override
-    public void loadDataOntoStack(int asType) {
-        //TODO?
+    public void loadDataOntoStack(int resultType) {
+        this.resultType = resultType;
+
+        emptyCode(); // Safety check
+        left.loadDataOntoStack(resultType);
+        right.loadDataOntoStack(resultType);
+
+        addCode(left.getCode());
+        addCode(right.getCode());
     }
 }

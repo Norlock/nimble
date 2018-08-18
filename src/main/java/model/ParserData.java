@@ -41,7 +41,7 @@ public class ParserData {
      * Get rid of old code
      */
     protected void emptyCode() {
-        code = new ArrayList<>();
+        code.clear();
     }
 
     public void addCode(ArrayList<String> code) {

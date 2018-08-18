@@ -139,7 +139,10 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
      */
     @Override
     public ParserData visitConditionBlock(NimbleParser.ConditionBlockContext ctx) {
-        ParserData condition = (ParserData) this.visit(ctx.condition());
+        ExpressionData condition = (ExpressionData) this.visit(ctx.condition());
+        if(!condition.isBooleanExpression())
+            condition.throwError("If statements can only contain a boolean expression");
+
         ParserData block = (ParserData) this.visit(ctx.block());
         // TODO
         return condition;
@@ -212,8 +215,8 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
 
         // Left is dominant (e.g. "test" + 3) -> "test3" || (3 + "test") -> Exception
         System.out.println(ctx.expression().size());
-        ValueData left = (ValueData) this.visit(ctx.expression(0));
-        ValueData right = (ValueData) this.visit(ctx.expression(1));
+        BaseValue left = (BaseValue) this.visit(ctx.expression(0));
+        BaseValue right = (BaseValue) this.visit(ctx.expression(1));
 
         ExpressionData expressionData = new ExpressionData(ctx, left, right);
 
@@ -258,7 +261,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
         final int isEqualOperator = ctx.op.getType();
 
         ExpressionData exprData = new ExpressionData(ctx, left, right);
-        String label = exprData.setCompareExpression(isEqualOperator);
+        exprData.setCompareExpression(isEqualOperator);
 
         return exprData;
     }

@@ -72,7 +72,7 @@ public class VariableData extends BaseValue {
     }
 
     @Override
-    public void loadDataOntoStack(int type) {
+    protected void loadDataOntoStack(int asType) {
         emptyCode(); // Once a variable is set
         String prefix = JasminConstants.Prefix.getPrefixBasedOnType(type).toString();
         if(0 <= variableIndex && variableIndex <= 3) {
@@ -80,6 +80,9 @@ public class VariableData extends BaseValue {
         } else {
             addCommand(prefix + JasminConstants.LOAD_VAL + variableIndex);
         }
+
+        if(asType == NimbleParser.DOUBLE_TYPE && type == NimbleParser.INTEGER_TYPE)
+            addCommand(JasminConstants.INT_TO_DOUBLE);
     }
 
 }

@@ -17,8 +17,8 @@ public abstract class BaseValue extends ParserData {
     }
 
     public abstract int getType();
-    public abstract void loadDataOntoStack();
-    public abstract void loadDataOntoStack(int asType);
+    protected abstract void loadDataOntoStack();
+    protected abstract void loadDataOntoStack(int asType);
 
     public boolean isType(int type) {
         return type == getType();
