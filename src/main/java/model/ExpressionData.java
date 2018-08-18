@@ -20,9 +20,9 @@ public class ExpressionData extends BaseValue {
 
     /**
      *
-     * @param ctx
-     * @param left
-     * @param right
+     * @param ctx context
+     * @param left left side value
+     * @param right right side value
      */
     public ExpressionData(ParserRuleContext ctx, final BaseValue left, final BaseValue right) {
         super(ctx);
@@ -79,15 +79,14 @@ public class ExpressionData extends BaseValue {
     public void setCompareExpression(int operatorType) {
         boolean isEqualOperator = operatorType == NimbleParser.EQUAL;
 
-        if(!isEqualOperator && operatorType != NimbleParser.NOT_EQUAL)
-            throwError("Unknown operator type");
+        if(left.getVarType() != right.getVarType())
+            throwError("Can't compare two different types of variables");
 
         label = JasminHelper.getNewLabel();
         resultType = NimbleParser.BOOLEAN_TYPE; // Compare == boolean
-
         loadDataOntoStack();
 
-        switch (left.getType()) {
+        switch (left.getVarType()) {
             case NimbleParser.INTEGER_TYPE:
             case NimbleParser.BOOLEAN_TYPE: // booleans are either 0 or 1
                 compareIntegers(isEqualOperator, label);
@@ -105,30 +104,34 @@ public class ExpressionData extends BaseValue {
 
     private void setSubtractExpressionInteger() {
         resultType = NimbleParser.INTEGER_TYPE;
-        setSub(JasminConstants.Prefix.DOUBLE);
+        loadDataOntoStack();
+        setSub(JasminConstants.Prefix.INTEGER_OR_BOOLEAN);
     }
 
     private void setAdditiveExpressionInteger() {
         resultType = NimbleParser.INTEGER_TYPE;
-        left.loadDataOntoStack();
-        right.loadDataOntoStack();
-
-        setAdd(JasminConstants.Prefix.DOUBLE);
+        loadDataOntoStack();
+        setAdd(JasminConstants.Prefix.INTEGER_OR_BOOLEAN);
     }
 
     private void setSubtractExpressionDouble() {
         resultType = NimbleParser.DOUBLE_TYPE;
-        left.loadDataOntoStack(resultType);
-        right.loadDataOntoStack(resultType);
-
+        loadDataOntoStack();
         setSub(JasminConstants.Prefix.DOUBLE);
     }
 
     private void setAdditiveExpressionDouble() {
         resultType = NimbleParser.DOUBLE_TYPE;
         loadDataOntoStack();
-
         setAdd(JasminConstants.Prefix.DOUBLE);
+    }
+
+    private void setSub(JasminConstants.Prefix prefix) {
+        addCommand(prefix.toString() + JasminConstants.SUB);
+    }
+
+    private void setAdd(JasminConstants.Prefix prefix) {
+        addCommand(prefix.toString() + JasminConstants.ADD);
     }
 
     private void setAdditiveExpressionString() {
@@ -136,9 +139,11 @@ public class ExpressionData extends BaseValue {
         addCommand(JasminConstants.CONSTRUCT_STRING_BUILDER);
         addCommand(JasminConstants.DUPLICATE_VALUE_ONTOP_OF_STACK);
         addCommand(JasminConstants.INIT_STRING_BUILDER);
-        loadStringOntoStack(left.toString());
+        left.loadDataOntoStack();
+        appendCode(left);
         addCommand(JasminConstants.APPEND_STRING_BUILDER);
-        loadStringOntoStack(right.toString());
+        right.loadDataOntoStack();
+        appendCode(right);
         addCommand(JasminConstants.APPEND_STRING_BUILDER);
         addCommand(JasminConstants.STRING_BUILDER_TO_STRING);
     }
@@ -160,7 +165,7 @@ public class ExpressionData extends BaseValue {
         }
     }
 
-    public void compareStrings(boolean isEqualOperator, String label) {
+    private void compareStrings(boolean isEqualOperator, String label) {
         addCommand(JasminConstants.COMPARE_STRING);
         if(isEqualOperator) { // Jasmin uses opposition.
             addCommand(JasminConstants.IF_NOT_EQUAL + label);
@@ -174,23 +179,21 @@ public class ExpressionData extends BaseValue {
     }
 
     @Override
-    public int getType() {
+    public int getVarType() {
         return resultType;
     }
 
+    /**
+     * Helper method, not to use as public. Will load the left and right side onto stack.
+     */
     @Override
-    public void loadDataOntoStack() {
-    }
+    protected void loadDataOntoStack() {
+        left.loadDataOntoStack();
+        left.setIntToDoubleIfNeeded(resultType);
+        right.loadDataOntoStack();
+        right.setIntToDoubleIfNeeded(resultType);
 
-    @Override
-    public void loadDataOntoStack(int resultType) {
-        this.resultType = resultType;
-
-        emptyCode(); // Safety check
-        left.loadDataOntoStack(resultType);
-        right.loadDataOntoStack(resultType);
-
-        addCode(left.getCode());
-        addCode(right.getCode());
+        appendCode(left);
+        appendCode(right);
     }
 }

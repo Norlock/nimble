@@ -19,7 +19,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
         VariableData nimbleVariable = variables.get(identifier);
 
         if (nimbleVariable == null) {
-            throw new ParseException(ctx, "Variable: " + identifier + " has been assigned before being declared");
+            throw new ParseException(ctx, "Unknown identifier: " + identifier);
         }
 
         return nimbleVariable;
@@ -34,18 +34,13 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
 
         int type = ctx.variableType().start.getType();
         VariableData variable;
-        if (ctx.expression() == null) { // Use default value
-            variable = new VariableData(ctx, type, id, new ValueData(type, ctx));
-
+        BaseValue baseValue = (BaseValue) this.visit(ctx.expression());
+        if (baseValue == null) { // Create default var
+            variable = new VariableData(ctx, type);
             variables.put(id, variable);
             return variable;
         } else {
-            ParserData data = this.visit(ctx.expression());
-            if(data instanceof ValueData) {
-                variable = new VariableData(ctx, type, id, (ValueData)data);
-            } else {
-                variable = new VariableData(ctx, type, id , (ExpressionData) data);
-            }
+            variable = new VariableData(ctx, type, baseValue);
         }
         variables.put(id, variable);
         return variable;
@@ -60,10 +55,10 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
     @Override
     public ParserData visitVariableAssignment(NimbleParser.VariableAssignmentContext ctx) {
         String id = ctx.IDENTIFIER().getText();
-        VariableData variable = getVariable(id, ctx);
+        VariableData oldVariable = getVariable(id, ctx);
 
         BaseValue baseValue = (BaseValue) this.visit(ctx.expression());
-        variable.updateData(baseValue);
+        VariableData variable = new VariableData(ctx, oldVariable.getVarType(), baseValue);
         variables.put(id, variable);
 
         return variable;
@@ -77,7 +72,17 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
      */
     @Override
     public ParserData visitIfStatement(NimbleParser.IfStatementContext ctx) {
-        return super.visitIfStatement(ctx);
+        ParserData parserData = new ParserData(ctx);
+        ExpressionData expressionData = (ExpressionData) this.visit(ctx.conditionBlock(0));
+        if(!expressionData.isBooleanExpression())
+            expressionData.throwError("If statements can only contain boolean expressions");
+
+        parserData.appendCode(expressionData);
+        for(int i = 1; i < ctx.conditionBlock().size(); i++) {
+            System.out.println("extra block");
+        }
+
+        return parserData;
     }
 
     /**
@@ -139,13 +144,19 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
      */
     @Override
     public ParserData visitConditionBlock(NimbleParser.ConditionBlockContext ctx) {
-        ExpressionData condition = (ExpressionData) this.visit(ctx.condition());
-        if(!condition.isBooleanExpression())
-            condition.throwError("If statements can only contain a boolean expression");
+        ExpressionData expressionData = (ExpressionData) this.visit(ctx.condition());
+        expressionData.appendCode(this.visit(ctx.block()));
+        return expressionData;
+    }
 
-        ParserData block = (ParserData) this.visit(ctx.block());
-        // TODO
-        return condition;
+    @Override
+    public ParserData visitBlock(NimbleParser.BlockContext ctx) {
+        ParserData parserData = new ParserData(ctx);
+        for(int i = 0; i < ctx.statement().size(); i++) {
+            parserData.appendCode(this.visit(ctx.statement(i)));
+        }
+
+        return parserData;
     }
 
     @Override
@@ -253,7 +264,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
         BaseValue left = (BaseValue) this.visit(ctx.expression(0));
         BaseValue right = (BaseValue) this.visit(ctx.expression(1));
 
-        if(left.getType() != right.getType()) {
+        if(left.getVarType() != right.getVarType()) {
             throw new ParseException(ctx, "Equality expression only compares similar types of variables");
         }
 

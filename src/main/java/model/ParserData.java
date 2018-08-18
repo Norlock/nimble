@@ -44,8 +44,9 @@ public class ParserData {
         code.clear();
     }
 
-    public void addCode(ArrayList<String> code) {
-        code.addAll(code);
+
+    public void appendCode(ParserData parserData) {
+        code.addAll(parserData.getCode());
     }
 
 
@@ -71,7 +72,7 @@ public class ParserData {
 
     public void print(ArrayList<String> code) {
         code.add(JasminConstants.LOAD_SYSO_ONTO_STACK);
-        code.addAll(code);
+        this.code.addAll(code); // THIS todo
         code.add(JasminConstants.PRINT);
     }
 
