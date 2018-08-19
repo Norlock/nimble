@@ -33,6 +33,10 @@ public final class JasminHelper {
         }
     }
 
+    public static boolean castToDouble(int valueType, int resultType) {
+        return (valueType == NimbleParser.INTEGER_TYPE && resultType == NimbleParser.DOUBLE_TYPE);
+    }
+
     public static String getFileFooter() {
         return  "        return\n" +
                 "    .end method";

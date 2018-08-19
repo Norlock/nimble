@@ -13,16 +13,10 @@ import java.util.ArrayList;
 public class ParserData {
 
     private final ParserRuleContext ctx;
-    private ArrayList<String> code;
+    private final ArrayList<String> code = new ArrayList<>();
 
     public ParserData(ParserRuleContext ctx) {
         this.ctx = ctx;
-        this.code = new ArrayList<>();
-    }
-
-    public ParserData(ParserRuleContext ctx, ArrayList<String> code) {
-        this(ctx);
-        this.code = code;
     }
 
     public void throwError(String errorMsg) {
@@ -36,14 +30,6 @@ public class ParserData {
     public ParserRuleContext getCtx() {
         return ctx;
     }
-
-    /**
-     * Get rid of old code
-     */
-    protected void emptyCode() {
-        code.clear();
-    }
-
 
     public void appendCode(ParserData parserData) {
         code.addAll(parserData.getCode());

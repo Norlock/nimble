@@ -7,28 +7,46 @@ public class ValueData extends BaseValue {
 
     private final int type;
 
-    private ValueData(int type, ParserRuleContext ctx) {
+    public ValueData(int valueType, ParserRuleContext ctx) {
         super(ctx);
-        this.type = type;
+        this.type = valueType;
+
+        switch (valueType) {
+            case NimbleParser.INTEGER_TYPE:
+                loadIntegerOntoStack(0);
+                break;
+            case NimbleParser.BOOLEAN_TYPE:
+                loadBooleanOnStack(false);
+                break;
+            case NimbleParser.DOUBLE_TYPE:
+                loadDoubleOntoStack(0);
+                break;
+            case NimbleParser.STRING_TYPE:
+                loadStringOntoStack("");
+        }
     }
 
     public ValueData(ParserRuleContext ctx, String value) {
-        this(NimbleParser.STRING_TYPE, ctx);
+        super(ctx);
+        this.type = NimbleParser.STRING_TYPE;
         loadStringOntoStack(value);
     }
 
     public ValueData(ParserRuleContext ctx, boolean value) {
-        this(NimbleParser.BOOLEAN_TYPE, ctx);
+        super(ctx);
+        this.type = NimbleParser.BOOLEAN_TYPE;
         loadBooleanOnStack(value);
     }
 
     public ValueData(ParserRuleContext ctx, double value) {
-        this(NimbleParser.DOUBLE_TYPE, ctx);
+        super(ctx);
+        this.type = NimbleParser.DOUBLE_TYPE;
         loadDoubleOntoStack(value);
     }
 
     public ValueData(ParserRuleContext ctx, int value) {
-        this(NimbleParser.INTEGER_TYPE, ctx);
+        super(ctx);
+        this.type = NimbleParser.INTEGER_TYPE;
         loadIntegerOntoStack(value);
     }
 
@@ -50,11 +68,6 @@ public class ValueData extends BaseValue {
 //        }
 //    }
 
-    /**
-     * Loads numeric type on stack (e.g. iconst_3;
-     * @param value
-     * @return
-     */
     private void loadIntegerOntoStack(int value) {
         if (0 <= value && value <= 5) {
             addCommand(JasminConstants.INTEGER_CONST + value);

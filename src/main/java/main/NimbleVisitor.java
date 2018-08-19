@@ -33,51 +33,44 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
         if (variables.get(id) != null)
             throw new ParseException(ctx, "Identifier " + id + " has already been declared");
 
-        int type = ctx.variableType().start.getType();
-        VariableData variable;
-        BaseValue baseValue = (BaseValue) this.visit(ctx.expression());
-        if (baseValue == null) { // Create default var
-            variable = new VariableData(ctx, type);
-            variables.put(id, variable);
-            return variable;
-        } else {
-            variable = new VariableData(ctx, type, baseValue);
-        }
-        variables.put(id, variable);
-        return variable;
+        int varType = ctx.variableType().start.getType();
+        int varIndex = JasminHelper.getVariableIndex();
+
+        BaseValue value = (BaseValue) this.visit(ctx.expression());
+
+        if (value == null)  // Create default value
+            value = new ValueData(varType, ctx);
+
+        ParserData parserData = setVariableAssignment(ctx, varType, value, varIndex);
+        variables.put(id, new VariableData(ctx, varType, varIndex));
+
+        return parserData;
     }
 
-    public ArrayList<String> setVariableAssignment(int varType, BaseValue baseValue, int variableIndex) {
-        ArrayList<String> code = new ArrayList<>(baseValue.getCode());
-        validate(varType, baseValue.getVarType());
+    private ParserData setVariableAssignment(ParserRuleContext ctx, int varType, BaseValue value, int variableIndex) {
+        ParserData parserData = new ParserData(ctx);
+        parserData.appendCode(value);
 
-        if(JasminConstants.castToDouble(baseValue.getVarType(), varType))
-            code.add(JasminConstants.INT_TO_DOUBLE);
+        int valueType = value.getVarType();
 
-        String prefix = JasminConstants.Prefix.getPrefixBasedOnType(varType).toString();
-        if(0 <= variableIndex && variableIndex <= 3) {
-            code.add(prefix + JasminConstants.STORE_VAl_SMALL + variableIndex);
-        } else {
-            code.add(prefix + JasminConstants.STORE_VAL + variableIndex);
-        }
-
-        return code;
-    }
-
-    /**
-     * Throws exception if for example integer is assigned to a string
-     */
-    private void validate(int varType, int valueType) {
-        // If statement for readability
-        if(varType == valueType || (varType == NimbleParser.DOUBLE_TYPE && valueType == NimbleParser.INTEGER_TYPE))
-            return;
-        else {
+        if(JasminHelper.castToDouble(valueType, varType)) {
+            parserData.addCommand(JasminConstants.INT_TO_DOUBLE);
+        } else if(valueType != varType) {
             String errorMsg = "Cannot assign variable"
                     + " to varType " + NimbleParser.VOCABULARY.getLiteralName(valueType).replace("'","")
-                    + " for identifier ";
+                    + " cast exception incompatible types";
 
-            throwError(errorMsg);
+            parserData.throwError(errorMsg);
+        } else {
+            String prefix = JasminConstants.Prefix.getPrefixBasedOnType(varType).toString();
+            if (0 <= variableIndex && variableIndex <= 3) {
+                parserData.addCommand(prefix + JasminConstants.STORE_VAl_SMALL + variableIndex);
+            } else {
+                parserData.addCommand(prefix + JasminConstants.STORE_VAL + variableIndex);
+            }
         }
+
+        return parserData;
     }
 
     /**
@@ -89,13 +82,10 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
     @Override
     public ParserData visitVariableAssignment(NimbleParser.VariableAssignmentContext ctx) {
         String id = ctx.IDENTIFIER().getText();
-        VariableData oldVariable = getVariable(id, ctx);
+        VariableData variable = getVariable(id, ctx);
 
         BaseValue baseValue = (BaseValue) this.visit(ctx.expression());
-        VariableData variable = new VariableData(ctx, oldVariable.getVarType(), baseValue);
-        variables.put(id, variable);
-
-        return variable;
+        return setVariableAssignment(ctx, variable.getVarType(), baseValue, variable.getVarIndex());
     }
 
     /**

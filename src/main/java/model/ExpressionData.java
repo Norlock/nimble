@@ -83,8 +83,7 @@ public class ExpressionData extends BaseValue {
             throwError("Can't compare two different types of variables");
 
         label = JasminHelper.getNewLabel();
-        resultType = NimbleParser.BOOLEAN_TYPE; // Compare == boolean
-        loadDataOntoStack();
+        loadDataOntoStack(NimbleParser.BOOLEAN_TYPE); // Compare == boolean
 
         switch (left.getVarType()) {
             case NimbleParser.INTEGER_TYPE:
@@ -103,26 +102,22 @@ public class ExpressionData extends BaseValue {
     }
 
     private void setSubtractExpressionInteger() {
-        resultType = NimbleParser.INTEGER_TYPE;
-        loadDataOntoStack();
+        loadDataOntoStack(NimbleParser.INTEGER_TYPE);
         setSub(JasminConstants.Prefix.INTEGER_OR_BOOLEAN);
     }
 
     private void setAdditiveExpressionInteger() {
-        resultType = NimbleParser.INTEGER_TYPE;
-        loadDataOntoStack();
+        loadDataOntoStack(NimbleParser.INTEGER_TYPE);
         setAdd(JasminConstants.Prefix.INTEGER_OR_BOOLEAN);
     }
 
     private void setSubtractExpressionDouble() {
-        resultType = NimbleParser.DOUBLE_TYPE;
-        loadDataOntoStack();
+        loadDataOntoStack(NimbleParser.DOUBLE_TYPE);
         setSub(JasminConstants.Prefix.DOUBLE);
     }
 
     private void setAdditiveExpressionDouble() {
-        resultType = NimbleParser.DOUBLE_TYPE;
-        loadDataOntoStack();
+        loadDataOntoStack(NimbleParser.DOUBLE_TYPE);
         setAdd(JasminConstants.Prefix.DOUBLE);
     }
 
@@ -139,10 +134,8 @@ public class ExpressionData extends BaseValue {
         addCommand(JasminConstants.CONSTRUCT_STRING_BUILDER);
         addCommand(JasminConstants.DUPLICATE_VALUE_ONTOP_OF_STACK);
         addCommand(JasminConstants.INIT_STRING_BUILDER);
-        left.loadDataOntoStack();
         appendCode(left);
         addCommand(JasminConstants.APPEND_STRING_BUILDER);
-        right.loadDataOntoStack();
         appendCode(right);
         addCommand(JasminConstants.APPEND_STRING_BUILDER);
         addCommand(JasminConstants.STRING_BUILDER_TO_STRING);
@@ -186,13 +179,14 @@ public class ExpressionData extends BaseValue {
     /**
      * Helper method, not to use as public. Will load the left and right side onto stack.
      */
-    protected void loadDataOntoStack() {
-        left.loadDataOntoStack();
-        left.setIntToDoubleIfNeeded(resultType);
-        right.loadDataOntoStack();
-        right.setIntToDoubleIfNeeded(resultType);
-
+    private void loadDataOntoStack(int resultType) {
+        this.resultType = resultType;
         appendCode(left);
+        if(JasminHelper.castToDouble(left.getVarType(), resultType))
+            addCommand(JasminConstants.INT_TO_DOUBLE);
+
         appendCode(right);
+        if(JasminHelper.castToDouble(left.getVarType(), resultType))
+            addCommand(JasminConstants.INT_TO_DOUBLE);
     }
 }
