@@ -44,7 +44,7 @@ public final class JasminConstants {
     public static final String TRUE = "1", FALSE = "0";
 
     // (int/double) + Instructions
-    public static final String ADD = "add", SUB = "sub", MULTIPLY = "mul", DIVIDE = "div";
+    public static final String ADD = "add", SUB = "sub", MULTIPLY = "mul", DIVIDE = "div", MODULO = "rem";
 
     // Store / load a variable
     public static final String STORE_VAl_SMALL = "store_", LOAD_VAL_SMALL = "load_";
@@ -61,9 +61,9 @@ public final class JasminConstants {
     public static final String INTEGER_INCREMENT = "iinc";
 
     // Compares doubles
-    public static final String COMPARE_DOUBLE = "dcmpl" // + IF_EQUAL || IF LESS
-            , COMPARE_DOUBLE_RIGHT_GREATER = "dcmpg"  // + IF_GREATER
-            , COMPARE_DOUBLE_RIGHT_LESSER = "dmpl" ; // + IF_EQ || IF LESS
+    public static final String COMPARE_DOUBLE = "dcmpl"
+            , DOUBLE_COMPARE_IF_LEFT_IS_GREATER = "dcmpg"
+            , DOUBLE_COMPARE_IF_LEFT_IS_LESS  = "dcmpl" ;
 
     // Convert to double
     public static final String INT_TO_DOUBLE = "i2d" + SPACE;
@@ -73,14 +73,12 @@ public final class JasminConstants {
     public static final String IF_NOT_EQUAL = "ifne" + SPACE;
 
     // Jasmin will use opposition
-    // if( i < 3 ) --> IF_LEFT_IS_GREATER_OR_EQUAL goto ...
-    public static final String IF_LEFT_IS_GREATER = "ifgt" + SPACE;
-    public static final String IF_LEFT_IS_GREATER_OR_EQUAL = "ifge" + SPACE;
+    public static final String IF_GREATER = "ifgt" + SPACE;
+    public static final String IF_GREATER_OR_EQUAL = "ifge" + SPACE;
 
     // Jasmin will use opposition
-    // if( i > 3.2 ) --> IF_LEFT_IS_LESSER_OR_EQUAL goto ...
-    public static final String IF_LEFT_IS_LESSER = "iflt" + SPACE;
-    public static final String IF_LEFT_IS_LESSER_OR_EQUAL = "ifle" + SPACE;
+    public static final String IF_LESS = "iflt" + SPACE;
+    public static final String IF_LESS_OR_EQUAL = "ifle" + SPACE;
 
     // Jasmin will use opposition
     public static final String IF_INTEGER_COMPARE_EQUAL = "if_icmpeq" + SPACE;

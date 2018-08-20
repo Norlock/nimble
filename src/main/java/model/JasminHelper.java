@@ -13,8 +13,8 @@ public final class JasminHelper {
         return variableIndex;
     }
 
-    private static int incrementDoubleVariableIndex() {
-        return variableIndex += 2; // Double needs to spots
+    private static int incrementDoubleVariableIndex(){
+        return variableIndex += 2; // Double needs two spots
     }
 
     private static int incrementVariableIndex() {

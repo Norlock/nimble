@@ -293,7 +293,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
         BaseValue right = (BaseValue) this.visit(ctx.expression(1));
 
         if(left.getDataType() != right.getDataType()) {
-            throw new ParseException(ctx, "Equality expression only compares similar types of variables");
+            throw new ParseException(ctx, "Equality expression only compares similar types of variables.");
         }
 
         // isEqual and isEqualOperator
@@ -317,16 +317,13 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
         return super.visitNotExpression(ctx);
     }
 
-    /**
-     * Visit a parse tree produced by the {@code multiplicationExpression}
-     * labeled alternative in {@link NimbleParser#expression}.
-     *
-     * @param ctx the parse tree
-     * @return the visitor result
-     */
     @Override
     public ParserData visitMultiplicationExpression(NimbleParser.MultiplicationExpressionContext ctx) {
-        return super.visitMultiplicationExpression(ctx);
+        BaseValue left = (BaseValue) this.visit(ctx.expression(0));
+        BaseValue right = (BaseValue) this.visit(ctx.expression(1));
+        ExpressionData expressionData = new ExpressionData(ctx, left, right);
+        expressionData.setMultiplicationExpression(ctx.op.getType());
+        return expressionData;
     }
 
     @Override
@@ -334,7 +331,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
         try {
             return new ValueData(ctx, Integer.parseInt(ctx.getText()));
         } catch (NumberFormatException e) {
-            throw new ParseException(ctx, "Can't format: " + ctx.getText() + " to an integer");
+            throw new ParseException(ctx, "Can't format: " + ctx.getText() + " to an integer.");
         }
     }
 
@@ -343,7 +340,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
         try {
             return new ValueData(ctx, Double.parseDouble(ctx.getText()));
         } catch (NumberFormatException e) {
-            throw new ParseException(ctx, "Can't format: " + ctx.getText() + " to an integer");
+            throw new ParseException(ctx, "Can't format: " + ctx.getText() + " to an integer.");
         }
     }
 
@@ -358,7 +355,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
         if (boolStr.equals("true") || boolStr.equals("false")) {
             return new ValueData(ctx, Boolean.parseBoolean(boolStr));
         } else {
-            throw new ParseException(ctx, "Value: " + boolStr + " is not a string.");
+            throw new ParseException(ctx, "Value: " + boolStr + " is neither 'true' or 'false'.");
         }
     }
 

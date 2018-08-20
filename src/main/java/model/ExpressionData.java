@@ -1,6 +1,7 @@
 package model;
 
 import generated.NimbleParser;
+import main.Nimble;
 import main.ParseException;
 import org.antlr.v4.runtime.ParserRuleContext;
 
@@ -30,6 +31,24 @@ public class ExpressionData extends BaseValue {
         this.right = right;
     }
 
+    public void setMultiplicationExpression(int operatorType) {
+        if(left.isType(NimbleParser.STRING_TYPE) || left.isType(NimbleParser.BOOLEAN_TYPE)
+            || right.isType(NimbleParser.STRING_TYPE) || right.isType(NimbleParser.BOOLEAN_TYPE))
+            throwError("Multiplication expressions can only contain integers or doubles");
+        else if(left.isType(NimbleParser.INTEGER_TYPE) && right.isType(NimbleParser.INTEGER_TYPE))
+            loadDataOntoStack(NimbleParser.INTEGER_TYPE);
+        else
+            loadDataOntoStack(NimbleParser.DOUBLE_TYPE);
+
+        if (operatorType == NimbleParser.MULTIPLY)
+            addCommand(JasminConstants.Prefix.getPrefixBasedOnType(resultType) + JasminConstants.MULTIPLY);
+        else if (operatorType == NimbleParser.DIVIDE)
+            addCommand(JasminConstants.Prefix.getPrefixBasedOnType(resultType) + JasminConstants.DIVIDE);
+        else
+            addCommand(JasminConstants.Prefix.getPrefixBasedOnType(resultType) + JasminConstants.MODULO);
+
+    }
+
     public void setRelationalExpression(int operatorType) {
         if(left.getDataType() != right.getDataType()) {
             throwError("Types are not equal");
@@ -39,23 +58,53 @@ public class ExpressionData extends BaseValue {
             loadDataOntoStack(NimbleParser.BOOLEAN_TYPE);
             label = JasminHelper.getNewLabel();
 
-            // Javabytecode uses opposistion
-            switch (operatorType) {
-                case NimbleParser.LEFT_GREATER: // x > x
-                    addCommand(JasminConstants.IF_INTEGER_LEFT_IS_LESSER_OR_EQUAL + label);
-                    break;
-                case NimbleParser.LEFT_GREATER_OR_EQUAL: // x >= x
-                    addCommand(JasminConstants.IF_INTEGER_LEFT_IS_LESSER + label);
-                    break;
-                case NimbleParser.LEFT_LESSER: // x < x
-                    addCommand(JasminConstants.IF_INTEGER_LEFT_GREATER_OR_EQUAL + label);
-                    break;
-                case NimbleParser.LEFT_LESSER_OR_EQUAL: // x <= x
-                    addCommand(JasminConstants.IF_INTEGER_LEFT_IS_GREATER + label);
-                    break;
+            if(left.isType(NimbleParser.INTEGER_TYPE)) {
+                setRelationalExpressionInteger(operatorType);
+            } else if (left.isType(NimbleParser.DOUBLE_TYPE)) {
+                setRelationalExpressionDouble(operatorType);
             }
 
             finalizeBooleanExpression();
+        }
+    }
+
+    private void setRelationalExpressionInteger(int operatorType) {
+        // Javabytecode uses opposistion
+        switch (operatorType) {
+            case NimbleParser.LEFT_GREATER: // x > x
+                addCommand(JasminConstants.IF_INTEGER_LEFT_IS_LESSER_OR_EQUAL + label);
+                break;
+            case NimbleParser.LEFT_GREATER_OR_EQUAL: // x >= x
+                addCommand(JasminConstants.IF_INTEGER_LEFT_IS_LESSER + label);
+                break;
+            case NimbleParser.LEFT_LESSER: // x < x
+                addCommand(JasminConstants.IF_INTEGER_LEFT_GREATER_OR_EQUAL + label);
+                break;
+            case NimbleParser.LEFT_LESSER_OR_EQUAL: // x <= x
+                addCommand(JasminConstants.IF_INTEGER_LEFT_IS_GREATER + label);
+                break;
+        }
+    }
+
+    private void setRelationalExpressionDouble(int operatorType) {
+        // Javabytecode uses opposistion
+        switch (operatorType) {
+            case NimbleParser.LEFT_GREATER: // x > x
+                addCommand(JasminConstants.DOUBLE_COMPARE_IF_LEFT_IS_LESS);
+                addCommand(JasminConstants.IF_LESS_OR_EQUAL + label);
+                break;
+            case NimbleParser.LEFT_GREATER_OR_EQUAL: // x >= x
+                addCommand(JasminConstants.DOUBLE_COMPARE_IF_LEFT_IS_LESS + label);
+                addCommand(JasminConstants.IF_LESS + label);
+                break;
+            case NimbleParser.LEFT_LESSER: // x < x
+                addCommand(JasminConstants.DOUBLE_COMPARE_IF_LEFT_IS_GREATER);
+                addCommand(JasminConstants.IF_GREATER_OR_EQUAL + label);
+                break;
+            case NimbleParser.LEFT_LESSER_OR_EQUAL: // x <= x
+                addCommand(JasminConstants.DOUBLE_COMPARE_IF_LEFT_IS_GREATER);
+                addCommand(JasminConstants.IF_GREATER + label);
+                break;
         }
     }
 
