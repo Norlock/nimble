@@ -40,6 +40,14 @@ public class ParserData {
         code.add(command);
     }
 
+    public void setLabel(String label) {
+        code.add(label + JasminConstants.COLON);
+    }
+
+    public void gotoLabel(String label) {
+        code.add(JasminConstants.GO_TO + label);
+    }
+
 //    public void print(ValueData valueData) {
 //        jasminCode.add(JasminConstants.LOAD_SYSO_ONTO_STACK);
 //        if(valueData.isInteger()) {

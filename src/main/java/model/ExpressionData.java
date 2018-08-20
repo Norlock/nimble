@@ -30,6 +30,35 @@ public class ExpressionData extends BaseValue {
         this.right = right;
     }
 
+    public void setRelationalExpression(int operatorType) {
+        if(left.getDataType() != right.getDataType()) {
+            throwError("Types are not equal");
+        } else if(left.isType(NimbleParser.STRING_TYPE) || left.isType(NimbleParser.BOOLEAN_TYPE)) {
+            throwError("This type is not suitable for relation expressions");
+        } else {
+            loadDataOntoStack(NimbleParser.BOOLEAN_TYPE);
+            label = JasminHelper.getNewLabel();
+
+            // Javabytecode uses opposistion
+            switch (operatorType) {
+                case NimbleParser.LEFT_GREATER: // x > x
+                    addCommand(JasminConstants.IF_INTEGER_LEFT_IS_LESSER_OR_EQUAL + label);
+                    break;
+                case NimbleParser.LEFT_GREATER_OR_EQUAL: // x >= x
+                    addCommand(JasminConstants.IF_INTEGER_LEFT_IS_LESSER + label);
+                    break;
+                case NimbleParser.LEFT_LESSER: // x < x
+                    addCommand(JasminConstants.IF_INTEGER_LEFT_GREATER_OR_EQUAL + label);
+                    break;
+                case NimbleParser.LEFT_LESSER_OR_EQUAL: // x <= x
+                    addCommand(JasminConstants.IF_INTEGER_LEFT_IS_GREATER + label);
+                    break;
+            }
+
+            finalizeBooleanExpression();
+        }
+    }
+
     public void setAddExpression() {
         if (left.isType(NimbleParser.STRING_TYPE)) {
             setAdditiveExpressionString(); // toString gebruiken om ook andere types te gebruiken
@@ -79,13 +108,13 @@ public class ExpressionData extends BaseValue {
     public void setCompareExpression(int operatorType) {
         boolean isEqualOperator = operatorType == NimbleParser.EQUAL;
 
-        if(left.getVarType() != right.getVarType())
+        if(left.getDataType() != right.getDataType())
             throwError("Can't compare two different types of variables");
 
         label = JasminHelper.getNewLabel();
         loadDataOntoStack(NimbleParser.BOOLEAN_TYPE); // Compare == boolean
 
-        switch (left.getVarType()) {
+        switch (left.getDataType()) {
             case NimbleParser.INTEGER_TYPE:
             case NimbleParser.BOOLEAN_TYPE: // booleans are either 0 or 1
                 compareIntegers(isEqualOperator, label);
@@ -99,6 +128,8 @@ public class ExpressionData extends BaseValue {
             default:
                 throwError("Unknown type");
         }
+
+        finalizeBooleanExpression();
     }
 
     private void setSubtractExpressionInteger() {
@@ -167,12 +198,28 @@ public class ExpressionData extends BaseValue {
         }
     }
 
+    private void finalizeBooleanExpression() {
+        // If this is relational expression for a variable it needs to return the correct value
+        // For if statements it won't return any value
+        if(getCtx().getParent() instanceof NimbleParser.VariableDeclarationContext
+                || getCtx().getParent() instanceof  NimbleParser.VariableAssignmentContext
+                || getCtx().getParent() instanceof  NimbleParser.PrintStatementContext) {
+            String labelGoto = JasminHelper.getNewLabel();
+
+            loadBooleanOnStack(true);
+            gotoLabel(labelGoto);
+            setLabel(label);
+            loadBooleanOnStack(false);
+            setLabel(labelGoto);
+        }
+    }
+
     public String getLabel() {
         return label;
     }
 
     @Override
-    public int getVarType() {
+    public int getDataType() {
         return resultType;
     }
 
@@ -182,11 +229,11 @@ public class ExpressionData extends BaseValue {
     private void loadDataOntoStack(int resultType) {
         this.resultType = resultType;
         appendCode(left);
-        if(JasminHelper.castToDouble(left.getVarType(), resultType))
+        if(JasminHelper.castToDouble(left.getDataType(), resultType))
             addCommand(JasminConstants.INT_TO_DOUBLE);
 
         appendCode(right);
-        if(JasminHelper.castToDouble(left.getVarType(), resultType))
+        if(JasminHelper.castToDouble(right.getDataType(), resultType))
             addCommand(JasminConstants.INT_TO_DOUBLE);
     }
 }

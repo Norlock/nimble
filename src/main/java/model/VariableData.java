@@ -27,7 +27,7 @@ public class VariableData extends BaseValue {
     }
 
     @Override
-    public int getVarType() {
+    public int getDataType() {
         return varType;
     }
 }

@@ -20,8 +20,8 @@ public class NimbleParser extends Parser {
 		STRING_TYPE=1, INTEGER_TYPE=2, DOUBLE_TYPE=3, BOOLEAN_TYPE=4, VOID=5, 
 		NULL=6, GLOBAL=7, PACKAGE=8, INTERNAL=9, MAIN=10, SEMICOLON=11, COMMA=12, 
 		DOT=13, LEFT_PARENTHESE=14, RIGHT_PARENTHESE=15, LEFT_BRACE=16, RIGHT_BRACE=17, 
-		LEFT_SQUARE_BRACKET=18, RIGHT_SQUARE_BRACKET=19, ASSIGN=20, LESSER=21, 
-		GREATER=22, EQUAL=23, NOT_EQUAL=24, LESSER_OR_EQUAL=25, GREATER_OR_EQUAL=26, 
+		LEFT_SQUARE_BRACKET=18, RIGHT_SQUARE_BRACKET=19, ASSIGN=20, LEFT_LESSER=21, 
+		LEFT_GREATER=22, EQUAL=23, NOT_EQUAL=24, LEFT_LESSER_OR_EQUAL=25, LEFT_GREATER_OR_EQUAL=26, 
 		AND=27, OR=28, INCREMENT=29, DECREMENT=30, ADD=31, SUBSTRACT=32, MULTIPLY=33, 
 		DIVIDE=34, MODULO=35, NOT=36, IF=37, ELSE=38, GOTO=39, RETURN=40, FOR=41, 
 		WHILE=42, CLASS=43, PRINT=44, TRUE=45, FALSE=46, INTEGER=47, DOUBLE=48, 
@@ -54,12 +54,12 @@ public class NimbleParser extends Parser {
 		null, "STRING_TYPE", "INTEGER_TYPE", "DOUBLE_TYPE", "BOOLEAN_TYPE", "VOID", 
 		"NULL", "GLOBAL", "PACKAGE", "INTERNAL", "MAIN", "SEMICOLON", "COMMA", 
 		"DOT", "LEFT_PARENTHESE", "RIGHT_PARENTHESE", "LEFT_BRACE", "RIGHT_BRACE", 
-		"LEFT_SQUARE_BRACKET", "RIGHT_SQUARE_BRACKET", "ASSIGN", "LESSER", "GREATER", 
-		"EQUAL", "NOT_EQUAL", "LESSER_OR_EQUAL", "GREATER_OR_EQUAL", "AND", "OR", 
-		"INCREMENT", "DECREMENT", "ADD", "SUBSTRACT", "MULTIPLY", "DIVIDE", "MODULO", 
-		"NOT", "IF", "ELSE", "GOTO", "RETURN", "FOR", "WHILE", "CLASS", "PRINT", 
-		"TRUE", "FALSE", "INTEGER", "DOUBLE", "STRING", "IDENTIFIER", "WS", "COMMENT", 
-		"LINE_COMMENT"
+		"LEFT_SQUARE_BRACKET", "RIGHT_SQUARE_BRACKET", "ASSIGN", "LEFT_LESSER", 
+		"LEFT_GREATER", "EQUAL", "NOT_EQUAL", "LEFT_LESSER_OR_EQUAL", "LEFT_GREATER_OR_EQUAL", 
+		"AND", "OR", "INCREMENT", "DECREMENT", "ADD", "SUBSTRACT", "MULTIPLY", 
+		"DIVIDE", "MODULO", "NOT", "IF", "ELSE", "GOTO", "RETURN", "FOR", "WHILE", 
+		"CLASS", "PRINT", "TRUE", "FALSE", "INTEGER", "DOUBLE", "STRING", "IDENTIFIER", 
+		"WS", "COMMENT", "LINE_COMMENT"
 	};
 	public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
 
@@ -1448,10 +1448,10 @@ public class NimbleParser extends Parser {
 		public ExpressionContext expression(int i) {
 			return getRuleContext(ExpressionContext.class,i);
 		}
-		public TerminalNode LESSER_OR_EQUAL() { return getToken(NimbleParser.LESSER_OR_EQUAL, 0); }
-		public TerminalNode GREATER_OR_EQUAL() { return getToken(NimbleParser.GREATER_OR_EQUAL, 0); }
-		public TerminalNode LESSER() { return getToken(NimbleParser.LESSER, 0); }
-		public TerminalNode GREATER() { return getToken(NimbleParser.GREATER, 0); }
+		public TerminalNode LEFT_LESSER_OR_EQUAL() { return getToken(NimbleParser.LEFT_LESSER_OR_EQUAL, 0); }
+		public TerminalNode LEFT_GREATER_OR_EQUAL() { return getToken(NimbleParser.LEFT_GREATER_OR_EQUAL, 0); }
+		public TerminalNode LEFT_LESSER() { return getToken(NimbleParser.LEFT_LESSER, 0); }
+		public TerminalNode LEFT_GREATER() { return getToken(NimbleParser.LEFT_GREATER, 0); }
 		public RelationalExpressionContext(ExpressionContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
@@ -1626,7 +1626,7 @@ public class NimbleParser extends Parser {
 						setState(174);
 						((RelationalExpressionContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
-						if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << LESSER) | (1L << GREATER) | (1L << LESSER_OR_EQUAL) | (1L << GREATER_OR_EQUAL))) != 0)) ) {
+						if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << LEFT_LESSER) | (1L << LEFT_GREATER) | (1L << LEFT_LESSER_OR_EQUAL) | (1L << LEFT_GREATER_OR_EQUAL))) != 0)) ) {
 							((RelationalExpressionContext)_localctx).op = (Token)_errHandler.recoverInline(this);
 						} else {
 							consume();

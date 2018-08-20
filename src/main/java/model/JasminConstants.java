@@ -126,4 +126,6 @@ public final class JasminConstants {
             ".toString:()Ljava/lang/String;";
 
     public static final String DUPLICATE_VALUE_ONTOP_OF_STACK = "dup";
+
+    public static final String COLON = ":";
 }

@@ -7,7 +7,6 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,24 +33,25 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
             throw new ParseException(ctx, "Identifier " + id + " has already been declared");
 
         int varType = ctx.variableType().start.getType();
-        int varIndex = JasminHelper.getVariableIndex();
 
         BaseValue value = (BaseValue) this.visit(ctx.expression());
 
         if (value == null)  // Create default value
             value = new ValueData(varType, ctx);
 
-        ParserData parserData = setVariableAssignment(ctx, varType, value, varIndex);
+        int varIndex = JasminHelper.getVariableIndex();
+        ParserData parserData = setVariableAssignment(ctx, varType, varIndex, value);
         variables.put(id, new VariableData(ctx, varType, varIndex));
+        JasminHelper.updateVariableIndex(varType);
 
         return parserData;
     }
 
-    private ParserData setVariableAssignment(ParserRuleContext ctx, int varType, BaseValue value, int variableIndex) {
+    private ParserData setVariableAssignment(ParserRuleContext ctx, int varType, int varIndex, BaseValue value) {
         ParserData parserData = new ParserData(ctx);
         parserData.appendCode(value);
 
-        int valueType = value.getVarType();
+        int valueType = value.getDataType();
 
         if(JasminHelper.castToDouble(valueType, varType)) {
             parserData.addCommand(JasminConstants.INT_TO_DOUBLE);
@@ -63,10 +63,10 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
             parserData.throwError(errorMsg);
         } else {
             String prefix = JasminConstants.Prefix.getPrefixBasedOnType(varType).toString();
-            if (0 <= variableIndex && variableIndex <= 3) {
-                parserData.addCommand(prefix + JasminConstants.STORE_VAl_SMALL + variableIndex);
+            if (0 <= varIndex && varIndex <= 3) {
+                parserData.addCommand(prefix + JasminConstants.STORE_VAl_SMALL + varIndex);
             } else {
-                parserData.addCommand(prefix + JasminConstants.STORE_VAL + variableIndex);
+                parserData.addCommand(prefix + JasminConstants.STORE_VAL + varIndex);
             }
         }
 
@@ -85,7 +85,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
         VariableData variable = getVariable(id, ctx);
 
         BaseValue baseValue = (BaseValue) this.visit(ctx.expression());
-        return setVariableAssignment(ctx, variable.getVarType(), baseValue, variable.getVarIndex());
+        return setVariableAssignment(ctx, variable.getDataType(), variable.getVarIndex(), baseValue);
     }
 
     /**
@@ -97,17 +97,25 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
     @Override
     public ParserData visitIfStatement(NimbleParser.IfStatementContext ctx) {
         ParserData parserData = new ParserData(ctx);
-        ExpressionData expressionData = (ExpressionData) this.visit(ctx.conditionBlock(0));
-        if(!expressionData.isBooleanExpression())
-            expressionData.throwError("If statements can only contain boolean expressions");
 
-        parserData.appendCode(expressionData);
-        for(int i = 1; i < ctx.conditionBlock().size(); i++) {
-            System.out.println("extra block");
+        String gotoLabel = JasminHelper.getNewLabel();
+        for(int i = 0; i < ctx.conditionBlock().size(); i++) {
+            ExpressionData expressionData = (ExpressionData) this.visit(ctx.conditionBlock(i));
+            if(!expressionData.isBooleanExpression())
+                expressionData.throwError("If statements can only contain boolean expressions");
+
+            parserData.appendCode(expressionData);
+            parserData.gotoLabel(gotoLabel); // Label to go to after conditionblock
+            parserData.setLabel(expressionData.getLabel());
         }
 
+        if(ctx.block() != null)
+            parserData.appendCode(this.visit(ctx.block())); // TODO ldc "asdad" || ldc asdad uitzoeken?
+        
+        parserData.setLabel(gotoLabel);
         return parserData;
     }
+
 
     /**
      * Visit a parse tree produced by {@link NimbleParser#functionCall}.
@@ -263,17 +271,13 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
         return expressionData;
     }
 
-
-/**
- * Visit a parse tree produced by the {@code relationalExpression}
- * labeled alternative in {@link NimbleParser#expression}.
- *
- * @param ctx the parse tree
- * @return the visitor result
- */
     @Override
     public ParserData visitRelationalExpression(NimbleParser.RelationalExpressionContext ctx) {
-        return super.visitRelationalExpression(ctx);
+        BaseValue left = (BaseValue) this.visit(ctx.expression(0));
+        BaseValue right = (BaseValue) this.visit(ctx.expression(1));
+        ExpressionData expressionData = new ExpressionData(ctx, left, right);
+        expressionData.setRelationalExpression(ctx.op.getType());
+        return expressionData;
     }
 
     /**
@@ -288,7 +292,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
         BaseValue left = (BaseValue) this.visit(ctx.expression(0));
         BaseValue right = (BaseValue) this.visit(ctx.expression(1));
 
-        if(left.getVarType() != right.getVarType()) {
+        if(left.getDataType() != right.getDataType()) {
             throw new ParseException(ctx, "Equality expression only compares similar types of variables");
         }
 

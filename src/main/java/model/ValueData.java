@@ -68,30 +68,8 @@ public class ValueData extends BaseValue {
 //        }
 //    }
 
-    private void loadIntegerOntoStack(int value) {
-        if (0 <= value && value <= 5) {
-            addCommand(JasminConstants.INTEGER_CONST + value);
-        } else if (value == -1) {
-            addCommand(JasminConstants.INTEGER_CONST + "m1");
-        } else {
-            addCommand(JasminConstants.INTEGER_ADD + value);
-        }
-    }
-
-    private void loadBooleanOnStack(boolean value) {
-        addCommand(JasminConstants.INTEGER_CONST + (value ? JasminConstants.TRUE : JasminConstants.FALSE));
-    }
-
-    private void loadDoubleOntoStack(double value) {
-        addCommand(JasminConstants.DOUBLE_ADD + value);
-    }
-
-    private void loadStringOntoStack(String value) {
-        addCommand(JasminConstants.STRING_ADD + value);
-    }
-
     @Override
-    public int getVarType() {
+    public int getDataType() {
         return type;
     }
 

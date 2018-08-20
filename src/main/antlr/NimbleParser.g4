@@ -87,7 +87,8 @@ expression
     : NOT expression                                                                    #notExpression
     | expression (op=(ADD | SUBSTRACT) expression)+                                     #additiveExpression
     | expression op=(MULTIPLY | DIVIDE | MODULO) expression                             #multiplicationExpression
-    | expression op=(LESSER_OR_EQUAL | GREATER_OR_EQUAL | LESSER | GREATER) expression  #relationalExpression
+    | expression op=(LEFT_LESSER_OR_EQUAL | LEFT_GREATER_OR_EQUAL
+        | LEFT_LESSER | LEFT_GREATER) expression                                        #relationalExpression
     | expression op=(EQUAL | NOT_EQUAL) expression                                      #equalityExpression
     | expression AND expression                                                         #andExpression
     | expression OR expression                                                          #orExpression

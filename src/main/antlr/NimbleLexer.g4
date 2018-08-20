@@ -29,12 +29,12 @@ RIGHT_SQUARE_BRACKET: ']';
 // Operators
 
 ASSIGN: '=';
-LESSER: '<';
-GREATER: '>';
+LEFT_LESSER: '<';
+LEFT_GREATER: '>';
 EQUAL: '==';
 NOT_EQUAL: '!=';
-LESSER_OR_EQUAL: '<=';
-GREATER_OR_EQUAL: '>=';
+LEFT_LESSER_OR_EQUAL: '<=';
+LEFT_GREATER_OR_EQUAL: '>=';
 AND: '&&';
 OR: '||';
 INCREMENT: '++';
