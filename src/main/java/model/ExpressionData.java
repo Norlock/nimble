@@ -5,6 +5,8 @@ import main.Nimble;
 import main.ParseException;
 import org.antlr.v4.runtime.ParserRuleContext;
 
+import java.util.ArrayList;
+
 /**
  * ExpressionData is validated,
  */
@@ -14,6 +16,7 @@ public class ExpressionData extends BaseValue {
     private final BaseValue right;
     private int resultType;
     private String label;
+    private ArrayList<String> labels = new ArrayList<>();
 
     public boolean isBooleanExpression() {
         return resultType == NimbleParser.BOOLEAN_TYPE;
@@ -35,12 +38,7 @@ public class ExpressionData extends BaseValue {
         if(!left.isType(NimbleParser.BOOLEAN_TYPE) && !right.isType(NimbleParser.BOOLEAN_TYPE)) {
             throwError("And expressions can only contain boolean expressions.");
         } else {
-            this.resultType = NimbleParser.BOOLEAN_TYPE;
-            label = JasminHelper.getNewLabel();
-            // TODO left en right hoeven niet naar dezelfde label verwijzen. :)
-            appendCode(left);
-
-            appendCode(right);
+            loadDataOntoStack(NimbleParser.BOOLEAN_TYPE);
         }
     }
 
@@ -70,6 +68,7 @@ public class ExpressionData extends BaseValue {
         } else {
             loadDataOntoStack(NimbleParser.BOOLEAN_TYPE);
             this.label = JasminHelper.getNewLabel();
+//            labels.add(label);
 
             if(left.isType(NimbleParser.INTEGER_TYPE)) {
                 setRelationalExpressionInteger(operatorType);
