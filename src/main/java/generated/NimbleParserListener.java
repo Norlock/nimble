@@ -208,30 +208,6 @@ public interface NimbleParserListener extends ParseTreeListener {
 	 */
 	void exitConstructorParameters(NimbleParser.ConstructorParametersContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code orExpression}
-	 * labeled alternative in {@link NimbleParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void enterOrExpression(NimbleParser.OrExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code orExpression}
-	 * labeled alternative in {@link NimbleParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void exitOrExpression(NimbleParser.OrExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code andExpression}
-	 * labeled alternative in {@link NimbleParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void enterAndExpression(NimbleParser.AndExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code andExpression}
-	 * labeled alternative in {@link NimbleParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void exitAndExpression(NimbleParser.AndExpressionContext ctx);
-	/**
 	 * Enter a parse tree produced by the {@code atomExpression}
 	 * labeled alternative in {@link NimbleParser#expression}.
 	 * @param ctx the parse tree
@@ -303,6 +279,18 @@ public interface NimbleParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitMultiplicationExpression(NimbleParser.MultiplicationExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code bitwiseExpression}
+	 * labeled alternative in {@link NimbleParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterBitwiseExpression(NimbleParser.BitwiseExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code bitwiseExpression}
+	 * labeled alternative in {@link NimbleParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitBitwiseExpression(NimbleParser.BitwiseExpressionContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code parentheseExpression}
 	 * labeled alternative in {@link NimbleParser#atom}.

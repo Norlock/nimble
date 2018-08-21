@@ -77,7 +77,7 @@ condition
 
 modifier: GLOBAL | PACKAGE | INTERNAL ;
 
-variableType: INTEGER_TYPE | STRING_TYPE | BOOLEAN_TYPE ;
+variableType: INTEGER_TYPE | STRING_TYPE | BOOLEAN_TYPE | DOUBLE_TYPE ;
 
 constructorParameters
     : variableType IDENTIFIER (COMMA variableType IDENTIFIER)*
@@ -90,8 +90,7 @@ expression
     | expression op=(LEFT_LESSER_OR_EQUAL | LEFT_GREATER_OR_EQUAL
         | LEFT_LESSER | LEFT_GREATER) expression                                        #relationalExpression
     | expression op=(EQUAL | NOT_EQUAL) expression                                      #equalityExpression
-    | expression AND expression                                                         #andExpression
-    | expression OR expression                                                          #orExpression
+    | expression op=(AND | OR) expression                                               #bitwiseExpression
     | atom                                                                              #atomExpression
     ;
 

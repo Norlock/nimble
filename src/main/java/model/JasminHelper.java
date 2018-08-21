@@ -49,8 +49,7 @@ public final class JasminHelper {
             varAndParamsCount = 99;
 
         return ".class public NimbleProject\n" +
-                "    .super java/lang/Object\n" +
-                "\n" +
+                "    .super java/lang/Object\n\n" +
                 "    ; Default constructor (empty constructor)\n" +
                 "    .method public <init>()V\n" +
                 "        aload_0                                     ; Loads \"this\" on the stack\n" +

@@ -40,17 +40,32 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
             value = new ValueData(varType, ctx);
 
         int varIndex = JasminHelper.getVariableIndex();
-        ParserData parserData = setVariableAssignment(ctx, varType, varIndex, value);
+        ParserData parserData = getVariableAssignment(ctx, varType, varIndex, value);
         variables.put(id, new VariableData(ctx, varType, varIndex));
         JasminHelper.updateVariableIndex(varType);
 
         return parserData;
     }
 
-    private ParserData setVariableAssignment(ParserRuleContext ctx, int varType, int varIndex, BaseValue value) {
+    private ParserData getVariableAssignment(ParserRuleContext ctx, int varType, int varIndex, BaseValue value) {
         ParserData parserData = new ParserData(ctx);
-        parserData.appendCode(value);
 
+        if(value instanceof ExpressionData) {
+            ExpressionData expressionData = (ExpressionData) value;
+
+            // Boolean expressions don't always set true or false, e.g. if statements
+            if(expressionData.isBooleanExpression()) {
+                String labelGoto = JasminHelper.getNewLabel();
+
+                value.loadBooleanOnStack(true);
+                value.gotoLabel(labelGoto);
+                value.setLabel(expressionData.getLabel());
+                value.loadBooleanOnStack(false);
+                value.setLabel(labelGoto);
+            }
+        }
+
+        parserData.appendCode(value);
         int valueType = value.getDataType();
 
         if(JasminHelper.castToDouble(valueType, varType)) {
@@ -85,7 +100,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
         VariableData variable = getVariable(id, ctx);
 
         BaseValue baseValue = (BaseValue) this.visit(ctx.expression());
-        return setVariableAssignment(ctx, variable.getDataType(), variable.getVarIndex(), baseValue);
+        return getVariableAssignment(ctx, variable.getDataType(), variable.getVarIndex(), baseValue);
     }
 
     /**
@@ -116,6 +131,10 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
         return parserData;
     }
 
+    @Override
+    public ParserData visitParentheseExpression(NimbleParser.ParentheseExpressionContext ctx) {
+        return this.visit(ctx.expression());
+    }
 
     /**
      * Visit a parse tree produced by {@link NimbleParser#functionCall}.
@@ -229,28 +248,17 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
         return super.visitConstructorParameters(ctx);
     }
 
-    /**
-     * Visit a parse tree produced by the {@code orExpression}
-     * labeled alternative in {@link NimbleParser#expression}.
-     *
-     * @param ctx the parse tree
-     * @return the visitor result
-     */
     @Override
-    public ParserData visitOrExpression(NimbleParser.OrExpressionContext ctx) {
-        return super.visitOrExpression(ctx);
-    }
+    public ParserData visitBitwiseExpression(NimbleParser.BitwiseExpressionContext ctx) {
+        ExpressionData expressionData;
+        BaseValue left = (BaseValue) this.visit(ctx.expression(0));
+        BaseValue right = (BaseValue) this.visit(ctx.expression(1));
+        expressionData = new ExpressionData(ctx, left, right);
+        expressionData.setAndExpression();
+        for(int i = 0; i < ctx.expression().size() - 1; i++) {
 
-    /**
-     * Visit a parse tree produced by the {@code andExpression}
-     * labeled alternative in {@link NimbleParser#expression}.
-     *
-     * @param ctx the parse tree
-     * @return the visitor result
-     */
-    @Override
-    public ParserData visitAndExpression(NimbleParser.AndExpressionContext ctx) {
-        return super.visitAndExpression(ctx);
+        }
+        return expressionData;
     }
 
     @Override

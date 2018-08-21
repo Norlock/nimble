@@ -445,7 +445,7 @@ public class NimbleParser extends Parser {
 			match(LEFT_PARENTHESE);
 			setState(77);
 			_la = _input.LA(1);
-			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << STRING_TYPE) | (1L << INTEGER_TYPE) | (1L << BOOLEAN_TYPE))) != 0)) {
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << STRING_TYPE) | (1L << INTEGER_TYPE) | (1L << DOUBLE_TYPE) | (1L << BOOLEAN_TYPE))) != 0)) {
 				{
 				setState(76);
 				constructorParameters();
@@ -507,7 +507,7 @@ public class NimbleParser extends Parser {
 			setState(85);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << STRING_TYPE) | (1L << INTEGER_TYPE) | (1L << BOOLEAN_TYPE) | (1L << IF) | (1L << WHILE) | (1L << PRINT) | (1L << IDENTIFIER))) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << STRING_TYPE) | (1L << INTEGER_TYPE) | (1L << DOUBLE_TYPE) | (1L << BOOLEAN_TYPE) | (1L << IF) | (1L << WHILE) | (1L << PRINT) | (1L << IDENTIFIER))) != 0)) {
 				{
 				{
 				setState(82);
@@ -982,6 +982,7 @@ public class NimbleParser extends Parser {
 			switch (_input.LA(1)) {
 			case STRING_TYPE:
 			case INTEGER_TYPE:
+			case DOUBLE_TYPE:
 			case BOOLEAN_TYPE:
 				enterOuterAlt(_localctx, 1);
 				{
@@ -1211,6 +1212,7 @@ public class NimbleParser extends Parser {
 		public TerminalNode INTEGER_TYPE() { return getToken(NimbleParser.INTEGER_TYPE, 0); }
 		public TerminalNode STRING_TYPE() { return getToken(NimbleParser.STRING_TYPE, 0); }
 		public TerminalNode BOOLEAN_TYPE() { return getToken(NimbleParser.BOOLEAN_TYPE, 0); }
+		public TerminalNode DOUBLE_TYPE() { return getToken(NimbleParser.DOUBLE_TYPE, 0); }
 		public VariableTypeContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -1239,7 +1241,7 @@ public class NimbleParser extends Parser {
 			{
 			setState(151);
 			_la = _input.LA(1);
-			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << STRING_TYPE) | (1L << INTEGER_TYPE) | (1L << BOOLEAN_TYPE))) != 0)) ) {
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << STRING_TYPE) | (1L << INTEGER_TYPE) | (1L << DOUBLE_TYPE) | (1L << BOOLEAN_TYPE))) != 0)) ) {
 			_errHandler.recoverInline(this);
 			} else {
 				consume();
@@ -1342,52 +1344,6 @@ public class NimbleParser extends Parser {
 		public ExpressionContext() { }
 		public void copyFrom(ExpressionContext ctx) {
 			super.copyFrom(ctx);
-		}
-	}
-	public static class OrExpressionContext extends ExpressionContext {
-		public List<ExpressionContext> expression() {
-			return getRuleContexts(ExpressionContext.class);
-		}
-		public ExpressionContext expression(int i) {
-			return getRuleContext(ExpressionContext.class,i);
-		}
-		public TerminalNode OR() { return getToken(NimbleParser.OR, 0); }
-		public OrExpressionContext(ExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NimbleParserListener ) ((NimbleParserListener)listener).enterOrExpression(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NimbleParserListener ) ((NimbleParserListener)listener).exitOrExpression(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NimbleParserVisitor ) return ((NimbleParserVisitor<? extends T>)visitor).visitOrExpression(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-	public static class AndExpressionContext extends ExpressionContext {
-		public List<ExpressionContext> expression() {
-			return getRuleContexts(ExpressionContext.class);
-		}
-		public ExpressionContext expression(int i) {
-			return getRuleContext(ExpressionContext.class,i);
-		}
-		public TerminalNode AND() { return getToken(NimbleParser.AND, 0); }
-		public AndExpressionContext(ExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NimbleParserListener ) ((NimbleParserListener)listener).enterAndExpression(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NimbleParserListener ) ((NimbleParserListener)listener).exitAndExpression(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NimbleParserVisitor ) return ((NimbleParserVisitor<? extends T>)visitor).visitAndExpression(this);
-			else return visitor.visitChildren(this);
 		}
 	}
 	public static class AtomExpressionContext extends ExpressionContext {
@@ -1538,6 +1494,31 @@ public class NimbleParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
+	public static class BitwiseExpressionContext extends ExpressionContext {
+		public Token op;
+		public List<ExpressionContext> expression() {
+			return getRuleContexts(ExpressionContext.class);
+		}
+		public ExpressionContext expression(int i) {
+			return getRuleContext(ExpressionContext.class,i);
+		}
+		public TerminalNode AND() { return getToken(NimbleParser.AND, 0); }
+		public TerminalNode OR() { return getToken(NimbleParser.OR, 0); }
+		public BitwiseExpressionContext(ExpressionContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof NimbleParserListener ) ((NimbleParserListener)listener).enterBitwiseExpression(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof NimbleParserListener ) ((NimbleParserListener)listener).exitBitwiseExpression(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NimbleParserVisitor ) return ((NimbleParserVisitor<? extends T>)visitor).visitBitwiseExpression(this);
+			else return visitor.visitChildren(this);
+		}
+	}
 
 	public final ExpressionContext expression() throws RecognitionException {
 		return expression(0);
@@ -1566,7 +1547,7 @@ public class NimbleParser extends Parser {
 				setState(165);
 				match(NOT);
 				setState(166);
-				expression(8);
+				expression(7);
 				}
 				break;
 			case NULL:
@@ -1589,7 +1570,7 @@ public class NimbleParser extends Parser {
 				throw new NoViableAltException(this);
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(194);
+			setState(191);
 			_errHandler.sync(this);
 			_alt = getInterpreter().adaptivePredict(_input,14,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
@@ -1597,14 +1578,14 @@ public class NimbleParser extends Parser {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
 					_prevctx = _localctx;
 					{
-					setState(192);
+					setState(189);
 					switch ( getInterpreter().adaptivePredict(_input,13,_ctx) ) {
 					case 1:
 						{
 						_localctx = new MultiplicationExpressionContext(new ExpressionContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expression);
 						setState(170);
-						if (!(precpred(_ctx, 6))) throw new FailedPredicateException(this, "precpred(_ctx, 6)");
+						if (!(precpred(_ctx, 5))) throw new FailedPredicateException(this, "precpred(_ctx, 5)");
 						setState(171);
 						((MultiplicationExpressionContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
@@ -1614,7 +1595,7 @@ public class NimbleParser extends Parser {
 							consume();
 						}
 						setState(172);
-						expression(7);
+						expression(6);
 						}
 						break;
 					case 2:
@@ -1622,7 +1603,7 @@ public class NimbleParser extends Parser {
 						_localctx = new RelationalExpressionContext(new ExpressionContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expression);
 						setState(173);
-						if (!(precpred(_ctx, 5))) throw new FailedPredicateException(this, "precpred(_ctx, 5)");
+						if (!(precpred(_ctx, 4))) throw new FailedPredicateException(this, "precpred(_ctx, 4)");
 						setState(174);
 						((RelationalExpressionContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
@@ -1632,7 +1613,7 @@ public class NimbleParser extends Parser {
 							consume();
 						}
 						setState(175);
-						expression(6);
+						expression(5);
 						}
 						break;
 					case 3:
@@ -1640,7 +1621,7 @@ public class NimbleParser extends Parser {
 						_localctx = new EqualityExpressionContext(new ExpressionContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expression);
 						setState(176);
-						if (!(precpred(_ctx, 4))) throw new FailedPredicateException(this, "precpred(_ctx, 4)");
+						if (!(precpred(_ctx, 3))) throw new FailedPredicateException(this, "precpred(_ctx, 3)");
 						setState(177);
 						((EqualityExpressionContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
@@ -1650,40 +1631,34 @@ public class NimbleParser extends Parser {
 							consume();
 						}
 						setState(178);
-						expression(5);
+						expression(4);
 						}
 						break;
 					case 4:
 						{
-						_localctx = new AndExpressionContext(new ExpressionContext(_parentctx, _parentState));
+						_localctx = new BitwiseExpressionContext(new ExpressionContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expression);
 						setState(179);
-						if (!(precpred(_ctx, 3))) throw new FailedPredicateException(this, "precpred(_ctx, 3)");
+						if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
 						setState(180);
-						match(AND);
+						((BitwiseExpressionContext)_localctx).op = _input.LT(1);
+						_la = _input.LA(1);
+						if ( !(_la==AND || _la==OR) ) {
+							((BitwiseExpressionContext)_localctx).op = (Token)_errHandler.recoverInline(this);
+						} else {
+							consume();
+						}
 						setState(181);
-						expression(4);
+						expression(3);
 						}
 						break;
 					case 5:
 						{
-						_localctx = new OrExpressionContext(new ExpressionContext(_parentctx, _parentState));
-						pushNewRecursionContext(_localctx, _startState, RULE_expression);
-						setState(182);
-						if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
-						setState(183);
-						match(OR);
-						setState(184);
-						expression(3);
-						}
-						break;
-					case 6:
-						{
 						_localctx = new AdditiveExpressionContext(new ExpressionContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expression);
-						setState(185);
-						if (!(precpred(_ctx, 7))) throw new FailedPredicateException(this, "precpred(_ctx, 7)");
-						setState(188); 
+						setState(182);
+						if (!(precpred(_ctx, 6))) throw new FailedPredicateException(this, "precpred(_ctx, 6)");
+						setState(185); 
 						_errHandler.sync(this);
 						_alt = 1;
 						do {
@@ -1691,7 +1666,7 @@ public class NimbleParser extends Parser {
 							case 1:
 								{
 								{
-								setState(186);
+								setState(183);
 								((AdditiveExpressionContext)_localctx).op = _input.LT(1);
 								_la = _input.LA(1);
 								if ( !(_la==ADD || _la==SUBSTRACT) ) {
@@ -1699,7 +1674,7 @@ public class NimbleParser extends Parser {
 								} else {
 									consume();
 								}
-								setState(187);
+								setState(184);
 								expression(0);
 								}
 								}
@@ -1707,7 +1682,7 @@ public class NimbleParser extends Parser {
 							default:
 								throw new NoViableAltException(this);
 							}
-							setState(190); 
+							setState(187); 
 							_errHandler.sync(this);
 							_alt = getInterpreter().adaptivePredict(_input,12,_ctx);
 						} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
@@ -1716,7 +1691,7 @@ public class NimbleParser extends Parser {
 					}
 					} 
 				}
-				setState(196);
+				setState(193);
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,14,_ctx);
 			}
@@ -1874,17 +1849,17 @@ public class NimbleParser extends Parser {
 		enterRule(_localctx, 42, RULE_atom);
 		int _la;
 		try {
-			setState(207);
+			setState(204);
 			switch (_input.LA(1)) {
 			case LEFT_PARENTHESE:
 				_localctx = new ParentheseExpressionContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(197);
+				setState(194);
 				match(LEFT_PARENTHESE);
-				setState(198);
+				setState(195);
 				expression(0);
-				setState(199);
+				setState(196);
 				match(RIGHT_PARENTHESE);
 				}
 				break;
@@ -1892,7 +1867,7 @@ public class NimbleParser extends Parser {
 				_localctx = new IntegerAtomContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(201);
+				setState(198);
 				match(INTEGER);
 				}
 				break;
@@ -1901,7 +1876,7 @@ public class NimbleParser extends Parser {
 				_localctx = new BooleanAtomContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(202);
+				setState(199);
 				_la = _input.LA(1);
 				if ( !(_la==TRUE || _la==FALSE) ) {
 				_errHandler.recoverInline(this);
@@ -1914,7 +1889,7 @@ public class NimbleParser extends Parser {
 				_localctx = new IdentifierAtomContext(_localctx);
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(203);
+				setState(200);
 				match(IDENTIFIER);
 				}
 				break;
@@ -1922,7 +1897,7 @@ public class NimbleParser extends Parser {
 				_localctx = new StringAtomContext(_localctx);
 				enterOuterAlt(_localctx, 5);
 				{
-				setState(204);
+				setState(201);
 				match(STRING);
 				}
 				break;
@@ -1930,7 +1905,7 @@ public class NimbleParser extends Parser {
 				_localctx = new DoubleAtomContext(_localctx);
 				enterOuterAlt(_localctx, 6);
 				{
-				setState(205);
+				setState(202);
 				match(DOUBLE);
 				}
 				break;
@@ -1938,7 +1913,7 @@ public class NimbleParser extends Parser {
 				_localctx = new NullAtomContext(_localctx);
 				enterOuterAlt(_localctx, 7);
 				{
-				setState(206);
+				setState(203);
 				match(NULL);
 				}
 				break;
@@ -1967,23 +1942,21 @@ public class NimbleParser extends Parser {
 	private boolean expression_sempred(ExpressionContext _localctx, int predIndex) {
 		switch (predIndex) {
 		case 0:
-			return precpred(_ctx, 6);
-		case 1:
 			return precpred(_ctx, 5);
-		case 2:
+		case 1:
 			return precpred(_ctx, 4);
-		case 3:
+		case 2:
 			return precpred(_ctx, 3);
-		case 4:
+		case 3:
 			return precpred(_ctx, 2);
-		case 5:
-			return precpred(_ctx, 7);
+		case 4:
+			return precpred(_ctx, 6);
 		}
 		return true;
 	}
 
 	public static final String _serializedATN =
-		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\67\u00d4\4\2\t\2"+
+		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\67\u00d1\4\2\t\2"+
 		"\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13"+
 		"\t\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22"+
 		"\4\23\t\23\4\24\t\24\4\25\t\25\4\26\t\26\4\27\t\27\3\2\7\2\60\n\2\f\2"+
@@ -1996,59 +1969,57 @@ public class NimbleParser extends Parser {
 		"\20\3\20\3\21\3\21\3\21\3\22\3\22\3\22\3\22\3\23\3\23\3\24\3\24\3\25\3"+
 		"\25\3\25\3\25\3\25\3\25\7\25\u00a2\n\25\f\25\16\25\u00a5\13\25\3\26\3"+
 		"\26\3\26\3\26\5\26\u00ab\n\26\3\26\3\26\3\26\3\26\3\26\3\26\3\26\3\26"+
-		"\3\26\3\26\3\26\3\26\3\26\3\26\3\26\3\26\3\26\3\26\6\26\u00bf\n\26\r\26"+
-		"\16\26\u00c0\7\26\u00c3\n\26\f\26\16\26\u00c6\13\26\3\27\3\27\3\27\3\27"+
-		"\3\27\3\27\3\27\3\27\3\27\3\27\5\27\u00d2\n\27\3\27\2\3*\30\2\4\6\b\n"+
-		"\f\16\20\22\24\26\30\32\34\36 \"$&(*,\2\t\3\2\t\13\4\2\3\4\6\6\3\2#%\4"+
-		"\2\27\30\33\34\3\2\31\32\3\2!\"\3\2/\60\u00da\2\61\3\2\2\2\4?\3\2\2\2"+
-		"\6A\3\2\2\2\bD\3\2\2\2\nJ\3\2\2\2\fM\3\2\2\2\16S\3\2\2\2\20\\\3\2\2\2"+
-		"\22d\3\2\2\2\24o\3\2\2\2\26q\3\2\2\2\30\177\3\2\2\2\32\u0085\3\2\2\2\34"+
-		"\u008b\3\2\2\2\36\u008d\3\2\2\2 \u0090\3\2\2\2\"\u0093\3\2\2\2$\u0097"+
-		"\3\2\2\2&\u0099\3\2\2\2(\u009b\3\2\2\2*\u00aa\3\2\2\2,\u00d1\3\2\2\2."+
-		"\60\5\4\3\2/.\3\2\2\2\60\63\3\2\2\2\61/\3\2\2\2\61\62\3\2\2\2\62\64\3"+
-		"\2\2\2\63\61\3\2\2\2\648\5\6\4\2\65\67\5\4\3\2\66\65\3\2\2\2\67:\3\2\2"+
-		"\28\66\3\2\2\289\3\2\2\29;\3\2\2\2:8\3\2\2\2;<\7\2\2\3<\3\3\2\2\2=@\5"+
-		"\n\6\2>@\5\b\5\2?=\3\2\2\2?>\3\2\2\2@\5\3\2\2\2AB\7\f\2\2BC\5\16\b\2C"+
-		"\7\3\2\2\2DE\5$\23\2EF\5\34\17\2FG\7\64\2\2GH\5\f\7\2HI\5\16\b\2I\t\3"+
-		"\2\2\2JK\5$\23\2KL\5\20\t\2L\13\3\2\2\2MO\7\20\2\2NP\5(\25\2ON\3\2\2\2"+
-		"OP\3\2\2\2PQ\3\2\2\2QR\7\21\2\2R\r\3\2\2\2SW\7\22\2\2TV\5\24\13\2UT\3"+
-		"\2\2\2VY\3\2\2\2WU\3\2\2\2WX\3\2\2\2XZ\3\2\2\2YW\3\2\2\2Z[\7\23\2\2[\17"+
-		"\3\2\2\2\\]\5&\24\2]`\7\64\2\2^_\7\26\2\2_a\5*\26\2`^\3\2\2\2`a\3\2\2"+
-		"\2ab\3\2\2\2bc\7\r\2\2c\21\3\2\2\2de\7\64\2\2ef\7\26\2\2fg\5*\26\2gh\7"+
-		"\r\2\2h\23\3\2\2\2ip\5\20\t\2jp\5\22\n\2kp\5\26\f\2lp\5\30\r\2mp\5\36"+
-		"\20\2np\5\32\16\2oi\3\2\2\2oj\3\2\2\2ok\3\2\2\2ol\3\2\2\2om\3\2\2\2on"+
-		"\3\2\2\2p\25\3\2\2\2qr\7\'\2\2rx\5 \21\2st\7(\2\2tu\7\'\2\2uw\5 \21\2"+
-		"vs\3\2\2\2wz\3\2\2\2xv\3\2\2\2xy\3\2\2\2y}\3\2\2\2zx\3\2\2\2{|\7(\2\2"+
-		"|~\5\16\b\2}{\3\2\2\2}~\3\2\2\2~\27\3\2\2\2\177\u0080\7\64\2\2\u0080\u0081"+
-		"\7\20\2\2\u0081\u0082\5,\27\2\u0082\u0083\7\21\2\2\u0083\u0084\7\r\2\2"+
-		"\u0084\31\3\2\2\2\u0085\u0086\7.\2\2\u0086\u0087\5\"\22\2\u0087\u0088"+
-		"\7\r\2\2\u0088\33\3\2\2\2\u0089\u008c\5&\24\2\u008a\u008c\7\7\2\2\u008b"+
-		"\u0089\3\2\2\2\u008b\u008a\3\2\2\2\u008c\35\3\2\2\2\u008d\u008e\7,\2\2"+
-		"\u008e\u008f\5 \21\2\u008f\37\3\2\2\2\u0090\u0091\5\"\22\2\u0091\u0092"+
-		"\5\16\b\2\u0092!\3\2\2\2\u0093\u0094\7\20\2\2\u0094\u0095\5*\26\2\u0095"+
-		"\u0096\7\21\2\2\u0096#\3\2\2\2\u0097\u0098\t\2\2\2\u0098%\3\2\2\2\u0099"+
-		"\u009a\t\3\2\2\u009a\'\3\2\2\2\u009b\u009c\5&\24\2\u009c\u00a3\7\64\2"+
-		"\2\u009d\u009e\7\16\2\2\u009e\u009f\5&\24\2\u009f\u00a0\7\64\2\2\u00a0"+
-		"\u00a2\3\2\2\2\u00a1\u009d\3\2\2\2\u00a2\u00a5\3\2\2\2\u00a3\u00a1\3\2"+
-		"\2\2\u00a3\u00a4\3\2\2\2\u00a4)\3\2\2\2\u00a5\u00a3\3\2\2\2\u00a6\u00a7"+
-		"\b\26\1\2\u00a7\u00a8\7&\2\2\u00a8\u00ab\5*\26\n\u00a9\u00ab\5,\27\2\u00aa"+
-		"\u00a6\3\2\2\2\u00aa\u00a9\3\2\2\2\u00ab\u00c4\3\2\2\2\u00ac\u00ad\f\b"+
-		"\2\2\u00ad\u00ae\t\4\2\2\u00ae\u00c3\5*\26\t\u00af\u00b0\f\7\2\2\u00b0"+
-		"\u00b1\t\5\2\2\u00b1\u00c3\5*\26\b\u00b2\u00b3\f\6\2\2\u00b3\u00b4\t\6"+
-		"\2\2\u00b4\u00c3\5*\26\7\u00b5\u00b6\f\5\2\2\u00b6\u00b7\7\35\2\2\u00b7"+
-		"\u00c3\5*\26\6\u00b8\u00b9\f\4\2\2\u00b9\u00ba\7\36\2\2\u00ba\u00c3\5"+
-		"*\26\5\u00bb\u00be\f\t\2\2\u00bc\u00bd\t\7\2\2\u00bd\u00bf\5*\26\2\u00be"+
-		"\u00bc\3\2\2\2\u00bf\u00c0\3\2\2\2\u00c0\u00be\3\2\2\2\u00c0\u00c1\3\2"+
-		"\2\2\u00c1\u00c3\3\2\2\2\u00c2\u00ac\3\2\2\2\u00c2\u00af\3\2\2\2\u00c2"+
-		"\u00b2\3\2\2\2\u00c2\u00b5\3\2\2\2\u00c2\u00b8\3\2\2\2\u00c2\u00bb\3\2"+
-		"\2\2\u00c3\u00c6\3\2\2\2\u00c4\u00c2\3\2\2\2\u00c4\u00c5\3\2\2\2\u00c5"+
-		"+\3\2\2\2\u00c6\u00c4\3\2\2\2\u00c7\u00c8\7\20\2\2\u00c8\u00c9\5*\26\2"+
-		"\u00c9\u00ca\7\21\2\2\u00ca\u00d2\3\2\2\2\u00cb\u00d2\7\61\2\2\u00cc\u00d2"+
-		"\t\b\2\2\u00cd\u00d2\7\64\2\2\u00ce\u00d2\7\63\2\2\u00cf\u00d2\7\62\2"+
-		"\2\u00d0\u00d2\7\b\2\2\u00d1\u00c7\3\2\2\2\u00d1\u00cb\3\2\2\2\u00d1\u00cc"+
-		"\3\2\2\2\u00d1\u00cd\3\2\2\2\u00d1\u00ce\3\2\2\2\u00d1\u00cf\3\2\2\2\u00d1"+
-		"\u00d0\3\2\2\2\u00d2-\3\2\2\2\22\618?OW`ox}\u008b\u00a3\u00aa\u00c0\u00c2"+
-		"\u00c4\u00d1";
+		"\3\26\3\26\3\26\3\26\3\26\3\26\3\26\6\26\u00bc\n\26\r\26\16\26\u00bd\7"+
+		"\26\u00c0\n\26\f\26\16\26\u00c3\13\26\3\27\3\27\3\27\3\27\3\27\3\27\3"+
+		"\27\3\27\3\27\3\27\5\27\u00cf\n\27\3\27\2\3*\30\2\4\6\b\n\f\16\20\22\24"+
+		"\26\30\32\34\36 \"$&(*,\2\n\3\2\t\13\3\2\3\6\3\2#%\4\2\27\30\33\34\3\2"+
+		"\31\32\3\2\35\36\3\2!\"\3\2/\60\u00d6\2\61\3\2\2\2\4?\3\2\2\2\6A\3\2\2"+
+		"\2\bD\3\2\2\2\nJ\3\2\2\2\fM\3\2\2\2\16S\3\2\2\2\20\\\3\2\2\2\22d\3\2\2"+
+		"\2\24o\3\2\2\2\26q\3\2\2\2\30\177\3\2\2\2\32\u0085\3\2\2\2\34\u008b\3"+
+		"\2\2\2\36\u008d\3\2\2\2 \u0090\3\2\2\2\"\u0093\3\2\2\2$\u0097\3\2\2\2"+
+		"&\u0099\3\2\2\2(\u009b\3\2\2\2*\u00aa\3\2\2\2,\u00ce\3\2\2\2.\60\5\4\3"+
+		"\2/.\3\2\2\2\60\63\3\2\2\2\61/\3\2\2\2\61\62\3\2\2\2\62\64\3\2\2\2\63"+
+		"\61\3\2\2\2\648\5\6\4\2\65\67\5\4\3\2\66\65\3\2\2\2\67:\3\2\2\28\66\3"+
+		"\2\2\289\3\2\2\29;\3\2\2\2:8\3\2\2\2;<\7\2\2\3<\3\3\2\2\2=@\5\n\6\2>@"+
+		"\5\b\5\2?=\3\2\2\2?>\3\2\2\2@\5\3\2\2\2AB\7\f\2\2BC\5\16\b\2C\7\3\2\2"+
+		"\2DE\5$\23\2EF\5\34\17\2FG\7\64\2\2GH\5\f\7\2HI\5\16\b\2I\t\3\2\2\2JK"+
+		"\5$\23\2KL\5\20\t\2L\13\3\2\2\2MO\7\20\2\2NP\5(\25\2ON\3\2\2\2OP\3\2\2"+
+		"\2PQ\3\2\2\2QR\7\21\2\2R\r\3\2\2\2SW\7\22\2\2TV\5\24\13\2UT\3\2\2\2VY"+
+		"\3\2\2\2WU\3\2\2\2WX\3\2\2\2XZ\3\2\2\2YW\3\2\2\2Z[\7\23\2\2[\17\3\2\2"+
+		"\2\\]\5&\24\2]`\7\64\2\2^_\7\26\2\2_a\5*\26\2`^\3\2\2\2`a\3\2\2\2ab\3"+
+		"\2\2\2bc\7\r\2\2c\21\3\2\2\2de\7\64\2\2ef\7\26\2\2fg\5*\26\2gh\7\r\2\2"+
+		"h\23\3\2\2\2ip\5\20\t\2jp\5\22\n\2kp\5\26\f\2lp\5\30\r\2mp\5\36\20\2n"+
+		"p\5\32\16\2oi\3\2\2\2oj\3\2\2\2ok\3\2\2\2ol\3\2\2\2om\3\2\2\2on\3\2\2"+
+		"\2p\25\3\2\2\2qr\7\'\2\2rx\5 \21\2st\7(\2\2tu\7\'\2\2uw\5 \21\2vs\3\2"+
+		"\2\2wz\3\2\2\2xv\3\2\2\2xy\3\2\2\2y}\3\2\2\2zx\3\2\2\2{|\7(\2\2|~\5\16"+
+		"\b\2}{\3\2\2\2}~\3\2\2\2~\27\3\2\2\2\177\u0080\7\64\2\2\u0080\u0081\7"+
+		"\20\2\2\u0081\u0082\5,\27\2\u0082\u0083\7\21\2\2\u0083\u0084\7\r\2\2\u0084"+
+		"\31\3\2\2\2\u0085\u0086\7.\2\2\u0086\u0087\5\"\22\2\u0087\u0088\7\r\2"+
+		"\2\u0088\33\3\2\2\2\u0089\u008c\5&\24\2\u008a\u008c\7\7\2\2\u008b\u0089"+
+		"\3\2\2\2\u008b\u008a\3\2\2\2\u008c\35\3\2\2\2\u008d\u008e\7,\2\2\u008e"+
+		"\u008f\5 \21\2\u008f\37\3\2\2\2\u0090\u0091\5\"\22\2\u0091\u0092\5\16"+
+		"\b\2\u0092!\3\2\2\2\u0093\u0094\7\20\2\2\u0094\u0095\5*\26\2\u0095\u0096"+
+		"\7\21\2\2\u0096#\3\2\2\2\u0097\u0098\t\2\2\2\u0098%\3\2\2\2\u0099\u009a"+
+		"\t\3\2\2\u009a\'\3\2\2\2\u009b\u009c\5&\24\2\u009c\u00a3\7\64\2\2\u009d"+
+		"\u009e\7\16\2\2\u009e\u009f\5&\24\2\u009f\u00a0\7\64\2\2\u00a0\u00a2\3"+
+		"\2\2\2\u00a1\u009d\3\2\2\2\u00a2\u00a5\3\2\2\2\u00a3\u00a1\3\2\2\2\u00a3"+
+		"\u00a4\3\2\2\2\u00a4)\3\2\2\2\u00a5\u00a3\3\2\2\2\u00a6\u00a7\b\26\1\2"+
+		"\u00a7\u00a8\7&\2\2\u00a8\u00ab\5*\26\t\u00a9\u00ab\5,\27\2\u00aa\u00a6"+
+		"\3\2\2\2\u00aa\u00a9\3\2\2\2\u00ab\u00c1\3\2\2\2\u00ac\u00ad\f\7\2\2\u00ad"+
+		"\u00ae\t\4\2\2\u00ae\u00c0\5*\26\b\u00af\u00b0\f\6\2\2\u00b0\u00b1\t\5"+
+		"\2\2\u00b1\u00c0\5*\26\7\u00b2\u00b3\f\5\2\2\u00b3\u00b4\t\6\2\2\u00b4"+
+		"\u00c0\5*\26\6\u00b5\u00b6\f\4\2\2\u00b6\u00b7\t\7\2\2\u00b7\u00c0\5*"+
+		"\26\5\u00b8\u00bb\f\b\2\2\u00b9\u00ba\t\b\2\2\u00ba\u00bc\5*\26\2\u00bb"+
+		"\u00b9\3\2\2\2\u00bc\u00bd\3\2\2\2\u00bd\u00bb\3\2\2\2\u00bd\u00be\3\2"+
+		"\2\2\u00be\u00c0\3\2\2\2\u00bf\u00ac\3\2\2\2\u00bf\u00af\3\2\2\2\u00bf"+
+		"\u00b2\3\2\2\2\u00bf\u00b5\3\2\2\2\u00bf\u00b8\3\2\2\2\u00c0\u00c3\3\2"+
+		"\2\2\u00c1\u00bf\3\2\2\2\u00c1\u00c2\3\2\2\2\u00c2+\3\2\2\2\u00c3\u00c1"+
+		"\3\2\2\2\u00c4\u00c5\7\20\2\2\u00c5\u00c6\5*\26\2\u00c6\u00c7\7\21\2\2"+
+		"\u00c7\u00cf\3\2\2\2\u00c8\u00cf\7\61\2\2\u00c9\u00cf\t\t\2\2\u00ca\u00cf"+
+		"\7\64\2\2\u00cb\u00cf\7\63\2\2\u00cc\u00cf\7\62\2\2\u00cd\u00cf\7\b\2"+
+		"\2\u00ce\u00c4\3\2\2\2\u00ce\u00c8\3\2\2\2\u00ce\u00c9\3\2\2\2\u00ce\u00ca"+
+		"\3\2\2\2\u00ce\u00cb\3\2\2\2\u00ce\u00cc\3\2\2\2\u00ce\u00cd\3\2\2\2\u00cf"+
+		"-\3\2\2\2\22\618?OW`ox}\u008b\u00a3\u00aa\u00bd\u00bf\u00c1\u00ce";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

@@ -24,7 +24,7 @@ public abstract class BaseValue extends ParserData {
         }
     }
 
-    protected void loadBooleanOnStack(boolean value) {
+    public void loadBooleanOnStack(boolean value) {
         addCommand(JasminConstants.INTEGER_CONST + (value ? JasminConstants.TRUE : JasminConstants.FALSE));
     }
 

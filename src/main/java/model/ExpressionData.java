@@ -31,6 +31,19 @@ public class ExpressionData extends BaseValue {
         this.right = right;
     }
 
+    public void setAndExpression() {
+        if(!left.isType(NimbleParser.BOOLEAN_TYPE) && !right.isType(NimbleParser.BOOLEAN_TYPE)) {
+            throwError("And expressions can only contain boolean expressions.");
+        } else {
+            this.resultType = NimbleParser.BOOLEAN_TYPE;
+            label = JasminHelper.getNewLabel();
+            // TODO left en right hoeven niet naar dezelfde label verwijzen. :)
+            appendCode(left);
+
+            appendCode(right);
+        }
+    }
+
     public void setMultiplicationExpression(int operatorType) {
         if(left.isType(NimbleParser.STRING_TYPE) || left.isType(NimbleParser.BOOLEAN_TYPE)
             || right.isType(NimbleParser.STRING_TYPE) || right.isType(NimbleParser.BOOLEAN_TYPE))
@@ -56,15 +69,13 @@ public class ExpressionData extends BaseValue {
             throwError("This type is not suitable for relation expressions");
         } else {
             loadDataOntoStack(NimbleParser.BOOLEAN_TYPE);
-            label = JasminHelper.getNewLabel();
+            this.label = JasminHelper.getNewLabel();
 
             if(left.isType(NimbleParser.INTEGER_TYPE)) {
                 setRelationalExpressionInteger(operatorType);
             } else if (left.isType(NimbleParser.DOUBLE_TYPE)) {
                 setRelationalExpressionDouble(operatorType);
             }
-
-            finalizeBooleanExpression();
         }
     }
 
@@ -177,8 +188,6 @@ public class ExpressionData extends BaseValue {
             default:
                 throwError("Unknown type");
         }
-
-        finalizeBooleanExpression();
     }
 
     private void setSubtractExpressionInteger() {
@@ -247,22 +256,6 @@ public class ExpressionData extends BaseValue {
         }
     }
 
-    private void finalizeBooleanExpression() {
-        // If this is relational expression for a variable it needs to return the correct value
-        // For if statements it won't return any value
-        if(getCtx().getParent() instanceof NimbleParser.VariableDeclarationContext
-                || getCtx().getParent() instanceof  NimbleParser.VariableAssignmentContext
-                || getCtx().getParent() instanceof  NimbleParser.PrintStatementContext) {
-            String labelGoto = JasminHelper.getNewLabel();
-
-            loadBooleanOnStack(true);
-            gotoLabel(labelGoto);
-            setLabel(label);
-            loadBooleanOnStack(false);
-            setLabel(labelGoto);
-        }
-    }
-
     public String getLabel() {
         return label;
     }
@@ -277,6 +270,7 @@ public class ExpressionData extends BaseValue {
      */
     private void loadDataOntoStack(int resultType) {
         this.resultType = resultType;
+
         appendCode(left);
         if(JasminHelper.castToDouble(left.getDataType(), resultType))
             addCommand(JasminConstants.INT_TO_DOUBLE);

@@ -60,8 +60,7 @@ PRINT: 'print';
 TRUE: 'true';
 FALSE: 'false';
 INTEGER: [0-9]+;
-
-DOUBLE: INTEGER+ ',' INTEGER+;
+DOUBLE: INTEGER+ '.' INTEGER+;
 
 STRING
  : '"' (~["\r\n] | '""')* '"'

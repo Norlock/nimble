@@ -131,20 +131,6 @@ public interface NimbleParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitConstructorParameters(NimbleParser.ConstructorParametersContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code orExpression}
-	 * labeled alternative in {@link NimbleParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitOrExpression(NimbleParser.OrExpressionContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code andExpression}
-	 * labeled alternative in {@link NimbleParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitAndExpression(NimbleParser.AndExpressionContext ctx);
-	/**
 	 * Visit a parse tree produced by the {@code atomExpression}
 	 * labeled alternative in {@link NimbleParser#expression}.
 	 * @param ctx the parse tree
@@ -186,6 +172,13 @@ public interface NimbleParserVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitMultiplicationExpression(NimbleParser.MultiplicationExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code bitwiseExpression}
+	 * labeled alternative in {@link NimbleParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBitwiseExpression(NimbleParser.BitwiseExpressionContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code parentheseExpression}
 	 * labeled alternative in {@link NimbleParser#atom}.
