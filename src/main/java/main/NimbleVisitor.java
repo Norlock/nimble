@@ -59,7 +59,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
 
                 value.loadBooleanOnStack(true);
                 value.gotoLabel(labelGoto);
-                value.setLabel(expressionData.getLabel());
+                value.setLabel(expressionData.getLabel(0));
                 value.loadBooleanOnStack(false);
                 value.setLabel(labelGoto);
             }
@@ -121,7 +121,9 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
 
             parserData.appendCode(expressionData);
             parserData.gotoLabel(gotoLabel); // Label to go to after conditionblock
-            parserData.setLabel(expressionData.getLabel());
+            for(String label : expressionData.getLabels()) {
+                parserData.setLabel(label);
+            }
         }
 
         if(ctx.block() != null)
@@ -256,7 +258,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
         expressionData = new ExpressionData(ctx, left, right);
         expressionData.setAndExpression();
         for(int i = 0; i < ctx.expression().size() - 1; i++) {
-
+// TODO for meerdere && expressions?
         }
         return expressionData;
     }

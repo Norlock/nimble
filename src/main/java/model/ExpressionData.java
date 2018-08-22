@@ -15,7 +15,6 @@ public class ExpressionData extends BaseValue {
     private final BaseValue left;
     private final BaseValue right;
     private int resultType;
-    private String label;
     private ArrayList<String> labels = new ArrayList<>();
 
     public boolean isBooleanExpression() {
@@ -38,6 +37,8 @@ public class ExpressionData extends BaseValue {
         if(!left.isType(NimbleParser.BOOLEAN_TYPE) && !right.isType(NimbleParser.BOOLEAN_TYPE)) {
             throwError("And expressions can only contain boolean expressions.");
         } else {
+            labels.add(((ExpressionData)left).getLabel(0));
+            labels.add(((ExpressionData)right).getLabel(0));
             loadDataOntoStack(NimbleParser.BOOLEAN_TYPE);
         }
     }
@@ -67,8 +68,7 @@ public class ExpressionData extends BaseValue {
             throwError("This type is not suitable for relation expressions");
         } else {
             loadDataOntoStack(NimbleParser.BOOLEAN_TYPE);
-            this.label = JasminHelper.getNewLabel();
-//            labels.add(label);
+            labels.add(JasminHelper.getNewLabel());
 
             if(left.isType(NimbleParser.INTEGER_TYPE)) {
                 setRelationalExpressionInteger(operatorType);
@@ -82,16 +82,16 @@ public class ExpressionData extends BaseValue {
         // Javabytecode uses opposistion
         switch (operatorType) {
             case NimbleParser.LEFT_GREATER: // x > x
-                addCommand(JasminConstants.IF_INTEGER_LEFT_IS_LESSER_OR_EQUAL + label);
+                addCommand(JasminConstants.IF_INTEGER_LEFT_IS_LESSER_OR_EQUAL + labels.get(0));
                 break;
             case NimbleParser.LEFT_GREATER_OR_EQUAL: // x >= x
-                addCommand(JasminConstants.IF_INTEGER_LEFT_IS_LESSER + label);
+                addCommand(JasminConstants.IF_INTEGER_LEFT_IS_LESSER + labels.get(0));
                 break;
             case NimbleParser.LEFT_LESSER: // x < x
-                addCommand(JasminConstants.IF_INTEGER_LEFT_GREATER_OR_EQUAL + label);
+                addCommand(JasminConstants.IF_INTEGER_LEFT_GREATER_OR_EQUAL + labels.get(0));
                 break;
             case NimbleParser.LEFT_LESSER_OR_EQUAL: // x <= x
-                addCommand(JasminConstants.IF_INTEGER_LEFT_IS_GREATER + label);
+                addCommand(JasminConstants.IF_INTEGER_LEFT_IS_GREATER + labels.get(0));
                 break;
         }
     }
@@ -101,19 +101,19 @@ public class ExpressionData extends BaseValue {
         switch (operatorType) {
             case NimbleParser.LEFT_GREATER: // x > x
                 addCommand(JasminConstants.DOUBLE_COMPARE_IF_LEFT_IS_LESS);
-                addCommand(JasminConstants.IF_LESS_OR_EQUAL + label);
+                addCommand(JasminConstants.IF_LESS_OR_EQUAL + labels.get(0));
                 break;
             case NimbleParser.LEFT_GREATER_OR_EQUAL: // x >= x
-                addCommand(JasminConstants.DOUBLE_COMPARE_IF_LEFT_IS_LESS + label);
-                addCommand(JasminConstants.IF_LESS + label);
+                addCommand(JasminConstants.DOUBLE_COMPARE_IF_LEFT_IS_LESS + labels.get(0));
+                addCommand(JasminConstants.IF_LESS + labels.get(0));
                 break;
             case NimbleParser.LEFT_LESSER: // x < x
                 addCommand(JasminConstants.DOUBLE_COMPARE_IF_LEFT_IS_GREATER);
-                addCommand(JasminConstants.IF_GREATER_OR_EQUAL + label);
+                addCommand(JasminConstants.IF_GREATER_OR_EQUAL + labels.get(0));
                 break;
             case NimbleParser.LEFT_LESSER_OR_EQUAL: // x <= x
                 addCommand(JasminConstants.DOUBLE_COMPARE_IF_LEFT_IS_GREATER);
-                addCommand(JasminConstants.IF_GREATER + label);
+                addCommand(JasminConstants.IF_GREATER + labels.get(0));
                 break;
         }
     }
@@ -170,19 +170,19 @@ public class ExpressionData extends BaseValue {
         if(left.getDataType() != right.getDataType())
             throwError("Can't compare two different types of variables");
 
-        label = JasminHelper.getNewLabel();
+        labels.add(JasminHelper.getNewLabel());
         loadDataOntoStack(NimbleParser.BOOLEAN_TYPE); // Compare == boolean
 
         switch (left.getDataType()) {
             case NimbleParser.INTEGER_TYPE:
             case NimbleParser.BOOLEAN_TYPE: // booleans are either 0 or 1
-                compareIntegers(isEqualOperator, label);
+                compareIntegers(isEqualOperator, labels.get(0));
                 break;
             case NimbleParser.DOUBLE_TYPE:
-                compareDoubles(isEqualOperator, label);
+                compareDoubles(isEqualOperator, labels.get(0));
                 break;
             case NimbleParser.STRING_TYPE:
-                compareStrings(isEqualOperator, label);
+                compareStrings(isEqualOperator, labels.get(0));
                 break;
             default:
                 throwError("Unknown type");
@@ -255,8 +255,12 @@ public class ExpressionData extends BaseValue {
         }
     }
 
-    public String getLabel() {
-        return label;
+    public ArrayList<String> getLabels() {
+        return labels;
+    }
+
+    public String getLabel(int index) {
+        return labels.get(index);
     }
 
     @Override
