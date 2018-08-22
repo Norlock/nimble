@@ -98,14 +98,12 @@ public final class JasminConstants {
     public static final String INVOKE_SPECIAL = "invokespecial" + SPACE;
 
     //Invoke methods that are not bound to this class
-    private static final String INVOKE_VIRTUAL = "invokevirtual" + SPACE;
+    public static final String INVOKE_VIRTUAL = "invokevirtual" + SPACE;
     private static final String INVOKE_STATIC = "invokestatic" + SPACE;
     private static final String GET_STATIC = "getstatic" + SPACE;
 
     // push System.out onto the stack
-    public static final String LOAD_SYSO_ONTO_STACK = GET_STATIC + "java/lang/System/out Ljava/io/PrintStream";
-    // Call println
-    public static final String PRINT = INVOKE_VIRTUAL + "java/io/PrintStream/println(Ljava/lang/String;)V";
+    public static final String LOAD_SYSO_ONTO_STACK = GET_STATIC + "java/lang/System.out Ljava/io/PrintStream;";
 
     public static final String COMPARE_STRING = INVOKE_VIRTUAL + "java/lang/String.equals:(Ljava/lang/Object;)Z";
 

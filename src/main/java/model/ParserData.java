@@ -41,6 +41,10 @@ public class ParserData {
         code.add(new JavaByteCommand(command));
     }
 
+    protected void prependCommand(String command) {
+        code.add(0, new JavaByteCommand(command));
+    }
+
     public void addCommand(BranchOffType type, String label) {
         code.add(new BranchOffCommand(type, label));
     }
@@ -49,7 +53,7 @@ public class ParserData {
         code.add(new JavaByteCommand(label + JasminConstants.COLON));
     }
 
-    public void setGoto(String label) {
+    public void setGotoRedirection(String label) {
         code.add(new JavaByteCommand(JasminConstants.GO_TO + label));
     }
 
@@ -72,11 +76,5 @@ public class ParserData {
 //        }
 //        jasminCode.add(JasminConstants.PRINT);
 //    }
-
-    public void print(ArrayList<JavaByteCommand> code) {
-        code.add(new JavaByteCommand(JasminConstants.LOAD_SYSO_ONTO_STACK));
-        this.code.addAll(code); // THIS todo
-        code.add(new JavaByteCommand(JasminConstants.PRINT));
-    }
 
 }

@@ -60,6 +60,6 @@ public final class JasminHelper {
                 "    ; Method definition for public static void main(String[] args)\n" +
                 "    .method public static main([Ljava/lang/String;)V\n" +
                 "        .limit stack " + stackSize + "\n" +
-                "        .limit locals " + varAndParamsCount + "\n\n";
+                "        .limit locals " + varAndParamsCount + "\n";
     }
 }

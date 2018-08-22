@@ -1,5 +1,6 @@
 package model;
 
+import generated.NimbleParser;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 
@@ -36,4 +37,21 @@ public abstract class BaseValue extends ParserData {
         addCommand(JasminConstants.STRING_ADD + value);
     }
 
+
+    public void print() {
+        prependCommand(JasminConstants.LOAD_SYSO_ONTO_STACK);
+
+        // Call println
+        String print = JasminConstants.INVOKE_VIRTUAL + "java/io/PrintStream/println(";
+        if(isType(NimbleParser.STRING_TYPE)) {
+            print += "Ljava/lang/String;";
+        } else if(isType(NimbleParser.INTEGER_TYPE)) {
+            print += "I";
+        } else if(isType(NimbleParser.DOUBLE_TYPE)) {
+            print += "D";
+        } else {
+            print += "Z";
+        }
+        addCommand(print + ")V");
+    }
 }

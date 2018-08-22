@@ -5,6 +5,7 @@ import generated.NimbleParserBaseVisitor;
 import model.*;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.HashMap;
@@ -23,6 +24,13 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
         }
 
         return nimbleVariable;
+    }
+
+    // TODO
+    @Override
+    public ParserData visitParse(NimbleParser.ParseContext ctx) {
+        ParserData parserData = super.visit(ctx.main());
+        return parserData;
     }
 
     @Override
@@ -58,7 +66,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
                 String labelGoto = JasminHelper.getNewLabel();
 
                 value.loadBooleanOnStack(true);
-                value.setGoto(labelGoto);
+                value.setGotoRedirection(labelGoto);
                 value.setLabel(expressionData.getLabel());
                 value.loadBooleanOnStack(false);
                 value.setLabel(labelGoto);
@@ -118,7 +126,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
             ExpressionData expressionData = (ExpressionData) this.visit(ctx.conditionBlock(i));
 
             parserData.appendCode(expressionData);
-            parserData.setGoto(gotoLabel); // Label to go to after conditionblock
+            parserData.setGotoRedirection(gotoLabel); // Label to go to after conditionblock
             parserData.setLabel(expressionData.getLabel());
         }
 
@@ -168,20 +176,8 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
 
     @Override
     public ParserData visitPrintStatement(NimbleParser.PrintStatementContext ctx) {
-        ParserData data = this.visit(ctx.condition());
-        if (data == null) {
-            throw new ParseException(ctx, "Can't print uninitialized variable.");
-        }
-
-//        ParserData parserData = new ParserData();
-//        if(data instanceof ParserData) {
-//            parserData.print(data.getJasminCode());
-//        } else if (data instanceof ValueData) {
-//            parserData.print((ValueData) data);
-//        } else {
-//            throw new RuntimeException("Unknown data class");
-//        }
-
+        BaseValue data = (BaseValue) this.visit(ctx.condition());
+        data.print();
         return data;
     }
 
@@ -214,17 +210,6 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
     @Override
     public ParserData visitCondition(NimbleParser.ConditionContext ctx) {
         return this.visit(ctx.expression());
-    }
-
-    /**
-     * Visit a parse tree produced by {@link NimbleParser#modifier}.
-     *
-     * @param ctx the parse tree
-     * @return the visitor result
-     */
-    @Override
-    public ParserData visitModifier(NimbleParser.ModifierContext ctx) {
-        return super.visitModifier(ctx);
     }
 
     /**
@@ -262,7 +247,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
         }
 
         for(int i = 0; i < ctx.expression().size() - 1; i++) {
-// TODO for meerdere && expressions?
+            // TODO for meerdere && || expressions?
         }
         return expressionData;
     }
@@ -328,7 +313,27 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
      */
     @Override
     public ParserData visitNotExpression(NimbleParser.NotExpressionContext ctx) {
-        return super.visitNotExpression(ctx);
+        BaseValue value = (BaseValue) this.visit(ctx.expression());
+        String gotoLbl = JasminHelper.getNewLabel();
+
+        if(value.getDataType() != NimbleParser.BOOLEAN_TYPE) {
+            value.throwError("Not expression only allowed for boolean types");
+        } else if (value instanceof ExpressionData) {
+            value.loadBooleanOnStack(false);
+            value.setGotoRedirection(gotoLbl);
+            value.setLabel(((ExpressionData) value).getLabel());
+            value.loadBooleanOnStack(true);
+            value.setLabel(gotoLbl);
+        } else {
+            String branchOffLbl = JasminHelper.getNewLabel();
+            value.addCommand(BranchOffType.IF_NOT_EQUAL, branchOffLbl);
+            value.loadBooleanOnStack(true);
+            value.setGotoRedirection(gotoLbl);
+            value.setLabel(branchOffLbl);
+            value.loadBooleanOnStack(false);
+            value.setLabel(gotoLbl);
+        }
+        return value;
     }
 
     @Override
