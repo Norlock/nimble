@@ -9,7 +9,7 @@ main {
     bool jemoeder = (2 < 3);
     if((a > b) && (a > b)) {
         int i = 4;
-    } else if (b == c) {
+    } else if (a > b || a > b) {
         string j = "jaaaa";
     } else {
         string h = "jaaaa";

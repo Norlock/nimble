@@ -3,6 +3,7 @@ package model;
 import generated.NimbleParser;
 import main.ParseException;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.misc.Pair;
 
 import java.util.ArrayList;
 
@@ -13,7 +14,7 @@ import java.util.ArrayList;
 public class ParserData {
 
     private final ParserRuleContext ctx;
-    private final ArrayList<String> code = new ArrayList<>();
+    private final ArrayList<JavaByteCommand> code = new ArrayList<>();
 
     public ParserData(ParserRuleContext ctx) {
         this.ctx = ctx;
@@ -23,7 +24,7 @@ public class ParserData {
         throw new ParseException(ctx, errorMsg);
     }
 
-    public ArrayList<String> getCode() {
+    public ArrayList<JavaByteCommand> getCode() {
         return code;
     }
 
@@ -37,15 +38,23 @@ public class ParserData {
 
 
     public void addCommand(String command) {
-        code.add(command);
+        code.add(new JavaByteCommand(command));
+    }
+
+    public void addCommand(BranchOffType type, String label) {
+        code.add(new BranchOffCommand(type, label));
     }
 
     public void setLabel(String label) {
-        code.add(label + JasminConstants.COLON);
+        code.add(new JavaByteCommand(label + JasminConstants.COLON));
     }
 
-    public void gotoLabel(String label) {
-        code.add(JasminConstants.GO_TO + label);
+    public void setGoto(String label) {
+        code.add(new JavaByteCommand(JasminConstants.GO_TO + label));
+    }
+
+    public JavaByteCommand getLastCmd() {
+        return code.get(getCode().size() - 1);
     }
 
 //    public void print(ValueData valueData) {
@@ -64,10 +73,10 @@ public class ParserData {
 //        jasminCode.add(JasminConstants.PRINT);
 //    }
 
-    public void print(ArrayList<String> code) {
-        code.add(JasminConstants.LOAD_SYSO_ONTO_STACK);
+    public void print(ArrayList<JavaByteCommand> code) {
+        code.add(new JavaByteCommand(JasminConstants.LOAD_SYSO_ONTO_STACK));
         this.code.addAll(code); // THIS todo
-        code.add(JasminConstants.PRINT);
+        code.add(new JavaByteCommand(JasminConstants.PRINT));
     }
 
 }

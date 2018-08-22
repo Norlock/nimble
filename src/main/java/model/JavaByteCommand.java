@@ -1,31 +1,28 @@
 package model;
 
 public class JavaByteCommand {
-    private String command, label;
+    private String command;
+
+    protected JavaByteCommand() {}
 
     public JavaByteCommand(String command) {
         this.command = command;
-    }
-
-    public JavaByteCommand(String command, String label) {
-        this.command = command;
-        this.label = label;
     }
 
     public void setCommand(String command) {
         this.command = command;
     }
 
-    public void setLabel(String label) {
-        this.label = label;
+    public boolean isBranchOffCommand() {
+        return this instanceof BranchOffCommand;
     }
 
-    public boolean hasLabel() {
-        return label != null;
+    public BranchOffCommand cast() {
+        return (BranchOffCommand) this;
     }
 
     @Override
     public String toString() {
-        return command + label;
+        return command;
     }
 }

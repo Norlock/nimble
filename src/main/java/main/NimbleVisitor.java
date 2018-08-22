@@ -58,8 +58,8 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
                 String labelGoto = JasminHelper.getNewLabel();
 
                 value.loadBooleanOnStack(true);
-                value.gotoLabel(labelGoto);
-                value.setLabel(expressionData.getLabel(0));
+                value.setGoto(labelGoto);
+                value.setLabel(expressionData.getLabel());
                 value.loadBooleanOnStack(false);
                 value.setLabel(labelGoto);
             }
@@ -116,14 +116,10 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
         String gotoLabel = JasminHelper.getNewLabel();
         for(int i = 0; i < ctx.conditionBlock().size(); i++) {
             ExpressionData expressionData = (ExpressionData) this.visit(ctx.conditionBlock(i));
-            if(!expressionData.isBooleanExpression())
-                expressionData.throwError("If statements can only contain boolean expressions");
 
             parserData.appendCode(expressionData);
-            parserData.gotoLabel(gotoLabel); // Label to go to after conditionblock
-            for(String label : expressionData.getLabels()) {
-                parserData.setLabel(label);
-            }
+            parserData.setGoto(gotoLabel); // Label to go to after conditionblock
+            parserData.setLabel(expressionData.getLabel());
         }
 
         if(ctx.block() != null)
@@ -198,6 +194,9 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
     @Override
     public ParserData visitConditionBlock(NimbleParser.ConditionBlockContext ctx) {
         ExpressionData expressionData = (ExpressionData) this.visit(ctx.condition());
+        if(!expressionData.isBooleanExpression())
+            expressionData.throwError("If statements can only contain boolean expressions");
+
         expressionData.appendCode(this.visit(ctx.block()));
         return expressionData;
     }
@@ -256,7 +255,12 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
         BaseValue left = (BaseValue) this.visit(ctx.expression(0));
         BaseValue right = (BaseValue) this.visit(ctx.expression(1));
         expressionData = new ExpressionData(ctx, left, right);
-        expressionData.setAndExpression();
+        if(ctx.op.getType() == NimbleParser.AND) {
+            expressionData.setAndExpression();
+        } else {
+            expressionData.setOrExpression();
+        }
+
         for(int i = 0; i < ctx.expression().size() - 1; i++) {
 // TODO for meerdere && expressions?
         }

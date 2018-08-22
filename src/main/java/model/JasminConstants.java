@@ -4,9 +4,8 @@ import generated.NimbleParser;
 
 public final class JasminConstants {
 
-
     // For reading purpose
-    private static final String SPACE = " ";
+    public static final String SPACE = " ";
 
     public enum Prefix {
         INTEGER_OR_BOOLEAN("i"),
