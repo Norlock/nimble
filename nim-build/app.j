@@ -1,4 +1,4 @@
-.class public NimbleProject
+.class public App
     .super java/lang/Object
 
     ; Default constructor (empty constructor)
@@ -15,8 +15,12 @@
 
 		iconst_2
 		istore_1
+		iconst_3
+		istore_2
 		getstatic java/lang/System.out Ljava/io/PrintStream;
 		iload_1
+		iload_2
+		iadd
 		invokevirtual java/io/PrintStream/println(I)V
         return
     .end method

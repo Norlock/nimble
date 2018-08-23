@@ -256,7 +256,6 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
     public ParserData visitAdditiveExpression(NimbleParser.AdditiveExpressionContext ctx) {
 
         // Left is dominant (e.g. "test" + 3) -> "test3" || (3 + "test") -> Exception
-        System.out.println(ctx.expression().size());
         BaseValue left = (BaseValue) this.visit(ctx.expression(0));
         BaseValue right = (BaseValue) this.visit(ctx.expression(1));
 

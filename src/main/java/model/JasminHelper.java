@@ -37,29 +37,4 @@ public final class JasminHelper {
         return (valueType == NimbleParser.INTEGER_TYPE && resultType == NimbleParser.DOUBLE_TYPE);
     }
 
-    public static String getFileFooter() {
-        return  "        return\n" +
-                "    .end method";
-    }
-
-    public static String getFileHeader(int stackSize, int varAndParamsCount) {
-        if(stackSize == 0)
-            stackSize = 99;
-        if(varAndParamsCount == 0)
-            varAndParamsCount = 99;
-
-        return ".class public NimbleProject\n" +
-                "    .super java/lang/Object\n\n" +
-                "    ; Default constructor (empty constructor)\n" +
-                "    .method public <init>()V\n" +
-                "        aload_0                                     ; Loads \"this\" on the stack\n" +
-                "        invokenonvirtual java/lang/Object/<init>()V ; Call super constructor\n" +
-                "        return                                      ; Terminate method\n" +
-                "    .end method\n" +
-                "    \n" +
-                "    ; Method definition for public static void main(String[] args)\n" +
-                "    .method public static main([Ljava/lang/String;)V\n" +
-                "        .limit stack " + stackSize + "\n" +
-                "        .limit locals " + varAndParamsCount + "\n";
-    }
 }

@@ -21,6 +21,8 @@ mainClassName = 'App'
 
 dependencies {
 
+    compile group: 'commons-io', name: 'commons-io', version: '2.4'
+
     antlr "org.antlr:antlr4:4.5.1" // use ANTLR version 4
     compile "org.antlr:antlr4-runtime:4.5.1"
     // Use JUnit test framework
