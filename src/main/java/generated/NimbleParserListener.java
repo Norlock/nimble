@@ -28,6 +28,16 @@ public interface NimbleParserListener extends ParseTreeListener {
 	 */
 	void exitDeclarations(NimbleParser.DeclarationsContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link NimbleParser#comment}.
+	 * @param ctx the parse tree
+	 */
+	void enterComment(NimbleParser.CommentContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NimbleParser#comment}.
+	 * @param ctx the parse tree
+	 */
+	void exitComment(NimbleParser.CommentContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link NimbleParser#main}.
 	 * @param ctx the parse tree
 	 */

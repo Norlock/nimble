@@ -5,8 +5,9 @@ import generated.NimbleParserBaseVisitor;
 import model.*;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import utils.JasminConstants;
+import utils.JasminHelper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,8 +38,12 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
     public ParserData visitVariableDeclaration(NimbleParser.VariableDeclarationContext ctx) {
         String id = ctx.IDENTIFIER().getText();
 
-        if (variables.get(id) != null)
+        if(ctx.getStop().getType() != NimbleParser.SEMICOLON) {
+            throw new ParseException(ctx, "Missing semicolon");
+        }
+        else if (variables.get(id) != null) {
             throw new ParseException(ctx, "Identifier " + id + " has already been declared");
+        }
 
         int varType = ctx.variableType().start.getType();
 
@@ -56,44 +61,36 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
     }
 
     private ParserData getVariableAssignment(ParserRuleContext ctx, int varType, int varIndex, BaseValue value) {
-        ParserData parserData = new ParserData(ctx);
-
-        if(value instanceof ExpressionData) {
-            ExpressionData expressionData = (ExpressionData) value;
-
-            // Boolean expressions don't always set true or false, e.g. if statements
-            if(expressionData.isBooleanExpression()) {
-                String labelGoto = JasminHelper.getNewLabel();
-
-                value.loadBooleanOnStack(true);
-                value.setGotoRedirection(labelGoto);
-                value.setLabel(expressionData.getLabel());
-                value.loadBooleanOnStack(false);
-                value.setLabel(labelGoto);
-            }
-        }
-
-        parserData.appendCode(value);
+        ParserData variable = new ParserData(ctx);
+        boolean castable = value.isAutoCastable(varType);
         int valueType = value.getDataType();
 
-        if(JasminHelper.castToDouble(valueType, varType)) {
-            parserData.addCommand(JasminConstants.INT_TO_DOUBLE);
-        } else if(valueType != varType) {
-            String errorMsg = "Cannot assign variable"
-                    + " to varType " + NimbleParser.VOCABULARY.getLiteralName(valueType).replace("'","")
-                    + " cast exception incompatible types";
-
-            parserData.throwError(errorMsg);
-        } else {
-            String prefix = JasminConstants.Prefix.getPrefixBasedOnType(varType).toString();
-            if (0 <= varIndex && varIndex <= 3) {
-                parserData.addCommand(prefix + JasminConstants.STORE_VAl_SMALL + varIndex);
-            } else {
-                parserData.addCommand(prefix + JasminConstants.STORE_VAL + varIndex);
-            }
+        if(varType != valueType && !castable) {
+            variable.throwError("Can't assign type of value to this variable.");
         }
 
-        return parserData;
+        if(value instanceof BaseExpression && value.isBoolean()) {
+            String labelGoto = JasminHelper.getNewLabel();
+
+            value.loadBooleanOnStack(true);
+            value.setGotoRedirection(labelGoto);
+            value.setLabel(((ExpressionData)value).getLabel());
+            value.loadBooleanOnStack(false);
+            value.setLabel(labelGoto);
+        }
+
+        variable.appendCode(value);
+        if(castable)
+            variable.addCommand(value.getCastCommand(varType));
+
+        String prefix = JasminConstants.Prefix.getPrefixBasedOnType(varType).toString();
+        if (0 <= varIndex && varIndex <= 3) {
+            variable.addCommand(prefix + JasminConstants.STORE_VAl_SMALL + varIndex);
+        } else {
+            variable.addCommand(prefix + JasminConstants.STORE_VAL + varIndex);
+        }
+
+        return variable;
     }
 
     /**
@@ -105,6 +102,10 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
     @Override
     public ParserData visitVariableAssignment(NimbleParser.VariableAssignmentContext ctx) {
         String id = ctx.IDENTIFIER().getText();
+        if(ctx.SEMICOLON() == null) {
+            throw new ParseException(ctx, "missing semicolon");
+        }
+
         VariableData variable = getVariable(id, ctx);
 
         BaseValue baseValue = (BaseValue) this.visit(ctx.expression());
@@ -190,7 +191,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
     @Override
     public ParserData visitConditionBlock(NimbleParser.ConditionBlockContext ctx) {
         ExpressionData expressionData = (ExpressionData) this.visit(ctx.condition());
-        if(!expressionData.isBooleanExpression())
+        if(!expressionData.isBoolean())
             expressionData.throwError("If statements can only contain boolean expressions");
 
         expressionData.appendCode(this.visit(ctx.block()));
@@ -318,11 +319,12 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
         if(value.getDataType() != NimbleParser.BOOLEAN_TYPE) {
             value.throwError("Not expression only allowed for boolean types");
         } else if (value instanceof ExpressionData) {
-            value.loadBooleanOnStack(false);
-            value.setGotoRedirection(gotoLbl);
-            value.setLabel(((ExpressionData) value).getLabel());
-            value.loadBooleanOnStack(true);
-            value.setLabel(gotoLbl);
+            JavaByteCommand cmd = value.getLastCmd();
+            if(cmd.isBranchOffCommand()) {
+                cmd.cast().invertType();
+            } else {
+                throw new ParseException(ctx, "Invalid expression.");
+            }
         } else {
             String branchOffLbl = JasminHelper.getNewLabel();
             value.addCommand(BranchOffType.IF_NOT_EQUAL, branchOffLbl);
@@ -378,7 +380,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
     }
 
     @Override
-    public ParserData visitIdentifierAtom(NimbleParser.IdentifierAtomContext ctx) { // TODO (return parserdata variable kan veranderen!)
+    public ParserData visitIdentifierAtom(NimbleParser.IdentifierAtomContext ctx) {
         return getVariable(ctx.getText(), ctx);
     }
 

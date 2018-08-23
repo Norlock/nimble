@@ -1,9 +1,8 @@
 package model;
 
-import generated.NimbleParser;
 import main.ParseException;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.misc.Pair;
+import utils.JasminConstants;
 
 import java.util.ArrayList;
 
@@ -60,21 +59,5 @@ public class ParserData {
     public JavaByteCommand getLastCmd() {
         return code.get(getCode().size() - 1);
     }
-
-//    public void print(ValueData valueData) {
-//        jasminCode.add(JasminConstants.LOAD_SYSO_ONTO_STACK);
-//        if(valueData.isInteger()) {
-//            loadIntegerOntoStack(valueData.getValueInt());
-//        } else if(valueData.isDouble()) {
-//            loadDoubleOntoStack(valueData.getValueDouble());
-//        } else if(valueData.isBoolean()) {
-//            loadBooleanOnStack(valueData.getValueBool());
-//        } else  if (valueData.isString()) {
-//            loadStringOntoStack(valueData.toString());
-//        } else {
-//            throw new RuntimeException("Not implemented");
-//        }
-//        jasminCode.add(JasminConstants.PRINT);
-//    }
 
 }

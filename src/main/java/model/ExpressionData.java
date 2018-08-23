@@ -3,20 +3,16 @@ package model;
 import generated.NimbleParser;
 import main.ParseException;
 import org.antlr.v4.runtime.ParserRuleContext;
+import utils.JasminConstants;
+import utils.JasminHelper;
 
 /**
  * ExpressionData is validated,
  */
-public class ExpressionData extends BaseValue {
+public class ExpressionData extends BaseExpression {
 
     private final BaseValue left;
     private final BaseValue right;
-    private int resultType;
-    private String label;
-
-    public boolean isBooleanExpression() {
-        return resultType == NimbleParser.BOOLEAN_TYPE;
-    }
 
     /**
      *
@@ -30,8 +26,8 @@ public class ExpressionData extends BaseValue {
         this.right = right;
     }
 
-    public void setAndExpression() {
-        if(!left.isType(NimbleParser.BOOLEAN_TYPE) && !right.isType(NimbleParser.BOOLEAN_TYPE)) {
+    public final void setAndExpression() {
+        if(!left.isBoolean() && !right.isBoolean()) {
             throwError("And expressions can only contain boolean expressions.");
         } else {
             // This label will overwrite the other ones.
@@ -53,8 +49,8 @@ public class ExpressionData extends BaseValue {
         }
     }
 
-    public void setOrExpression() {
-        if(!left.isType(NimbleParser.BOOLEAN_TYPE) && !right.isType(NimbleParser.BOOLEAN_TYPE)) {
+    public final void setOrExpression() {
+        if(!left.isBoolean() && !right.isBoolean()) {
             throwError("Or expressions can only contain boolean expressions.");
         } else {
             // This label will overwrite the other ones. So the left and right side have the same branch off label.
@@ -85,9 +81,8 @@ public class ExpressionData extends BaseValue {
         }
     }
 
-    public void setMultiplicationExpression(int operatorType) {
-        if(left.isType(NimbleParser.STRING_TYPE) || left.isType(NimbleParser.BOOLEAN_TYPE)
-            || right.isType(NimbleParser.STRING_TYPE) || right.isType(NimbleParser.BOOLEAN_TYPE))
+    public final void setMultiplicationExpression(int operatorType) {
+        if(!left.isNumber() && !right.isNumber())
             throwError("Multiplication expressions can only contain integers or doubles");
         else if(left.isType(NimbleParser.INTEGER_TYPE) && right.isType(NimbleParser.INTEGER_TYPE))
             loadDataOntoStack(NimbleParser.INTEGER_TYPE);
@@ -103,16 +98,14 @@ public class ExpressionData extends BaseValue {
 
     }
 
-    public void setRelationalExpression(int operatorType) {
-        if(left.getDataType() != right.getDataType()) {
-            throwError("Types are not equal");
-        } else if(left.isType(NimbleParser.STRING_TYPE) || left.isType(NimbleParser.BOOLEAN_TYPE)) {
-            throwError("This type is not suitable for relation expressions");
+    public final void setRelationalExpression(int operatorType) {
+        if(!left.isNumber() || !right.isNumber()) {
+            throwError("Relational expressions can only be number types (int, double).");
         } else {
             loadDataOntoStack(NimbleParser.BOOLEAN_TYPE);
             label = JasminHelper.getNewLabel();
 
-            if(left.isType(NimbleParser.INTEGER_TYPE)) {
+            if(left.isType(NimbleParser.INTEGER_TYPE) && right.isType(NimbleParser.INTEGER_TYPE)) {
                 setRelationalExpressionInteger(operatorType, label);
             } else if (left.isType(NimbleParser.DOUBLE_TYPE)) {
                 setRelationalExpressionDouble(operatorType, label);
@@ -160,42 +153,40 @@ public class ExpressionData extends BaseValue {
         }
     }
 
-    public void setAddExpression() {
+    public final void setAddExpression() {
         if (left.isType(NimbleParser.STRING_TYPE)) {
-            setAdditiveExpressionString(); // toString gebruiken om ook andere types te gebruiken
-        } else if (left.isType(NimbleParser.BOOLEAN_TYPE) || right.isType(NimbleParser.BOOLEAN_TYPE)) {
-            throwError("Can't add with a boolean");
-        } else if (right.isType(NimbleParser.STRING_TYPE)) {
-            throwError("Can't add with a string");
-        } else if (left.isType(NimbleParser.DOUBLE_TYPE)) {
-            if (right.isType(NimbleParser.DOUBLE_TYPE) || right.isType(NimbleParser.INTEGER_TYPE)) {
-                setAdditiveExpressionDouble();
-            } else {
-                throwError("Can't add this type with a double");
-            }
-        } else if (left.isType(NimbleParser.INTEGER_TYPE)) {
-            if(right.isType(NimbleParser.DOUBLE_TYPE)) {
-                setAdditiveExpressionDouble();
-            } else if (right.isType(NimbleParser.INTEGER_TYPE)) {
-                setAdditiveExpressionInteger();
-            }
+            setAdditiveExpressionString();
+        } else if (!left.isNumber() && !right.isNumber()) {
+            throwError("Additive expressions can only contain numbers, or start with a string.");
+        } else if(left.isType(NimbleParser.INTEGER_TYPE) && right.isType(NimbleParser.INTEGER_TYPE)) {
+            setAdditiveExpressionInteger();
+        } else {
+            setAdditiveExpressionDouble();
         }
     }
 
-    public void setSubtractExpression() {
-        if(left.isType(NimbleParser.STRING_TYPE) || right.isType(NimbleParser.STRING_TYPE))
+    public final void setSubtractExpression() {
+        if (!left.isNumber() && !right.isNumber()) {
+            throwError("Subtract expressions can only contain numbers.");
+        } else if(left.isType(NimbleParser.INTEGER_TYPE) && right.isType(NimbleParser.INTEGER_TYPE)) {
+            setSubtractExpressionInteger();
+        } else {
+            setSubtractExpressionDouble();
+        }
+
+        if(left.isType(NimbleParser.STRING_TYPE) || right.isType(NimbleParser.STRING_TYPE)) {
             throw new ParseException(getCtx(), "Can't subtract from a String");
-        else if (left.isType(NimbleParser.BOOLEAN_TYPE) || right.isType(NimbleParser.BOOLEAN_TYPE))
+        }
+        else if (left.isType(NimbleParser.BOOLEAN_TYPE) || right.isType(NimbleParser.BOOLEAN_TYPE)) {
             throw new ParseException(getCtx(), "Can't subtract from a boolean");
+        }
         else if (left.isType(NimbleParser.DOUBLE_TYPE)) {
             if(right.isType(NimbleParser.DOUBLE_TYPE) || right.isType(NimbleParser.INTEGER_TYPE)) {
-                setSubtractExpressionDouble();
             } else {
                 throwError("Can't subtract this type with a double");
             }
         } else {
             if(right.isType(NimbleParser.INTEGER_TYPE)) {
-                setSubtractExpressionInteger();
             } else if(right.isType(NimbleParser.DOUBLE_TYPE)) {
                 setSubtractExpressionDouble();
             }
@@ -206,7 +197,7 @@ public class ExpressionData extends BaseValue {
      * Compares two values
      * @param operatorType (is equal / not equal)
      */
-    public void setCompareExpression(int operatorType) {
+    public final void setCompareExpression(int operatorType) {
         boolean isEqualOperator = operatorType == NimbleParser.EQUAL;
 
         if(left.getDataType() != right.getDataType())
@@ -297,27 +288,26 @@ public class ExpressionData extends BaseValue {
         }
     }
 
-    public String getLabel() {
-        return label;
-    }
-
     @Override
     public int getDataType() {
         return resultType;
     }
 
-    /**
-     * Helper method, not to use as public. Will load the left and right side onto stack.
-     */
-    private void loadDataOntoStack(int resultType) {
+    @Override
+    protected void loadDataOntoStack(int resultType) {
+        super.loadDataOntoStack(resultType);
         this.resultType = resultType;
 
+        // Cast if needed
         appendCode(left);
-        if(JasminHelper.castToDouble(left.getDataType(), resultType))
-            addCommand(JasminConstants.INT_TO_DOUBLE);
+        if(left.isType(NimbleParser.DOUBLE_TYPE) && right.isType(NimbleParser.INTEGER_TYPE)) {
+            addCommand(right.getCastCommand(NimbleParser.DOUBLE_TYPE));
+        }
 
         appendCode(right);
-        if(JasminHelper.castToDouble(right.getDataType(), resultType))
-            addCommand(JasminConstants.INT_TO_DOUBLE);
+        if (right.isType(NimbleParser.DOUBLE_TYPE) && left.isType(NimbleParser.INTEGER_TYPE)) {
+            addCommand(left.getCastCommand(NimbleParser.DOUBLE_TYPE));
+        }
+
     }
 }

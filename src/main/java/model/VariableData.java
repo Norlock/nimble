@@ -1,7 +1,7 @@
 package model;
 
-import generated.NimbleParser;
 import org.antlr.v4.runtime.ParserRuleContext;
+import utils.JasminConstants;
 
 /**
  * In couple class for varType and variable, so String variables will only accept Strings.

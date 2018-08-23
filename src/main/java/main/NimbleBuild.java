@@ -1,12 +1,10 @@
 package main;
 
-import model.JasminHelper;
 import model.JavaByteCommand;
 import model.ParserData;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.*;
-import java.nio.file.FileSystemException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 

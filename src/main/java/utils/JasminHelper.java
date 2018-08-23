@@ -1,4 +1,4 @@
-package model;
+package utils;
 
 import generated.NimbleParser;
 
@@ -32,9 +32,4 @@ public final class JasminHelper {
             throw new RuntimeException("Unknown type");
         }
     }
-
-    public static boolean castToDouble(int valueType, int resultType) {
-        return (valueType == NimbleParser.INTEGER_TYPE && resultType == NimbleParser.DOUBLE_TYPE);
-    }
-
 }

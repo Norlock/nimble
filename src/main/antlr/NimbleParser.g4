@@ -8,7 +8,12 @@ parse: declarations* main declarations* EOF;
 declarations
     : field
     | function
+    | comment
     ;
+
+comment
+    : COMMENT
+    | LINE_COMMENT;
 
 main: MAIN block ;
 
@@ -44,11 +49,13 @@ statement
     | functionCall
     | whileLoop
     | printStatement
+    | comment
     ;
 
+
 ifStatement
-     : IF conditionBlock (ELSE IF conditionBlock)* (ELSE block)?
-     ;
+    : IF conditionBlock (ELSE IF conditionBlock)* (ELSE block)?
+    ;
 
 functionCall
     : IDENTIFIER LEFT_PARENTHESE atom RIGHT_PARENTHESE SEMICOLON

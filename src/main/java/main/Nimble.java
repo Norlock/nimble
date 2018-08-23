@@ -24,7 +24,6 @@ public class Nimble {
             ParseTree tree = nimbleParser.parse();
             nimbleBuild.generate(nimbleVisitor.visit(tree));
             nimbleBuild.execute();
-
         } catch (IOException e) {
             System.out.println("File not found");
             e.printStackTrace();

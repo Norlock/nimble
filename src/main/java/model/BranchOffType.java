@@ -1,5 +1,7 @@
 package model;
 
+import utils.JasminConstants;
+
 public enum BranchOffType {
 
     // Jasmin will use opposition

@@ -1,7 +1,10 @@
 package model;
 
 import generated.NimbleParser;
+import main.Nimble;
+import main.ParseException;
 import org.antlr.v4.runtime.ParserRuleContext;
+import utils.JasminConstants;
 
 
 public abstract class BaseValue extends ParserData {
@@ -11,8 +14,50 @@ public abstract class BaseValue extends ParserData {
     }
 
     public abstract int getDataType();
+
     public boolean isType(int type) {
         return type == getDataType();
+    }
+
+    public boolean isBoolean() {
+        return getDataType() == NimbleParser.BOOLEAN_TYPE;
+    }
+
+    public boolean isNumber() {
+        return getDataType() == NimbleParser.INTEGER_TYPE ||
+                getDataType() == NimbleParser.DOUBLE_TYPE;
+    }
+
+    /**
+     * Simple check method that can easily be expanded with more auto casts
+     * @param resultType
+     * @return
+     */
+    public boolean isAutoCastable(int resultType) {
+        switch (resultType) {
+            case NimbleParser.DOUBLE_TYPE:
+                return isCastableToDouble();
+            default: return false;
+        }
+    }
+
+    private boolean isCastableToDouble() {
+        return isType(NimbleParser.INTEGER_TYPE);
+    }
+    /**
+     * Method to retrieve cast command. This method will not set the command since it's not necessary part
+     * of each basevalue (variables might not always need to be casted).
+     * @param resultType type to cast to
+     * @return cast command
+     */
+    public String getCastCommand(int resultType) {
+        // In the future more auto casts can be implemented
+        if(!isAutoCastable(resultType)) {
+            throwError("Can't auto cast this value.");
+        } else if(resultType == NimbleParser.DOUBLE_TYPE && isType(NimbleParser.INTEGER_TYPE))
+            return JasminConstants.INT_TO_DOUBLE;
+
+        return null;
     }
 
     protected void loadIntegerOntoStack(int value) {
