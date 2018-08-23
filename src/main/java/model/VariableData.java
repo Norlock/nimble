@@ -9,6 +9,7 @@ import utils.JasminConstants;
 public class VariableData extends BaseValue {
 
     private final int varType, varIndex;
+
     public VariableData(ParserRuleContext ctx, int varType, int variableIndex) {
         super(ctx);
         this.varType = varType;

@@ -82,6 +82,25 @@ public abstract class BaseValue extends ParserData {
         addCommand(JasminConstants.STRING_ADD + value);
     }
 
+    public String getAppendString() {
+        StringBuilder sb = new StringBuilder(JasminConstants.INVOKE_VIRTUAL);
+        sb.append(JasminConstants.STRING_BUILDER_CLASS);
+        sb.append("/append(");
+
+        if(isType(NimbleParser.STRING_TYPE)) {
+            sb.append("Ljava/lang/String;");
+        } else if(isType(NimbleParser.INTEGER_TYPE)) {
+            sb.append("I");
+        } else if(isType(NimbleParser.DOUBLE_TYPE)) {
+            sb.append("D");
+        } else {
+            sb.append("Z");
+        }
+
+        sb.append(")Ljava/lang/StringBuilder;");
+
+        return sb.toString();
+    }
 
     public void print() {
         prependCommand(JasminConstants.LOAD_SYSO_ONTO_STACK);

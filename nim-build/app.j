@@ -14,23 +14,23 @@
         .limit locals 100
 
 		iconst_2
-		iconst_3
+		iconst_4
 		if_icmplt label1
 		iconst_1
-		goto label3
+		goto label2
 		label1:
 		iconst_0
-		label3:
+		label2:
 		istore_1
 		getstatic java/lang/System.out Ljava/io/PrintStream;
-		newjava/lang/StringBuilder
+		new java/lang/StringBuilder
 		dup
-		invokespecial java/lang/StringBuilder."<init>":()V
+		invokespecial java/lang/StringBuilder/<init>()V
 		ldc "test"
-		invokevirtual java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+		invokevirtual java/lang/StringBuilder/append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 		iload_1
-		invokevirtual java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
-		invokevirtual java/lang/StringBuilder.toString:()Ljava/lang/String;
+		invokevirtual java/lang/StringBuilder/append(Z)Ljava/lang/StringBuilder;
+		invokevirtual java/lang/StringBuilder.toString()Ljava/lang/String;
 		invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
         return
     .end method

@@ -1,6 +1,5 @@
 package model;
 
-import generated.NimbleParser;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 public abstract class BaseExpression extends BaseValue {

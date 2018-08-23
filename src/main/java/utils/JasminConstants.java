@@ -99,8 +99,8 @@ public final class JasminConstants {
 
     //Invoke methods that are not bound to this class
     public static final String INVOKE_VIRTUAL = "invokevirtual" + SPACE;
-    private static final String INVOKE_STATIC = "invokestatic" + SPACE;
-    private static final String GET_STATIC = "getstatic" + SPACE;
+    public static final String INVOKE_STATIC = "invokestatic" + SPACE;
+    public static final String GET_STATIC = "getstatic" + SPACE;
 
     // push System.out onto the stack
     public static final String LOAD_SYSO_ONTO_STACK = GET_STATIC + "java/lang/System.out Ljava/io/PrintStream;";
@@ -110,15 +110,14 @@ public final class JasminConstants {
     // Go to (+ label)
     public static final String GO_TO = "goto" + SPACE;
 
-    private static final String NEW = "new";
-    private static final String STRING_BUILDER_CLASS = "java/lang/StringBuilder";
+    public static final String NEW = "new" + SPACE;
+    public static final String STRING_BUILDER_CLASS = "java/lang/StringBuilder";
 
     public static final String CONSTRUCT_STRING_BUILDER = NEW + STRING_BUILDER_CLASS;
-    public static final String INIT_STRING_BUILDER = INVOKE_SPECIAL + STRING_BUILDER_CLASS + ".\"<init>\":()V";
-    public static final String APPEND_STRING_BUILDER = INVOKE_VIRTUAL + STRING_BUILDER_CLASS +
-            ".append:(Ljava/lang/String;)Ljava/lang/StringBuilder;";
+    public static final String INIT_STRING_BUILDER = INVOKE_SPECIAL + STRING_BUILDER_CLASS + "/<init>()V";
+
     public static final String STRING_BUILDER_TO_STRING = INVOKE_VIRTUAL + STRING_BUILDER_CLASS +
-            ".toString:()Ljava/lang/String;";
+            ".toString()Ljava/lang/String;";
 
     public static final String DUPLICATE_VALUE_ONTOP_OF_STACK = "dup";
 

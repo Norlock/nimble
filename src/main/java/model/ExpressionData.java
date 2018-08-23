@@ -34,6 +34,7 @@ public class ExpressionData extends BaseExpression {
             label = JasminHelper.getNewLabel();
             JavaByteCommand leftCmd = left.getLastCmd();
             JavaByteCommand rightCmd = right.getLastCmd();
+
             if(leftCmd.isBranchOffCommand()) {
                 leftCmd.cast().setLabel(label);
             } else {
@@ -173,24 +174,6 @@ public class ExpressionData extends BaseExpression {
         } else {
             setSubtractExpressionDouble();
         }
-
-        if(left.isType(NimbleParser.STRING_TYPE) || right.isType(NimbleParser.STRING_TYPE)) {
-            throw new ParseException(getCtx(), "Can't subtract from a String");
-        }
-        else if (left.isType(NimbleParser.BOOLEAN_TYPE) || right.isType(NimbleParser.BOOLEAN_TYPE)) {
-            throw new ParseException(getCtx(), "Can't subtract from a boolean");
-        }
-        else if (left.isType(NimbleParser.DOUBLE_TYPE)) {
-            if(right.isType(NimbleParser.DOUBLE_TYPE) || right.isType(NimbleParser.INTEGER_TYPE)) {
-            } else {
-                throwError("Can't subtract this type with a double");
-            }
-        } else {
-            if(right.isType(NimbleParser.INTEGER_TYPE)) {
-            } else if(right.isType(NimbleParser.DOUBLE_TYPE)) {
-                setSubtractExpressionDouble();
-            }
-        }
     }
 
     /**
@@ -256,9 +239,9 @@ public class ExpressionData extends BaseExpression {
         addCommand(JasminConstants.DUPLICATE_VALUE_ONTOP_OF_STACK);
         addCommand(JasminConstants.INIT_STRING_BUILDER);
         appendCode(left);
-        addCommand(JasminConstants.APPEND_STRING_BUILDER);
+        addCommand(left.getAppendString());
         appendCode(right);
-        addCommand(JasminConstants.APPEND_STRING_BUILDER);
+        addCommand(right.getAppendString());
         addCommand(JasminConstants.STRING_BUILDER_TO_STRING);
     }
 
@@ -298,15 +281,15 @@ public class ExpressionData extends BaseExpression {
         super.loadDataOntoStack(resultType);
         this.resultType = resultType;
 
-        // Cast if needed
         appendCode(left);
-        if(left.isType(NimbleParser.DOUBLE_TYPE) && right.isType(NimbleParser.INTEGER_TYPE)) {
-            addCommand(right.getCastCommand(NimbleParser.DOUBLE_TYPE));
+        boolean castToDouble = left.isNumber() && right.isNumber() && left.getDataType() != right.getDataType();
+        if(castToDouble) {
+            addCommand(left.getCastCommand(NimbleParser.DOUBLE_TYPE));
         }
 
         appendCode(right);
-        if (right.isType(NimbleParser.DOUBLE_TYPE) && left.isType(NimbleParser.INTEGER_TYPE)) {
-            addCommand(left.getCastCommand(NimbleParser.DOUBLE_TYPE));
+        if (castToDouble) {
+            addCommand(right.getCastCommand(NimbleParser.DOUBLE_TYPE));
         }
 
     }

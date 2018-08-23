@@ -74,7 +74,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
 
             value.loadBooleanOnStack(true);
             value.setGotoRedirection(labelGoto);
-            value.setLabel(((ExpressionData)value).getLabel());
+            value.setLabel(((BaseExpression)value).getLabel());
             value.loadBooleanOnStack(false);
             value.setLabel(labelGoto);
         }
@@ -247,9 +247,6 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
             expressionData.setOrExpression();
         }
 
-        for(int i = 0; i < ctx.expression().size() - 1; i++) {
-            // TODO for meerdere && || expressions?
-        }
         return expressionData;
     }
 
@@ -295,11 +292,8 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
             throw new ParseException(ctx, "Equality expression only compares similar types of variables.");
         }
 
-        // isEqual and isEqualOperator
-        final int isEqualOperator = ctx.op.getType();
-
         ExpressionData exprData = new ExpressionData(ctx, left, right);
-        exprData.setCompareExpression(isEqualOperator);
+        exprData.setCompareExpression(ctx.op.getType());
 
         return exprData;
     }
@@ -314,27 +308,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
     @Override
     public ParserData visitNotExpression(NimbleParser.NotExpressionContext ctx) {
         BaseValue value = (BaseValue) this.visit(ctx.expression());
-        String gotoLbl = JasminHelper.getNewLabel();
-
-        if(value.getDataType() != NimbleParser.BOOLEAN_TYPE) {
-            value.throwError("Not expression only allowed for boolean types");
-        } else if (value instanceof ExpressionData) {
-            JavaByteCommand cmd = value.getLastCmd();
-            if(cmd.isBranchOffCommand()) {
-                cmd.cast().invertType();
-            } else {
-                throw new ParseException(ctx, "Invalid expression.");
-            }
-        } else {
-            String branchOffLbl = JasminHelper.getNewLabel();
-            value.addCommand(BranchOffType.IF_NOT_EQUAL, branchOffLbl);
-            value.loadBooleanOnStack(true);
-            value.setGotoRedirection(gotoLbl);
-            value.setLabel(branchOffLbl);
-            value.loadBooleanOnStack(false);
-            value.setLabel(gotoLbl);
-        }
-        return value;
+        return new NotExpressionData(ctx, value);
     }
 
     @Override
