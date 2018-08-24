@@ -10,61 +10,62 @@ import utils.JasminConstants;
 import utils.JasminHelper;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
 
     // store variables
-    private Map<String, VariableData> variables = new HashMap<>();
+    private Map<Integer, Map<String, VariableData>> variables = new HashMap<>();
 
     private VariableData getVariable(String identifier, ParserRuleContext ctx) {
-        VariableData nimbleVariable = variables.get(identifier);
+        HashSet<Integer> hashCodes = getBlockHashCodes(ctx);
 
-        if (nimbleVariable == null) {
-            throw new ParseException(ctx, "Unknown identifier: " + identifier);
+        for(int hashCode : hashCodes) {
+            Map<String, VariableData> blockVariables = variables.get(hashCode);
+            if (blockVariables.containsKey(identifier)) {
+                return blockVariables.get(identifier);
+            }
         }
 
-        return nimbleVariable;
+        return null;
     }
 
-    // TODO
-    @Override
-    public ParserData visitParse(NimbleParser.ParseContext ctx) {
-        ParserData parserData = super.visit(ctx.main());
-        return parserData;
+    private void setVariable(ParserRuleContext ctx, String id, VariableData variable) {
+        int hashCode = getBlockHashCode(ctx);
+        Map<String, VariableData> block = variables.get(hashCode);
+        block.put(id, variable);
+        variables.put(hashCode, block);
     }
 
-    @Override
-    public ParserData visitVariableDeclaration(NimbleParser.VariableDeclarationContext ctx) {
-        String id = ctx.IDENTIFIER().getText();
-
-        if(ctx.getStop().getType() != NimbleParser.SEMICOLON) {
-            throw new ParseException(ctx, "Missing semicolon");
+    /**
+     * Returns the hash codes for each block in the tree of this context.
+     * @param ctx context of caller.
+     * @return hash codes of blocks.
+     */
+    private HashSet<Integer> getBlockHashCodes(ParserRuleContext ctx) {
+        HashSet<Integer> hashCodes = new HashSet<>();
+        while(ctx.invokingState != -1) {
+            if(ctx instanceof NimbleParser.BlockContext)
+                hashCodes.add(ctx.hashCode());
+            ctx = ctx.getParent();
         }
-        else if (variables.get(id) != null) {
-            throw new ParseException(ctx, "Identifier " + id + " has already been declared");
+        return hashCodes;
+    }
+
+    private int getBlockHashCode(ParserRuleContext ctx) {
+        while(!(ctx instanceof NimbleParser.BlockContext)) {
+            ctx = ctx.getParent();
         }
-
-        BaseValue value = (BaseValue) this.visit(ctx.expression());
-        int varType = ctx.variableType().start.getType();
-        int varIndex = JasminHelper.getVariableIndex();
-
-        if (value == null)  // Create default value
-        {
-            value = new ValueData(varType, ctx);
-        }
-
-        ParserData parserData = getVariableAssignment(ctx, varType, varIndex, value);
-        variables.put(id, new VariableData(ctx, varType, varIndex));
-        JasminHelper.updateVariableIndex(varType);
-
-        return parserData;
+        return ctx.hashCode();
     }
 
     private ParserData getVariableAssignment(ParserRuleContext ctx, int varType, int varIndex, BaseValue value) {
         ParserData variable = new ParserData(ctx);
         boolean castable = value.isAutoCastable(varType);
         int valueType = value.getDataType();
+
+        System.out.println("var " + getBlockHashCode(ctx));
 
         if(varType != valueType && !castable) {
             variable.throwError("Cannot assign this type of value to the variable.");
@@ -87,6 +88,38 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
         }
 
         return variable;
+    }
+
+    // TODO
+    @Override
+    public ParserData visitParse(NimbleParser.ParseContext ctx) {
+        ParserData parserData = super.visit(ctx.main());
+        return parserData;
+    }
+
+    @Override
+    public ParserData visitVariableDeclaration(NimbleParser.VariableDeclarationContext ctx) {
+        String id = ctx.IDENTIFIER().getText();
+
+        if(ctx.getStop().getType() != NimbleParser.SEMICOLON) {
+            throw new ParseException(ctx, "Missing semicolon");
+        }
+        else if (getVariable(id, ctx) != null) {
+            throw new ParseException(ctx, "Identifier " + id + " has already been declared");
+        }
+
+        BaseValue value = (BaseValue) this.visit(ctx.expression());
+        int varType = ctx.variableType().start.getType();
+        int varIndex = JasminHelper.getVariableIndex();
+
+        if (value == null)  // Create default value
+            value = new ValueData(varType, ctx);
+
+        ParserData parserData = getVariableAssignment(ctx, varType, varIndex, value);
+        setVariable(ctx, id, new VariableData(ctx, varType, varIndex));
+        JasminHelper.updateVariableIndex(varType);
+
+        return parserData;
     }
 
     /**
@@ -227,6 +260,8 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
 
     @Override
     public ParserData visitBlock(NimbleParser.BlockContext ctx) {
+        System.out.println(ctx.hashCode());
+        variables.put(ctx.hashCode(), new HashMap<>());
         ParserData parserData = new ParserData(ctx);
         for(int i = 0; i < ctx.statement().size(); i++) {
             parserData.appendCode(this.visit(ctx.statement(i)));
@@ -379,7 +414,11 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
 
     @Override
     public ParserData visitIdentifierAtom(NimbleParser.IdentifierAtomContext ctx) {
-        return getVariable(ctx.getText(), ctx);
+        VariableData var = getVariable(ctx.getText(), ctx);
+        if(var == null)
+            throw new ParseException(ctx, "Variable has not been declared yet.");
+        else
+            return var;
     }
 
     @Override

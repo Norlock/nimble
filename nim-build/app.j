@@ -23,18 +23,27 @@
 		getstatic java/lang/System.out Ljava/io/PrintStream;
 		iload_2
 		invokevirtual java/io/PrintStream/println(I)V
-		label2:
 		iload_1
 		iload_2
-		if_icmpge label1
-		getstatic java/lang/System.out Ljava/io/PrintStream;
-		ldc "je moeder"
-		invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
-		iload_1
-		iconst_1
-		iadd
+		if_icmpge label2
+		ldc "ss"
+		astore_3
+		iconst_5
 		istore_1
-		goto label2
+		getstatic java/lang/System.out Ljava/io/PrintStream;
+		new java/lang/StringBuilder
+		dup
+		invokespecial java/lang/StringBuilder/<init>()V
+		iload_1
+		invokevirtual java/lang/StringBuilder/append(I)Ljava/lang/StringBuilder;
+		aload_3
+		invokevirtual java/lang/StringBuilder/append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+		invokevirtual java/lang/StringBuilder.toString()Ljava/lang/String;
+		invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
+		goto label1
+		label2:
+		ldc "yes"
+		astore 4
 		label1:
         return
     .end method

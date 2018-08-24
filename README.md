@@ -1,6 +1,5 @@
 # Uitzoeken
 * vars van verschillende blocken kunnen dezelfde naam hebben
-* ExpressionData in variable code afmaken ifcmple label => iconst_1 goto label icont_0 goto label zetten.
 
 # Compiler *main.Nimble*
 main.Nimble, wat vlug en licht in beweging betekend, is een programmeertaal die is ontwikkeld om vlugger en eenvoudiger code

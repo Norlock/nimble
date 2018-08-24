@@ -3,9 +3,12 @@ main {
     int b = 3;
     print(a);
     print(b);
-    while(a < b) {
-        print("je moeder");
-        a = a + 1;
+    if(a < b) {
+        string s = "ss";
+        a = 5;
+        print(a + s);
+    } else {
+        string s = "yes";
     }
 }
 
