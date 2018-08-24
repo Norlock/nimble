@@ -13,24 +13,28 @@
         .limit stack 100
         .limit locals 100
 
-		iconst_2
-		iconst_4
-		if_icmplt label1
+		iconst_0
+		istore_1
+		iconst_3
+		istore_2
+		getstatic java/lang/System.out Ljava/io/PrintStream;
+		iload_1
+		invokevirtual java/io/PrintStream/println(I)V
+		getstatic java/lang/System.out Ljava/io/PrintStream;
+		iload_2
+		invokevirtual java/io/PrintStream/println(I)V
+		label2:
+		iload_1
+		iload_2
+		if_icmpge label1
+		getstatic java/lang/System.out Ljava/io/PrintStream;
+		ldc "je moeder"
+		invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
+		iload_1
 		iconst_1
+		iadd
+		istore_1
 		goto label2
 		label1:
-		iconst_0
-		label2:
-		istore_1
-		getstatic java/lang/System.out Ljava/io/PrintStream;
-		new java/lang/StringBuilder
-		dup
-		invokespecial java/lang/StringBuilder/<init>()V
-		ldc "test"
-		invokevirtual java/lang/StringBuilder/append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-		iload_1
-		invokevirtual java/lang/StringBuilder/append(Z)Ljava/lang/StringBuilder;
-		invokevirtual java/lang/StringBuilder.toString()Ljava/lang/String;
-		invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
         return
     .end method

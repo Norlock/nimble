@@ -92,7 +92,7 @@ constructorParameters
 
 expression
     : NOT expression                                                                    #notExpression
-    | expression (op=(ADD | SUBSTRACT) expression)+                                     #additiveExpression
+    | expression op=(ADD | SUBSTRACT) expression                                     #additiveExpression
     | expression op=(MULTIPLY | DIVIDE | MODULO) expression                             #multiplicationExpression
     | expression op=(LEFT_LESSER_OR_EQUAL | LEFT_GREATER_OR_EQUAL
         | LEFT_LESSER | LEFT_GREATER) expression                                        #relationalExpression

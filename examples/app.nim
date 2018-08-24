@@ -1,11 +1,11 @@
 main {
-    int a = 2;
+    int a = 0;
     int b = 3;
-    print(a + b);
-    double double1 = 2.0;
-    double double2 = 3.2;
-    print(double1 + double2);
-    bool notBoolean = !(2<4);
-    print("test" + notBoolean);
+    print(a);
+    print(b);
+    while(a < b) {
+        print("je moeder");
+        a = a + 1;
+    }
 }
 

@@ -5,6 +5,7 @@ import main.Nimble;
 import main.ParseException;
 import org.antlr.v4.runtime.ParserRuleContext;
 import utils.JasminConstants;
+import utils.JasminHelper;
 
 
 public abstract class BaseValue extends ParserData {
@@ -44,6 +45,7 @@ public abstract class BaseValue extends ParserData {
     private boolean isCastableToDouble() {
         return isType(NimbleParser.INTEGER_TYPE);
     }
+
     /**
      * Method to retrieve cast command. This method will not set the command since it's not necessary part
      * of each basevalue (variables might not always need to be casted).
@@ -82,7 +84,7 @@ public abstract class BaseValue extends ParserData {
         addCommand(JasminConstants.STRING_ADD + value);
     }
 
-    public String getAppendString() {
+    protected String getAppendString() {
         StringBuilder sb = new StringBuilder(JasminConstants.INVOKE_VIRTUAL);
         sb.append(JasminConstants.STRING_BUILDER_CLASS);
         sb.append("/append(");
@@ -100,22 +102,5 @@ public abstract class BaseValue extends ParserData {
         sb.append(")Ljava/lang/StringBuilder;");
 
         return sb.toString();
-    }
-
-    public void print() {
-        prependCommand(JasminConstants.LOAD_SYSO_ONTO_STACK);
-
-        // Call println
-        String print = JasminConstants.INVOKE_VIRTUAL + "java/io/PrintStream/println(";
-        if(isType(NimbleParser.STRING_TYPE)) {
-            print += "Ljava/lang/String;";
-        } else if(isType(NimbleParser.INTEGER_TYPE)) {
-            print += "I";
-        } else if(isType(NimbleParser.DOUBLE_TYPE)) {
-            print += "D";
-        } else {
-            print += "Z";
-        }
-        addCommand(print + ")V");
     }
 }

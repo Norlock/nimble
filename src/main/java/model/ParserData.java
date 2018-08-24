@@ -40,10 +40,6 @@ public class ParserData {
         code.add(new JavaByteCommand(command));
     }
 
-    protected void prependCommand(String command) {
-        code.add(0, new JavaByteCommand(command));
-    }
-
     public void addCommand(BranchOffType type, String label) {
         code.add(new BranchOffCommand(type, label));
     }

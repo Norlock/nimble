@@ -45,14 +45,15 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
             throw new ParseException(ctx, "Identifier " + id + " has already been declared");
         }
 
-        int varType = ctx.variableType().start.getType();
-
         BaseValue value = (BaseValue) this.visit(ctx.expression());
+        int varType = ctx.variableType().start.getType();
+        int varIndex = JasminHelper.getVariableIndex();
 
         if (value == null)  // Create default value
+        {
             value = new ValueData(varType, ctx);
+        }
 
-        int varIndex = JasminHelper.getVariableIndex();
         ParserData parserData = getVariableAssignment(ctx, varType, varIndex, value);
         variables.put(id, new VariableData(ctx, varType, varIndex));
         JasminHelper.updateVariableIndex(varType);
@@ -66,17 +67,12 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
         int valueType = value.getDataType();
 
         if(varType != valueType && !castable) {
-            variable.throwError("Can't assign type of value to this variable.");
+            variable.throwError("Cannot assign this type of value to the variable.");
         }
 
         if(value instanceof BaseExpression && value.isBoolean()) {
-            String labelGoto = JasminHelper.getNewLabel();
-
-            value.loadBooleanOnStack(true);
-            value.setGotoRedirection(labelGoto);
-            value.setLabel(((BaseExpression)value).getLabel());
-            value.loadBooleanOnStack(false);
-            value.setLabel(labelGoto);
+            BaseExpression baseExpression = (BaseExpression) value;
+            baseExpression.setBooleanReturnValue();
         }
 
         variable.appendCode(value);
@@ -172,14 +168,45 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
      */
     @Override
     public ParserData visitWhileLoop(NimbleParser.WhileLoopContext ctx) {
-        return super.visitWhileLoop(ctx);
+        BaseExpression conditionBlock = (BaseExpression) this.visit(ctx.conditionBlock());
+        ParserData whileLoop = new ParserData(ctx);
+        String whileLabel = JasminHelper.getNewLabel();
+        whileLoop.setLabel(whileLabel);
+        whileLoop.appendCode(conditionBlock);
+        whileLoop.setGotoRedirection(whileLabel);
+        whileLoop.setLabel(conditionBlock.getLabel());
+        return whileLoop;
     }
 
     @Override
     public ParserData visitPrintStatement(NimbleParser.PrintStatementContext ctx) {
         BaseValue data = (BaseValue) this.visit(ctx.condition());
-        data.print();
-        return data;
+        ParserData print = new ParserData(ctx);
+
+        print.addCommand(JasminConstants.LOAD_SYSO_ONTO_STACK);
+
+        if(data instanceof BaseExpression && data.isBoolean()) {
+            BaseExpression baseExpression = (BaseExpression) data;
+            baseExpression.setBooleanReturnValue();
+        }
+
+        print.appendCode(data);
+
+        // Call println
+        StringBuilder sb = new StringBuilder(JasminConstants.INVOKE_VIRTUAL + "java/io/PrintStream/println(");
+        if(data.isType(NimbleParser.STRING_TYPE)) {
+            sb.append("Ljava/lang/String;");
+        } else if(data.isType(NimbleParser.INTEGER_TYPE)) {
+            sb.append("I");
+        } else if(data.isType(NimbleParser.DOUBLE_TYPE)) {
+            sb.append("D");
+        } else {
+            sb.append("Z");
+        }
+
+        print.addCommand(sb.toString() + ")V");
+
+        return print;
     }
 
     /**
@@ -192,7 +219,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
     public ParserData visitConditionBlock(NimbleParser.ConditionBlockContext ctx) {
         ExpressionData expressionData = (ExpressionData) this.visit(ctx.condition());
         if(!expressionData.isBoolean())
-            expressionData.throwError("If statements can only contain boolean expressions");
+            expressionData.throwError("Conditions can only contain boolean expressions");
 
         expressionData.appendCode(this.visit(ctx.block()));
         return expressionData;
@@ -252,15 +279,12 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
 
     @Override
     public ParserData visitAdditiveExpression(NimbleParser.AdditiveExpressionContext ctx) {
-
-        // Left is dominant (e.g. "test" + 3) -> "test3" || (3 + "test") -> Exception
         BaseValue left = (BaseValue) this.visit(ctx.expression(0));
         BaseValue right = (BaseValue) this.visit(ctx.expression(1));
 
         ExpressionData expressionData = new ExpressionData(ctx, left, right);
 
-        int additiveOperator = ctx.op.getType();
-        if(additiveOperator == NimbleParser.ADD)
+        if(ctx.op.getType() == NimbleParser.ADD)
             expressionData.setAddExpression();
         else
             expressionData.setSubtractExpression();

@@ -55,8 +55,8 @@ public class ExpressionData extends BaseExpression {
             throwError("Or expressions can only contain boolean expressions.");
         } else {
             // This label will overwrite the other ones. So the left and right side have the same branch off label.
-            label = JasminHelper.getNewLabel();
             String gotoLabel = JasminHelper.getNewLabel();
+            label = JasminHelper.getNewLabel();
             JavaByteCommand leftCmd = left.getLastCmd();
             JavaByteCommand rightCmd = right.getLastCmd();
 
@@ -155,7 +155,7 @@ public class ExpressionData extends BaseExpression {
     }
 
     public final void setAddExpression() {
-        if (left.isType(NimbleParser.STRING_TYPE)) {
+        if (left.isType(NimbleParser.STRING_TYPE) || right.isType(NimbleParser.STRING_TYPE)) {
             setAdditiveExpressionString();
         } else if (!left.isNumber() && !right.isNumber()) {
             throwError("Additive expressions can only contain numbers, or start with a string.");
@@ -283,12 +283,12 @@ public class ExpressionData extends BaseExpression {
 
         appendCode(left);
         boolean castToDouble = left.isNumber() && right.isNumber() && left.getDataType() != right.getDataType();
-        if(castToDouble) {
+        if(!left.isType(NimbleParser.DOUBLE_TYPE) && castToDouble) {
             addCommand(left.getCastCommand(NimbleParser.DOUBLE_TYPE));
         }
 
         appendCode(right);
-        if (castToDouble) {
+        if (!right.isType(NimbleParser.DOUBLE_TYPE) && castToDouble) {
             addCommand(right.getCastCommand(NimbleParser.DOUBLE_TYPE));
         }
 

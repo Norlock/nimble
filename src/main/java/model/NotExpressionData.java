@@ -26,7 +26,8 @@ public class NotExpressionData extends BaseExpression {
                 throw new ParseException(ctx, "Invalid expression.");
             }
         } else {
-            addCommand(BranchOffType.IF_NOT_EQUAL, JasminHelper.getNewLabel());
+            label = JasminHelper.getNewLabel();
+            addCommand(BranchOffType.IF_NOT_EQUAL, label);
         }
 
     }

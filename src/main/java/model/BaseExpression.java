@@ -1,6 +1,7 @@
 package model;
 
 import org.antlr.v4.runtime.ParserRuleContext;
+import utils.JasminHelper;
 
 public abstract class BaseExpression extends BaseValue {
 
@@ -13,6 +14,16 @@ public abstract class BaseExpression extends BaseValue {
 
     public String getLabel() {
         return label;
+    }
+
+    public void setBooleanReturnValue() {
+        String labelGoto = JasminHelper.getNewLabel();
+
+        loadBooleanOnStack(true);
+        setGotoRedirection(labelGoto);
+        setLabel(getLabel());
+        loadBooleanOnStack(false);
+        setLabel(labelGoto);
     }
 
     @Override
