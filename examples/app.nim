@@ -3,10 +3,10 @@ class App;
 global string test = "jaaa!";
 
 main {
-    int a = 0;
+    int a = 9;
     int b = 3;
     test = "nee :(";
-    #print(a);
+    print(a + b - 6 - 3);
     #print(b);
     if(a < b) {
         string s = "ss";

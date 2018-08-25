@@ -1,5 +1,6 @@
 package main;
 
+import generated.NimbleParser;
 import model.FieldData;
 import model.JavaByteCommand;
 import model.ParserData;
@@ -38,7 +39,7 @@ public class NimbleBuild {
 
             outputFile = Paths.get(BUILD_DIR, filenameBase + ".j");
             try (PrintWriter out = new PrintWriter(outputFile.toString())) {
-                out.println(getFileHeader(100, 100));
+                out.println(getFileHeader());
                 for (JavaByteCommand command : parserData.getCode()) {
                     out.println("\t" + command.toString());
                 }
@@ -98,11 +99,9 @@ public class NimbleBuild {
         return  "\treturn\n" + ".end method";
     }
 
-    private String getFileHeader(int stackSize, int varAndParamsCount) {
-        if(stackSize == 0)
-            stackSize = 99;
-        if(varAndParamsCount == 0)
-            varAndParamsCount = 99;
+    private String getFileHeader() {
+        int stackSize = 100; // Resize for bigger programs
+        int varAndParamsCount = JasminHelper.getVariableIndex() + 1;
 
         CustomStringBuilder sb = new CustomStringBuilder();
 

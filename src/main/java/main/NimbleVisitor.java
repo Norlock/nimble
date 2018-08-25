@@ -435,7 +435,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
         try {
             return new ValueData(ctx, Integer.parseInt(ctx.getText()));
         } catch (NumberFormatException e) {
-            throw new ParseException(ctx, "Can't format: " + ctx.getText() + " to an integer.");
+            throw new ParseException(ctx, "NumberFormatException: " + e.getLocalizedMessage());
         }
     }
 
@@ -444,7 +444,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
         try {
             return new ValueData(ctx, Double.parseDouble(ctx.getText()));
         } catch (NumberFormatException e) {
-            throw new ParseException(ctx, "Can't format: " + ctx.getText() + " to an integer.");
+            throw new ParseException(ctx, "NumberFormatException: " + e.getLocalizedMessage());
         }
     }
 
@@ -459,7 +459,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
         if (boolStr.equals("true") || boolStr.equals("false")) {
             return new ValueData(ctx, Boolean.parseBoolean(boolStr));
         } else {
-            throw new ParseException(ctx, "Value: " + boolStr + " is neither 'true' or 'false'.");
+            throw new ParseException(ctx, "Value: " + boolStr + " is neither 'true' nor 'false'.");
         }
     }
 
