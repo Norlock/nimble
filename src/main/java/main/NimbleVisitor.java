@@ -287,11 +287,10 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
         print.appendCode(data);
 
         // Call println
-        StringBuilder sb = new StringBuilder(JasminConstants.INVOKE_VIRTUAL + "java/io/PrintStream/println(");
-        sb.append(JasminConstants.DataType.getDataTypeStr(data.getDataType()) + ")V");
+        String printStr = JasminConstants.INVOKE_VIRTUAL + "java/io/PrintStream/println("
+            + JasminConstants.DataType.getDataTypeStr(data.getDataType()) + ")V";
 
-        print.addCommand(sb.toString() );
-
+        print.addCommand(printStr);
         return print;
     }
 
@@ -313,7 +312,6 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
 
     @Override
     public ParserData visitBlock(NimbleParser.BlockContext ctx) {
-        System.out.println(ctx.hashCode());
         variables.put(ctx.hashCode(), new HashMap<>());
         ParserData parserData = new ParserData(ctx);
         for(int i = 0; i < ctx.statement().size(); i++) {

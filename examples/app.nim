@@ -10,7 +10,6 @@ main {
     #print(b);
     if(a < b) {
         string s = "ss";
-        bool test = false;
         a = 5;
         #print(a + s);
         print(test);

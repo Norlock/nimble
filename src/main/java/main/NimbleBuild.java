@@ -112,7 +112,6 @@ public class NimbleBuild {
         // Set static variables
         for(String key : NimbleVisitor.fields.keySet()) {
             FieldData fieldData = NimbleVisitor.fields.get(key);
-            String fieldName = fieldData.getFieldNameFull();
             int type = fieldData.getDataType();
 
             sb.appendLine(".field public static " + fieldData.getIdentifier() + " "
