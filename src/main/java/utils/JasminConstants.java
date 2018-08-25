@@ -7,6 +7,39 @@ public final class JasminConstants {
     // For reading purpose
     public static final String SPACE = " ";
 
+    public enum DataType {
+        STRING("Ljava/lang/String;"),
+        INTEGER("I"),
+        DOUBLE("D"),
+        BOOLEAN("Z");
+
+        private final String value;
+
+        DataType(String value) {
+            this.value = value;
+        }
+
+        public static String getDataTypeStr(int type) {
+            switch (type) {
+                case NimbleParser.INTEGER_TYPE:
+                    return DataType.INTEGER.toString();
+                case NimbleParser.BOOLEAN_TYPE:
+                    return DataType.BOOLEAN.toString();
+                case NimbleParser.DOUBLE_TYPE:
+                    return DataType.DOUBLE.toString();
+                case NimbleParser.STRING_TYPE:
+                    return DataType.STRING.toString();
+                default:
+                    throw new RuntimeException("Unknown type");
+            }
+        }
+
+        @Override
+        public String toString() {
+            return value;
+        }
+    }
+
     public enum Prefix {
         INTEGER_OR_BOOLEAN("i"),
         STRING("a"),
@@ -18,7 +51,7 @@ public final class JasminConstants {
             this.value = value;
         }
 
-        public static Prefix getPrefixBasedOnType(int type) {
+        public static Prefix getPrefix(int type) {
             switch (type) {
                 case NimbleParser.INTEGER_TYPE:
                     return Prefix.INTEGER_OR_BOOLEAN;
@@ -101,6 +134,7 @@ public final class JasminConstants {
     public static final String INVOKE_VIRTUAL = "invokevirtual" + SPACE;
     public static final String INVOKE_STATIC = "invokestatic" + SPACE;
     public static final String GET_STATIC = "getstatic" + SPACE;
+    public static final String PUT_STATIC = "putstatic" + SPACE;
 
     // push System.out onto the stack
     public static final String LOAD_SYSO_ONTO_STACK = GET_STATIC + "java/lang/System.out Ljava/io/PrintStream;";

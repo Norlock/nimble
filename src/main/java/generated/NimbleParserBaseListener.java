@@ -28,13 +28,25 @@ public class NimbleParserBaseListener implements NimbleParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterDeclarations(NimbleParser.DeclarationsContext ctx) { }
+	@Override public void enterComponent(NimbleParser.ComponentContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitDeclarations(NimbleParser.DeclarationsContext ctx) { }
+	@Override public void exitComponent(NimbleParser.ComponentContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterClassDeclaration(NimbleParser.ClassDeclarationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitClassDeclaration(NimbleParser.ClassDeclarationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

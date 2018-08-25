@@ -9,6 +9,8 @@ public final class JasminHelper {
         return "label" + labelIndex++;
     }
 
+    public static String className = "";
+
     public static int getVariableIndex() {
         return variableIndex;
     }

@@ -1,6 +1,3 @@
-# Uitzoeken
-* vars van verschillende blocken kunnen dezelfde naam hebben
-
 # Compiler *main.Nimble*
 main.Nimble, wat vlug en licht in beweging betekend, is een programmeertaal die is ontwikkeld om vlugger en eenvoudiger code
 te kunnen schrijven. 

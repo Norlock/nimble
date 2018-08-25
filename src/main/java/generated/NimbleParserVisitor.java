@@ -17,11 +17,17 @@ public interface NimbleParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitParse(NimbleParser.ParseContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link NimbleParser#declarations}.
+	 * Visit a parse tree produced by {@link NimbleParser#component}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitDeclarations(NimbleParser.DeclarationsContext ctx);
+	T visitComponent(NimbleParser.ComponentContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link NimbleParser#classDeclaration}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitClassDeclaration(NimbleParser.ClassDeclarationContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link NimbleParser#comment}.
 	 * @param ctx the parse tree

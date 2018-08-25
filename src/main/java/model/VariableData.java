@@ -15,7 +15,7 @@ public class VariableData extends BaseValue {
         this.varType = varType;
         this.varIndex = variableIndex;
 
-        String prefix = JasminConstants.Prefix.getPrefixBasedOnType(varType).toString();
+        String prefix = JasminConstants.Prefix.getPrefix(varType).toString();
         if(0 <= variableIndex && variableIndex <= 3) {
             addCommand(prefix + JasminConstants.LOAD_VAL_SMALL + variableIndex);
         } else {

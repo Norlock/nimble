@@ -1,7 +1,6 @@
 package model;
 
 import generated.NimbleParser;
-import main.ParseException;
 import org.antlr.v4.runtime.ParserRuleContext;
 import utils.JasminConstants;
 import utils.JasminHelper;
@@ -91,11 +90,11 @@ public class ExpressionData extends BaseExpression {
             loadDataOntoStack(NimbleParser.DOUBLE_TYPE);
 
         if (operatorType == NimbleParser.MULTIPLY)
-            addCommand(JasminConstants.Prefix.getPrefixBasedOnType(resultType) + JasminConstants.MULTIPLY);
+            addCommand(JasminConstants.Prefix.getPrefix(resultType) + JasminConstants.MULTIPLY);
         else if (operatorType == NimbleParser.DIVIDE)
-            addCommand(JasminConstants.Prefix.getPrefixBasedOnType(resultType) + JasminConstants.DIVIDE);
+            addCommand(JasminConstants.Prefix.getPrefix(resultType) + JasminConstants.DIVIDE);
         else
-            addCommand(JasminConstants.Prefix.getPrefixBasedOnType(resultType) + JasminConstants.MODULO);
+            addCommand(JasminConstants.Prefix.getPrefix(resultType) + JasminConstants.MODULO);
 
     }
 

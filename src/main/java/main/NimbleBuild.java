@@ -1,8 +1,12 @@
 package main;
 
+import model.FieldData;
 import model.JavaByteCommand;
 import model.ParserData;
 import org.apache.commons.io.FilenameUtils;
+import utils.CustomStringBuilder;
+import utils.JasminConstants;
+import utils.JasminHelper;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -10,14 +14,13 @@ import java.nio.file.Paths;
 
 public class NimbleBuild {
 
-    private final String filenameFull,  filenameBase, className;
+    private final String filenameFull,  filenameBase;
     private final static String BUILD_DIR = "nim-build";
     private Path outputFile;
 
     public NimbleBuild(String filePath) {
         filenameFull = FilenameUtils.getName(filePath);
         filenameBase = FilenameUtils.getBaseName(filenameFull);
-        className = filenameBase.substring(0, 1).toUpperCase() + filenameBase.substring(1);
 
         String extension = FilenameUtils.getExtension(filePath);
         if(!extension.equals("nim")) {
@@ -37,7 +40,7 @@ public class NimbleBuild {
             try (PrintWriter out = new PrintWriter(outputFile.toString())) {
                 out.println(getFileHeader(100, 100));
                 for (JavaByteCommand command : parserData.getCode()) {
-                    out.println("\t\t" + command.toString());
+                    out.println("\t" + command.toString());
                 }
                 out.println(getFileFooter());
             } catch (FileNotFoundException e) {
@@ -53,7 +56,7 @@ public class NimbleBuild {
         File buildDir = new File(BUILD_DIR);
         compile.directory(buildDir);
         executeCommand(compile);
-        ProcessBuilder run = new ProcessBuilder("java", className);
+        ProcessBuilder run = new ProcessBuilder("java", JasminHelper.className);
         run.directory(buildDir);
         executeCommand(run);
     }
@@ -92,8 +95,7 @@ public class NimbleBuild {
     }
 
     private String getFileFooter() {
-        return  "        return\n" +
-                "    .end method";
+        return  "\treturn\n" + ".end method";
     }
 
     private String getFileHeader(int stackSize, int varAndParamsCount) {
@@ -102,18 +104,31 @@ public class NimbleBuild {
         if(varAndParamsCount == 0)
             varAndParamsCount = 99;
 
-        return ".class public " + className + "\n" +
-                "    .super java/lang/Object\n\n" +
-                "    ; Default constructor (empty constructor)\n" +
-                "    .method public <init>()V\n" +
-                "        aload_0                                     ; Loads \"this\" on the stack\n" +
-                "        invokenonvirtual java/lang/Object/<init>()V ; Call super constructor\n" +
-                "        return                                      ; Terminate method\n" +
-                "    .end method\n" +
-                "    \n" +
-                "    ; Method definition for public static void main(String[] args)\n" +
-                "    .method public static main([Ljava/lang/String;)V\n" +
-                "        .limit stack " + stackSize + "\n" +
-                "        .limit locals " + varAndParamsCount + "\n";
+        CustomStringBuilder sb = new CustomStringBuilder();
+
+        sb.appendLine(".class public " + JasminHelper.className);
+        sb.appendLine(".super java/lang/Object");
+        sb.appendLine();
+        // Set static variables
+        for(String key : NimbleVisitor.fields.keySet()) {
+            FieldData fieldData = NimbleVisitor.fields.get(key);
+            String fieldName = fieldData.getFieldNameFull();
+            int type = fieldData.getDataType();
+
+            sb.appendLine(".field public static " + fieldData.getIdentifier() + " "
+                + JasminConstants.DataType.getDataTypeStr(type));
+        }
+        sb.appendLine();
+        sb.appendLine(".method public <init>()V");
+        sb.appendLine("\taload_0                                      ; Loads \"this\" on the stack");
+        sb.appendLine("\tinvokenonvirtual java/lang/Object/<init>()V  ; Call super constructor");
+        sb.appendLine("\treturn                                       ; Terminate method");
+        sb.appendLine(".end method");
+        sb.appendLine();
+        sb.appendLine("; Method definition for public static void main(String[] args)");
+        sb.appendLine(".method public static main([Ljava/lang/String;)V");
+        sb.appendLine("\t.limit stack " + stackSize);
+        sb.appendLine("\t.limit locals " + varAndParamsCount);
+        return sb.toString();
     }
 }

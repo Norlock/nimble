@@ -2,14 +2,16 @@ parser grammar NimbleParser;
 
 options { tokenVocab=NimbleLexer; }
 
-// functies en fields mogen boven de main bevinden.
-parse: declarations* main declarations* EOF;
+parse: classDeclaration component* main component* EOF;
 
-declarations
+component
     : field
     | function
     | comment
     ;
+
+classDeclaration
+    : CLASS IDENTIFIER SEMICOLON ;
 
 comment
     : COMMENT
