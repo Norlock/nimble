@@ -196,6 +196,18 @@ public class NimbleParserBaseListener implements NimbleParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterReturnStatement(NimbleParser.ReturnStatementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitReturnStatement(NimbleParser.ReturnStatementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterReturnValue(NimbleParser.ReturnValueContext ctx) { }
 	/**
 	 * {@inheritDoc}

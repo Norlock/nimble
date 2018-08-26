@@ -52,6 +52,7 @@ statement
     | whileLoop
     | printStatement
     | comment
+    | returnStatement
     ;
 
 
@@ -60,12 +61,15 @@ ifStatement
     ;
 
 functionCall
-    : IDENTIFIER LEFT_PARENTHESE atom RIGHT_PARENTHESE SEMICOLON
+    : IDENTIFIER LEFT_PARENTHESE expression* RIGHT_PARENTHESE SEMICOLON
     ;
 
 printStatement
     : PRINT condition SEMICOLON
     ;
+
+returnStatement
+    : RETURN expression? SEMICOLON ;
 
 returnValue
     : variableType

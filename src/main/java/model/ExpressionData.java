@@ -1,6 +1,9 @@
 package model;
 
 import generated.NimbleParser;
+import model.commands.BranchOffCommand;
+import model.commands.BranchOffType;
+import model.commands.JavaByteCommand;
 import org.antlr.v4.runtime.ParserRuleContext;
 import utils.JasminConstants;
 import utils.JasminHelper;

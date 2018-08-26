@@ -1,4 +1,4 @@
-package model;
+package model.commands;
 
 import utils.JasminConstants;
 
@@ -21,9 +21,7 @@ public enum BranchOffType {
     IF_INTEGER_LEFT_GREATER_OR_EQUAL("if_icmpge"),
 
     IF_INTEGER_LEFT_IS_LESS("if_icmplt"),
-    IF_INTEGER_LEFT_IS_LESSER_OR_EQUAL("if_icmple"),
-
-    GOTO("goto"); // Not a real branch off type but functions the same
+    IF_INTEGER_LEFT_IS_LESSER_OR_EQUAL("if_icmple");
 
     private final String value;
     private boolean isInverted;

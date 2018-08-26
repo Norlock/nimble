@@ -1,11 +1,8 @@
 package model;
 
 import generated.NimbleParser;
-import main.Nimble;
-import main.ParseException;
 import org.antlr.v4.runtime.ParserRuleContext;
 import utils.JasminConstants;
-import utils.JasminHelper;
 
 
 public abstract class BaseValue extends ParserData {

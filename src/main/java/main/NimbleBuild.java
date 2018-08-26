@@ -1,12 +1,10 @@
 package main;
 
-import generated.NimbleParser;
-import model.FieldData;
-import model.JavaByteCommand;
+import model.commands.JavaByteCommand;
 import model.ParserData;
+import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.commons.io.FilenameUtils;
 import utils.CustomStringBuilder;
-import utils.JasminConstants;
 import utils.JasminHelper;
 
 import java.io.*;
@@ -39,11 +37,11 @@ public class NimbleBuild {
 
             outputFile = Paths.get(BUILD_DIR, filenameBase + ".j");
             try (PrintWriter out = new PrintWriter(outputFile.toString())) {
-                out.println(getFileHeader());
+//                out.println(getFileHeader(parserData.getCtx()));
                 for (JavaByteCommand command : parserData.getCode()) {
                     out.println("\t" + command.toString());
                 }
-                out.println(getFileFooter());
+//                out.println(getFileFooter());
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
@@ -95,38 +93,4 @@ public class NimbleBuild {
         return(directory.delete());
     }
 
-    private String getFileFooter() {
-        return  "\treturn\n" + ".end method";
-    }
-
-    private String getFileHeader() {
-        int stackSize = 100; // Resize for bigger programs
-        int varAndParamsCount = JasminHelper.getVariableIndex() + 1;
-
-        CustomStringBuilder sb = new CustomStringBuilder();
-
-        sb.appendLine(".class public " + JasminHelper.className);
-        sb.appendLine(".super java/lang/Object");
-        sb.appendLine();
-        // Set static variables
-        for(String key : NimbleVisitor.fields.keySet()) {
-            FieldData fieldData = NimbleVisitor.fields.get(key);
-            int type = fieldData.getDataType();
-
-            sb.appendLine(".field public static " + fieldData.getIdentifier() + " "
-                + JasminConstants.DataType.getDataTypeStr(type));
-        }
-        sb.appendLine();
-        sb.appendLine(".method public <init>()V");
-        sb.appendLine("\taload_0                                      ; Loads \"this\" on the stack");
-        sb.appendLine("\tinvokenonvirtual java/lang/Object/<init>()V  ; Call super constructor");
-        sb.appendLine("\treturn                                       ; Terminate method");
-        sb.appendLine(".end method");
-        sb.appendLine();
-        sb.appendLine("; Method definition for public static void main(String[] args)");
-        sb.appendLine(".method public static main([Ljava/lang/String;)V");
-        sb.appendLine("\t.limit stack " + stackSize);
-        sb.appendLine("\t.limit locals " + varAndParamsCount);
-        return sb.toString();
-    }
 }

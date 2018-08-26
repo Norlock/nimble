@@ -1,6 +1,9 @@
 package model;
 
 import main.ParseException;
+import model.commands.BranchOffCommand;
+import model.commands.BranchOffType;
+import model.commands.JavaByteCommand;
 import org.antlr.v4.runtime.ParserRuleContext;
 import utils.JasminConstants;
 
@@ -34,7 +37,6 @@ public class ParserData {
     public void appendCode(ParserData parserData) {
         code.addAll(parserData.getCode());
     }
-
 
     public void addCommand(String command) {
         code.add(new JavaByteCommand(command));

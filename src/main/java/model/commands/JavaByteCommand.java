@@ -1,4 +1,6 @@
-package model;
+package model.commands;
+
+import model.commands.BranchOffCommand;
 
 public class JavaByteCommand {
     private String command;
@@ -6,10 +8,6 @@ public class JavaByteCommand {
     protected JavaByteCommand() {}
 
     public JavaByteCommand(String command) {
-        this.command = command;
-    }
-
-    public void setCommand(String command) {
         this.command = command;
     }
 

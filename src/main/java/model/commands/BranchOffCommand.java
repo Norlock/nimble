@@ -1,4 +1,4 @@
-package model;
+package model.commands;
 
 public class BranchOffCommand extends JavaByteCommand {
     private BranchOffType type;

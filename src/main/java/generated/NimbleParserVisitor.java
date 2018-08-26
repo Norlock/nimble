@@ -101,6 +101,12 @@ public interface NimbleParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitPrintStatement(NimbleParser.PrintStatementContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link NimbleParser#returnStatement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitReturnStatement(NimbleParser.ReturnStatementContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link NimbleParser#returnValue}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

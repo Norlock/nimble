@@ -1,3 +1,5 @@
+TODO FUNCTIE fixen! daarna klaar finito.
+
 # Compiler *main.Nimble*
 main.Nimble, wat vlug en licht in beweging betekend, is een programmeertaal die is ontwikkeld om vlugger en eenvoudiger code
 te kunnen schrijven. 
@@ -14,7 +16,6 @@ Deze termen spreken direct tot de verbeelding voor de ontwikkelaar.
 main {
   global String name;
   global int trackCount;
-  domain String description;
 }
 ```
 
