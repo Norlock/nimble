@@ -253,10 +253,101 @@ if(someBool || someBool)
 ```
 
 Wanneer de linker someBool `ifne` omgedraaid wordt naar `ifeq`, mag dat alleen op het linker object gebeuren. Als deze
-naar dezelfde referentie verwijzen zouden er problemen kunnen ontstaan. Dit probleem wordt al vanaf het begin opgelost:
+naar dezelfde referentie verwijzen zouden er problemen kunnen ontstaan. Dit probleem wordt vanaf het begin opgelost:
 
+```Java
+@Override
+public ParserData visitIdentifierAtom(NimbleParser.IdentifierAtomContext ctx) {
+	BaseValue var = JasminHelper.getFieldOrVariable(ctx.getText(), ctx);
+	if (var == null)
+		throw new ParseException(ctx, "Variable has not been declared yet.");
+	else if (var instanceof FieldData)
+		return new FieldData((FieldData) var);
+	else
+		return new VariableData((VariableData) var);
+}
 ```
 
+**JasminConstants** <br>
+Dit is een constante klasse die alle Jasmin commando's bevat. Veel commando's zijn afgekort en niet makkelijk leesbaar,
+deze klasse is om te ontwikkelaar daarbij te ondersteunen. Zo wordt `ifne` bijvoorbeeld `IF_NOT_EQUAL`.
 
+# 4. Databeheer
+Er is veel data wat niet zomaar geretouneerd kan worden en die opverschillende wijze berekend moet worden. Bijvoorbeeld
+moeten methodes kennis hebben van de laatste index waar een variabelen is opgeslagen. Deze "persistente" data wordt
+beheerd door de `JasminHelper` klasse. Deze JasminHelper klasse heeft voornamelijk static methodes die waarden retouneren aan
+de hand van de context van de opvrager. Deze informatie worden met recursieve methodes opgehaald:
+
+```Java
+private static ParserRuleContext getRootContext(ParserRuleContext ctx) {
+	if(ctx instanceof NimbleParser.FunctionContext || ctx instanceof NimbleParser.MainContext)
+		return ctx;
+	else if(ctx.invokingState == -1)
+		return null;
+	else
+		return getRootContext(ctx.getParent());
+}
+```
+
+Met deze root context kan bijvoorbeeld de functie identifier worden bepaald. 
+
+## 4.1 Variabelen
+Variabelen worden opgeslagen in een hashmap. De key is een hashCode die afkomstig is van een blok context. Elk blok kan
+variabelen declareren. De reden dat deze per blok context worden opgeslagen en niet per functie is om de volgende
+reden:
+
+```
+Main { # blockContext hash code 11100...
+  string a = "some string";
+
+  if(2 < 3) { # blockContext hash code 2141.....
+    string b = "other string";
+  } else { # blockContext hash code 1234.....
+    string b = "normal string";
+	a = "change string";
+  }
+}
+```
+
+String b mag in principe gezet worden, maar als deze op functie niveau worden opgeslagen zullen de twee strings clashen.
+Per blok kan nu recursieve omhoog gewerkt worden om te kijken of deze variabelen geldig is. Dat wordt gedaan met de
+volgende functie:
+
+```Java
+private static HashSet<Integer> getHashCodesRecursivelyUp(ParserRuleContext ctx, HashSet<Integer> hashCodes) {
+	if(ctx.invokingState == -1) {
+		return hashCodes;
+	} else if(ctx instanceof  NimbleParser.BlockContext || ctx instanceof NimbleParser.FunctionContext) {
+		hashCodes.add(ctx.hashCode());
+	}
+
+	return getHashCodesRecursivelyUp(ctx.getParent(), hashCodes);
+}
+```
+
+Deze HashSet zal de hashcodes van de blokken ophalen, maar alleen vanaf caller omhoog. Naast deze help methode is er ook
+een methode die het blok van de caller kan ophalen. Wanneer je een variabelen zet, zal deze opgeslagen worden in de
+eerste block die de vrager richting root tegenkomt. 
+
+Hash codes kunnen in principe botsen, maar de kans is miniem. In de toekomst zou daar nog iets op gevonden kunnen worden
+om deze bosting te ontwijken.
+
+## 4.1.1 Containers
+FunctionContainers slaan data op m.b.t. de functie. Deze containers kunnen benaderd worden via de JasminHelper m.b.v. de
+functie identifier. Deze klasse bevatten informatie over de variabelen index van deze functie, de return waarde en de
+constructor parameters. Deze constructer parameters moeten "persistent" beheerd worden, omdat de aanvraag van de
+methode niks weet van de methode zelf. De aanvraag methode moet in het volgende geval een foutmelding opleveren:
+
+```
+main {
+	function("this is a string");
+}
+
+global void function(int a) {
+	# do something ...
+}
+```
+
+In de visitor kan de identifier van de aanroeper van de methode bepaalde worden. 
 
 

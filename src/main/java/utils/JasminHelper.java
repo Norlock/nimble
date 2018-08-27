@@ -48,6 +48,11 @@ public final class JasminHelper {
         functionContainers.get(identifier).updateVariableIndex(varType);
     }
 
+    /**
+     * Haalt de root context op, rootcontext is bijvoorbeeld de functie context of main context.
+     * @param ctx
+     * @return
+     */
     private static ParserRuleContext getRootContext(ParserRuleContext ctx) {
         if(ctx instanceof NimbleParser.FunctionContext || ctx instanceof NimbleParser.MainContext)
             return ctx;
@@ -55,7 +60,6 @@ public final class JasminHelper {
             return null;
         else
             return getRootContext(ctx.getParent());
-
     }
 
     private static VariableData getVariable(String identifier, ParserRuleContext ctx) {

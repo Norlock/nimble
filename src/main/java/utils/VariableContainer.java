@@ -1,6 +1,5 @@
 package utils;
 
-import generated.NimbleParser;
 import model.VariableData;
 
 import java.util.HashMap;
