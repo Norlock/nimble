@@ -143,7 +143,7 @@ public final class JasminHelper {
     }
 
     /**
-     * Returns the hash codes for each block in the tree of context.
+     * Returns the hash codes for each block in the tree of context towards the root.
      *
      * @param ctx context of caller.
      * @return hash codes of the blocks.

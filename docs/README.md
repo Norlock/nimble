@@ -1,6 +1,29 @@
 # Compiler *Nimble*
 
-# 1. Taal introductie
+![alt text](https://s3.amazonaws.com/kukuruku-co/uploads/images/59/03/5903d81e484b2.jpg)
+
+Gemaakt door: Joris Willems<br>
+Student nummer: 349672<br>
+Datum: 27-8-2018<br>
+
+---
+
+# Inhoudsopgave
+1. [Taal introductie](#introductie)
+	1. [Data typen](#typen)
+	2. [Commentaar](#commentaar)
+	3. [Bestandsindeling](#indeling)
+2. [Grammatica regels](#grammar)
+	1. [Statements](#statements)
+	2. [Expressies](#expressies)
+	3. [Atromen](#atomen)
+	4. [Overzicht visitor boom](#boom)
+3. [Code architectuur](#architectuur)
+	1. [Klasse structuur](#klasse-structuur)
+4. [Databeheer](#databeheer)
+	1. [Variabelen](#variabelen)
+
+# 1. Taal introductie <a name="introductie"></a>
 Nimble, wat vlug en licht in beweging betekend, is een programmeertaal die gebasseerd is op JavaScript, om vlugger
 en eenvoudiger code te kunnen schrijven. Alles wordt net als in JavaScript in 1 bestand gedaan. Er zit wat syntactic
 sugar in om minder code te hoeven schrijven. Bijvoorbeeld de print() methode roept automatisch system.out.println() op
@@ -41,7 +64,7 @@ zal als output: 0 opleveren. Alles mag direct worden geprint:
 
 ```
 int a = 6;
-string test = "test string"
+string test = "test string";
 print a + 3;  // 9
 print 3 + a; // 9
 print "een " + test; // een test string
@@ -50,19 +73,23 @@ print (test + 6); // test string6
 
 Deze waarden zullen allemaal uitgeprint worden. 
 
-## 1.1 Data types
-Nimble maakt gebruik van de volgende vier data types:
+## 1.1 Data typen
+Nimble maakt gebruik van de volgende vier data typen:
 * string (in java String)
 * bool (in java boolean)
 * int
 * double
 
-## 1.1 Commentaar
-In code commentaar kan via twee manieren worden toegevoegd:
-1. `# Dit commentaar geld per regel.`
-2. `<# Dit commentaar kan op meerdere regels verspreid worden #>`
+Wanneer er een double wordt verwacht, maar een integer is meegegeven wordt deze automatisch gecast.
 
-## 1.2 Bestands indeling
+## 1.2 Commentaar
+In code commentaar kan via twee manieren worden toegevoegd:
+1. \# Dit commentaar geld per regel.
+2. <# Dit commentaar kan op meerdere regels verspreid worden #>
+
+Commentaar mag zich overal bevinden, behalve binnen expressies.
+
+## 1.3 Bestands indeling
 Development bestanden in Nimble maken gebruik van de volgende extensie: `.nim`.
 Wanneer de compiler gerund wordt, zal alles direct gebuild en gecompiled worden. De build bestanden zijn te vinden in
 de nim-build folder. Bij elke build zal deze folder verwijderd en opnieuw gecreerd worden. Nimble zal een '*.j' bestand
@@ -81,13 +108,13 @@ class App;
 ```
 
 Deze klasse declaratie zal ook gebruikt worden om de bestandsnaam van de build toe te wijzen: `App.j of App.java`. 
-Code begint bij het main blok.
+Code begint bij het main blok zal in Java als `public static void main(String[] args) gedeclareerd worden.
 
 ```
 class App;
 
 main {
-  # Hier begint de code.
+  # Do something...
 }
 ```
 
@@ -104,6 +131,8 @@ global void someMethod(int a, string b) {
 	
 }
 ```
+
+De compiler zal bij het runnen de output weergeven.
 
 # 2. Grammatica regels
 De grammatica regels worden in het bestand NimbleParser gedefinieerd. Programmeertalen maken gebruik van een aantal
@@ -129,18 +158,18 @@ expressies bevatten. Zoals bijvoorbeeld:
 
 ```
 if(2 < 3) {
-  
+  # do something...
 }
 ```
 
 Hierboven bevat het if - else statement, de expressie: `2 < 3`. Expressies die gebruikt worden in Nimble zijn:
-* Niet expressies
-* optel - aftrek expressies
-* vermenigvuldig - delen - rest expressies
-* relationele vergelijkingen
-* gelijkwaardige vergelijkingen
-* and, of operatoren
-* en atomen
+* Niet expressies (! ...)
+* optel - aftrek expressies (a + b)
+* vermenigvuldig - delen - rest expressies (a * b) (a / b) (a % b)
+* relationele vergelijkingen (a < b)
+* gelijkwaardige vergelijkingen (a == b)
+* and, of operatoren (a || b) 
+* en atomen (someBool)
 
 ## 2.3 Atomen
 Atomen zijn inidivuele onderdelen van expressies. Atomen zijn bijvoorbeeld integers, strings, etc. Maar kunnen ook weer
@@ -148,11 +177,17 @@ interne expressies zijn:
 
 ```
 if((2 < 3) && (3 < 4)) {
-  
+  # do something...
 }
 ```
 
 atom 1 is de expressie (2 < 3) ofwel true.
+
+## 2.4 Overzicht visitor boom
+
+![alt text](Tree.png)
+
+Hierboven is een vereenvoudigde weergave van de NimbleVisitorTree. De boom begint en eindigt bij ParseTree. Recursief wordt alle data vanaf de bladeren naar boven geretouneerd. Op deze weergave zijn de expressies niet zichtbaar, deze expressies zullen de bladeren zijn van deze boom.
 
 # 3. Code architectuur
 De visitor klasse van ANTLR retouneerd de klasse: `ParserData`. In het begin heb ik getwijfeld om i.p.v. ParserData een
@@ -185,9 +220,9 @@ istore 8
 label3:
 ```
 
-Hierboven is te zien dat de eerste someBool de commando's 'iload 6, ifeq label4` krijgt. Vervolgens wordt deze via de
-label direct naar de if block geleid (bool a = true;). De tweede somebool `iload 6, ifne label5` werkt zoals bij een
-gewone if statement. Via ParserData kan ik een kopie van de commando ifne opvragen en omzetten naar ifeq. Elk commando
+Hierboven is te zien dat de eerste someBool de commando's `iload 6, ifeq label4` krijgt. Vervolgens wordt deze via de
+label direct naar de if block geleid: `bool a = true;`. De tweede somebool `iload 6, ifne label5` werkt zoals bij een
+gewone if statement. Via ParserData kan een kopie van de commando `ifne` opgevraagd worden en vervolgens worden omgezet naar `ifeq`. Elk commando
 kan automatisch worden 'omgedraaid'.
 
 ## 3.1 Klasse structuur
@@ -208,8 +243,7 @@ De commands sub package bevat de commando klasses. Deze klasses zijn makkelijker
 De utils package bevat allerlei helper klasses om data te vergaren en te manipuleren.
 
 ### 3.1.2 Klasses
-De model klasses lijken op het eerste ogenblik ingewikkeld in elkaar te zitten maar zullen door het volgende diagram een
-stuk duidelijker moeten worden.
+De model klassen worden d.m.v overerving gezet. In het volgende diagram wordt de inheritance structuur duidelijk:
 
 ![alt text](Klasses.png)
 
@@ -247,6 +281,11 @@ weer een expressie zijn).
 **FieldData / VariableData** <br>
 Deze klasses opereren ongeveer gelijk. Belangrijk is dat deze klasses kopie constructoren bevat. Deze kopie
 constructoren worden gebruikt om ongewenste manipulaties te voorkomen. Een voorbeeld kan zijn:
+
+**FileData** <br>
+Deze klasse is een uitzondering die op het eind wordt geretouneerd (begin van de visitor boom). Deze klasse zet alles
+klaar voor het Jasmin bestand. Aan deze klasse worden alle functies en velden (fields) toegevoegd. Fia functie
+containers kan info zoals het aantal locals dat nodig is voor de methode worden gezet. 
 
 ```
 if(someBool || someBool)
@@ -348,6 +387,9 @@ global void function(int a) {
 }
 ```
 
-In de visitor kan de identifier van de aanroeper van de methode bepaalde worden. 
+In de visitor kan de identifier van de aanroeper van de methode bepaalde worden. Deze identifier kan gebruikt worden
+om de functionContainer op te halen via de JasminHelper.
+
+
 
 
