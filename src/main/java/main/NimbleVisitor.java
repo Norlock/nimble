@@ -3,38 +3,34 @@ package main;
 import generated.NimbleParser;
 import generated.NimbleParserBaseVisitor;
 import model.*;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ErrorNode;
-import org.antlr.v4.runtime.tree.TerminalNode;
-import utils.JasminConstants;
+import utils.FunctionContainer;
 import utils.JasminHelper;
 
 public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
 
-
-    // TODO
     @Override
     public ParserData visitParse(NimbleParser.ParseContext ctx) {
-        ParserData main = this.visit(ctx.main());
-        FileData fileData = new FileData(main.getCtx());
-
         this.visit(ctx.classDeclaration());
+        FileData fileData = new FileData(ctx);
+
+        // First iterate through components --> Will assign fields
         for (int i = 0; i < ctx.component().size(); i++) {
             fileData.appendCode(this.visit(ctx.component(i)));
         }
 
+        fileData.appendMain((FunctionData) this.visit(ctx.main()));
         return fileData;
     }
 
     @Override
     public ParserData visitMain(NimbleParser.MainContext ctx) {
-        return this.visit(ctx.block());
+        return new FunctionData(this.visit(ctx.block()));
     }
 
     @Override
     public ParserData visitClassDeclaration(NimbleParser.ClassDeclarationContext ctx) {
         JasminHelper.className = ctx.IDENTIFIER().getText();
-        return super.visitClassDeclaration(ctx);
+        return new ParserData(ctx);
     }
 
     @Override
@@ -43,7 +39,8 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
             return visit(ctx.field());
         else if (ctx.function() != null)
             return visit(ctx.function());
-        return super.visitComponent(ctx); // TODO checken of comments of hier worden gehonoreerd.
+
+        return new ParserData(ctx);
     }
 
     @Override
@@ -77,7 +74,6 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
             int varIndex = JasminHelper.getVariableIndex(ctx);
             parserData = JasminHelper.getVariableAssignment(ctx, varType, varIndex, value);
             JasminHelper.setVariable(ctx, id, new VariableData(ctx, varType, varIndex));
-            JasminHelper.updateVariableIndex(ctx, varType);
         }
 
         return parserData;
@@ -155,15 +151,33 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
 
     @Override
     public ParserData visitFunction(NimbleParser.FunctionContext ctx) {
-        ParserData parserData = new ParserData(ctx);
+        // Will load the constructor variables
         JasminHelper.setVariableBlock(ctx);
-        parserData.appendCode(this.visit(ctx.constructorDeclaration()));
-        return super.visitFunction(ctx);
+        this.visit(ctx.constructorDeclaration());
+        this.visit(ctx.returnValue());
+
+        ParserData parserData = new FunctionData(ctx);
+        parserData.appendCode(this.visit(ctx.block()));
+        return parserData;
+    }
+
+    /**
+     * What kind of data type does it expects to return? void, bool, etc.
+     * @param ctx context
+     * @return no modified return value.
+     */
+    @Override
+    public ParserData visitReturnValue(NimbleParser.ReturnValueContext ctx) {
+        int type = ctx.variableType().start.getType();
+        FunctionContainer container = JasminHelper.getFunctionContainer(ctx);
+        container.setReturnType(type);
+        return new ParserData(ctx);
     }
 
     @Override
-    public ParserData visitReturnValue(NimbleParser.ReturnValueContext ctx) {
-        return super.visitReturnValue(ctx);
+    public ParserData visitReturnStatement(NimbleParser.ReturnStatementContext ctx) {
+        BaseValue value = (BaseValue) this.visit(ctx.expression());
+        return JasminHelper.getReturnAssignment(ctx, value);
     }
 
     @Override
@@ -181,23 +195,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
     @Override
     public ParserData visitPrintStatement(NimbleParser.PrintStatementContext ctx) {
         BaseValue data = (BaseValue) this.visit(ctx.condition());
-        ParserData print = new ParserData(ctx);
-
-        print.addCommand(JasminConstants.LOAD_SYSO_ONTO_STACK);
-
-        if (data instanceof BaseExpression && data.isBoolean()) {
-            BaseExpression baseExpression = (BaseExpression) data;
-            baseExpression.setBooleanReturnValue();
-        }
-
-        print.appendCode(data);
-
-        // Call println
-        String printStr = JasminConstants.INVOKE_VIRTUAL + "java/io/PrintStream/println("
-                + JasminConstants.DataType.getDataTypeStr(data.getDataType()) + ")V";
-
-        print.addCommand(printStr);
-        return print;
+        return JasminHelper.getPrintAssignment(ctx, data);
     }
 
     @Override
@@ -228,7 +226,7 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
 
     @Override
     public ParserData visitConstructorDeclaration(NimbleParser.ConstructorDeclarationContext ctx) {
-        return visit(ctx.constructorParameters());
+        return this.visit(ctx.constructorParameters());
     }
 
     @Override
@@ -236,12 +234,12 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
 
         for(int i = 0; i < ctx.variableType().size(); i++) {
             int varType = ctx.variableType(i).start.getType();
+            int varIndex = JasminHelper.getVariableIndex(ctx);
             String identifier = ctx.IDENTIFIER(i).getText();
 
-            int varIndex = JasminHelper.getVariableIndex(ctx);
             JasminHelper.setVariable(ctx, identifier, new VariableData(ctx, varType, varIndex));
-            System.out.println("vartype is: " + JasminConstants.DataType.getDataTypeStr(varType));
-            System.out.println("Identifier: " + identifier);
+            FunctionContainer container = JasminHelper.getFunctionContainer(ctx);
+            container.appendConstructorParam(varType);
         }
 
         // Nothing has to be added, variables are already loaded.
@@ -370,20 +368,5 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
             throw new ParseException(ctx, "Variable has not been declared yet.");
         else
             return var;
-    }
-
-    @Override
-    public ParserData visitNullAtom(NimbleParser.NullAtomContext ctx) {
-        return super.visitNullAtom(ctx);
-    }
-
-    @Override
-    public ParserData visitTerminal(TerminalNode terminalNode) {
-        return super.visitTerminal(terminalNode);
-    }
-
-    @Override
-    public ParserData visitErrorNode(ErrorNode errorNode) {
-        return super.visitErrorNode(errorNode);
     }
 }

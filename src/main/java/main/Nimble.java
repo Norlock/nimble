@@ -2,6 +2,7 @@ package main;
 
 import generated.NimbleLexer;
 import generated.NimbleParser;
+import model.FileData;
 import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -22,7 +23,8 @@ public class Nimble {
             NimbleParser nimbleParser = new NimbleParser(new CommonTokenStream(nimbleLexer));
             NimbleVisitor nimbleVisitor = new NimbleVisitor();
             ParseTree tree = nimbleParser.parse();
-            nimbleBuild.generate(nimbleVisitor.visit(tree));
+            FileData fileData = (FileData) nimbleVisitor.visit(tree);
+            nimbleBuild.generate(fileData);
             nimbleBuild.execute();
         } catch (IOException e) {
             System.out.println("File not found");

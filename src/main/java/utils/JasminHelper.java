@@ -1,7 +1,6 @@
 package utils;
 
 import generated.NimbleParser;
-import main.Nimble;
 import main.ParseException;
 import model.*;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -17,8 +16,8 @@ public final class JasminHelper {
     // store variables Integer = hashcode.
     private static Map<Integer, VariableContainer> variables = new HashMap<>();
 
-    // String = method identifier, integer is variable index.
-    private static Map<String, Integer> variableIndexes = new HashMap<>();
+    // String = method identifier, FunctionContainer holds the variable index and returnType.
+    private static Map<String, FunctionContainer> functionContainers = new HashMap<>();
 
     // String = field identifier
     private static Map<String, FieldData> fields = new HashMap<>();
@@ -30,53 +29,25 @@ public final class JasminHelper {
     public static String className = "";
 
     public static int getVariableIndex(ParserRuleContext ctx) {
-        ParserRuleContext rootContext = getRootContext(ctx);
-        if(rootContext == null)
+        String identifier = getFunctionIdentifier(ctx);
+        if(identifier == null)
             throw new ParseException(ctx, "Something unexpected has occured");
-        if(rootContext instanceof NimbleParser.MainContext) {
-            NimbleParser.MainContext mainContext = (NimbleParser.MainContext) rootContext;
-            return variableIndexes.get(mainContext.MAIN().getText());
-        } else {
-            NimbleParser.FunctionContext functionContext = (NimbleParser.FunctionContext) rootContext;
-            return variableIndexes.get(functionContext.IDENTIFIER().getText());
-        }
+
+        return functionContainers.get(identifier).getVariableIndex();
     }
 
     /**
      * Updates the variable index.
      * @param ctx context of the caller
-     * @param type type of variable
+     * @param varType type of variable
      */
-    public static void updateVariableIndex(ParserRuleContext ctx, int type) {
-        String identifier;
-        ParserRuleContext rootContext = getRootContext(ctx);
-
-        if(rootContext == null)
+    private static void updateVariableIndex(ParserRuleContext ctx, int varType) {
+        String identifier = getFunctionIdentifier(ctx);
+        if(identifier == null)
             throw new ParseException(ctx, "Something unexpected has occured");
-        if(rootContext instanceof NimbleParser.MainContext) {
-            NimbleParser.MainContext mainContext = (NimbleParser.MainContext) rootContext;
-            identifier = mainContext.MAIN().getText();
-        } else {
-            NimbleParser.FunctionContext functionContext = (NimbleParser.FunctionContext) rootContext;
-            identifier = functionContext.IDENTIFIER().getText();
-        }
 
-        int index = variableIndexes.get(identifier);
-        variableIndexes.put(identifier, getIncrementedVariableIndex(index, type));
+        functionContainers.get(identifier).updateVariableIndex(varType);
     }
-
-    private static int getIncrementedVariableIndex(int variableIndex, int type) {
-        if(type == NimbleParser.INTEGER_TYPE
-                || type == NimbleParser.BOOLEAN_TYPE
-                || type == NimbleParser.STRING_TYPE) {
-            return variableIndex+1;
-        } else if(type == NimbleParser.DOUBLE_TYPE) {
-            return variableIndex+2;
-        } else {
-            throw new RuntimeException("Unknown type");
-        }
-    }
-
 
     private static ParserRuleContext getRootContext(ParserRuleContext ctx) {
         if(ctx instanceof NimbleParser.FunctionContext || ctx instanceof NimbleParser.MainContext)
@@ -88,7 +59,7 @@ public final class JasminHelper {
 
     }
 
-    public static VariableData getVariable(String identifier, ParserRuleContext ctx) {
+    private static VariableData getVariable(String identifier, ParserRuleContext ctx) {
         HashSet<Integer> hashCodes = getHashCodesRecursivelyUp(ctx, new HashSet<>());
 
         for (int hashCode : hashCodes) {
@@ -109,15 +80,40 @@ public final class JasminHelper {
             return fields.get(identifier);
     }
 
-    public static void setVariableBlock(ParserRuleContext ctx) {
+    public static String getFunctionIdentifier(ParserRuleContext ctx) {
         ParserRuleContext rootContext = getRootContext(ctx);
         if(rootContext instanceof NimbleParser.MainContext) {
             NimbleParser.MainContext mainContext = (NimbleParser.MainContext) rootContext;
-            variableIndexes.put(mainContext.MAIN().getText(), 1); // 0 is this.
+            return mainContext.MAIN().getText();
         } else {
             NimbleParser.FunctionContext functionContext = (NimbleParser.FunctionContext) rootContext;
-            variableIndexes.put(functionContext.IDENTIFIER().getText(), 1); // 0 is this.
+            return functionContext.IDENTIFIER().getText();
         }
+    }
+
+    /**
+     * Initializes a new block for variables.
+     * @param ctx block or function context.
+     */
+    public static void setVariableBlock(NimbleParser.BlockContext ctx) {
+        String identifier = getFunctionIdentifier(ctx);
+        if(!functionContainers.containsKey(identifier))
+            functionContainers.put(identifier, new FunctionContainer());
+
+        // After variable indexes are set, set var container.
+        variables.put(ctx.hashCode(), new VariableContainer());
+    }
+
+    public static FunctionContainer getFunctionContainer(ParserRuleContext ctx) {
+        return functionContainers.get(getFunctionIdentifier(ctx));
+    }
+
+    /**
+     * Initializes a new block for variables.
+     * @param ctx block or function context.
+     */
+    public static void setVariableBlock(NimbleParser.FunctionContext ctx) {
+        functionContainers.put(getFunctionIdentifier(ctx), new FunctionContainer()); // 0 is this.
 
         // After variable indexes are set, set var container.
         variables.put(ctx.hashCode(), new VariableContainer());
@@ -127,6 +123,7 @@ public final class JasminHelper {
         int hashCode = getEncapsulatingBlockHashCode(ctx);
         VariableContainer varContainer = variables.get(hashCode);
         varContainer.put(identifier, variable);
+        updateVariableIndex(ctx, variable.getDataType());
     }
 
     public static void setField(String identifier, FieldData fieldData) {
@@ -146,8 +143,7 @@ public final class JasminHelper {
     private static HashSet<Integer> getHashCodesRecursivelyUp(ParserRuleContext ctx, HashSet<Integer> hashCodes) {
         if(ctx.invokingState == -1) {
             return hashCodes;
-        } else if(ctx instanceof  NimbleParser.BlockContext
-                || ctx instanceof NimbleParser.FunctionContext) {
+        } else if(ctx instanceof  NimbleParser.BlockContext || ctx instanceof NimbleParser.FunctionContext) {
             hashCodes.add(ctx.hashCode());
         }
 
@@ -174,11 +170,44 @@ public final class JasminHelper {
     public static ParserData getFieldAssignment(ParserRuleContext ctx, int varType, String id, BaseValue value) {
         ParserData field = getDataAssignment(ctx, varType, value);
         String staticField = Paths.get(JasminHelper.className, id).toString();
-        field.addCommand(JasminConstants.PUT_STATIC + staticField + " " + JasminConstants.DataType.getDataTypeStr(varType));
+        field.addCommand(JasminConstants.PUT_STATIC + staticField + " " + JasminConstants.DataType.getDataType(varType));
         return field;
     }
 
-    public static ParserData getDataAssignment(ParserRuleContext ctx, int varType, BaseValue value) {
+    public static ParserData getVariableAssignment(ParserRuleContext ctx, int varType, int varIndex, BaseValue value) {
+        ParserData variable = getDataAssignment(ctx, varType, value);
+
+        String prefix = JasminConstants.Prefix.getPrefix(varType).toString();
+        if (0 <= varIndex && varIndex <= 3) {
+            variable.addCommand(prefix + JasminConstants.STORE_VAl_SMALL + varIndex);
+        } else {
+            variable.addCommand(prefix + JasminConstants.STORE_VAL + varIndex);
+        }
+
+        return variable;
+    }
+
+    public static ParserData getReturnAssignment(ParserRuleContext ctx, BaseValue value) {
+        int returnType = getFunctionContainer(ctx).getReturnType();
+        ParserData returnData = getDataAssignment(ctx, returnType, value);
+        returnData.addCommand(JasminConstants.Prefix.getPrefix(returnType) + JasminConstants.RETURN);
+        return returnData;
+    }
+
+    public static ParserData getPrintAssignment(ParserRuleContext ctx, BaseValue value) {
+        ParserData print = new ParserData(ctx);
+        print.addCommand(JasminConstants.LOAD_SYSO_ONTO_STACK);
+
+        print.appendCode(getDataAssignment(ctx, value.getDataType(), value));
+
+        // Call println
+        print.addCommand(JasminConstants.INVOKE_VIRTUAL + "java/io/PrintStream/println("
+                + JasminConstants.DataType.getDataType(value.getDataType()) + ")V");
+
+        return print;
+    }
+
+    private static ParserData getDataAssignment(ParserRuleContext ctx, int varType, BaseValue value) {
         ParserData data = new ParserData(ctx);
         boolean castable = value.isAutoCastable(varType);
         int valueType = value.getDataType();
@@ -197,19 +226,6 @@ public final class JasminHelper {
             data.addCommand(value.getCastCommand(varType));
 
         return data;
-    }
-
-    public static ParserData getVariableAssignment(ParserRuleContext ctx, int varType, int varIndex, BaseValue value) {
-        ParserData variable = getDataAssignment(ctx, varType, value);
-
-        String prefix = JasminConstants.Prefix.getPrefix(varType).toString();
-        if (0 <= varIndex && varIndex <= 3) {
-            variable.addCommand(prefix + JasminConstants.STORE_VAl_SMALL + varIndex);
-        } else {
-            variable.addCommand(prefix + JasminConstants.STORE_VAL + varIndex);
-        }
-
-        return variable;
     }
 
     public static Map<String, FieldData> getFields() {

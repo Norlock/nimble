@@ -20,7 +20,7 @@ public class FieldData extends BaseValue {
         this.id = id;
         fieldNameFull = Paths.get(JasminHelper.className, id).toString();
 
-        addCommand(getStatic + fieldNameFull + " " + JasminConstants.DataType.getDataTypeStr(fieldType));
+        addCommand(getStatic + fieldNameFull + " " + JasminConstants.DataType.getDataType(fieldType));
     }
 
     @Override

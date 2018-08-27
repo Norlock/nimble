@@ -1,8 +1,10 @@
 package model;
 
 import generated.NimbleParser;
+import model.commands.JavaByteCommand;
 import org.antlr.v4.runtime.ParserRuleContext;
 import utils.CustomStringBuilder;
+import utils.FunctionContainer;
 import utils.JasminConstants;
 import utils.JasminHelper;
 
@@ -12,12 +14,12 @@ import java.util.Map;
 public class FileData extends ParserData {
 
     private CustomStringBuilder sb = new CustomStringBuilder();
-    private ArrayList<FunctionData> methods = new ArrayList<>();
+    private ArrayList<FunctionData> functions = new ArrayList<>();
+    private FunctionData main;
     private static final int STACK_SIZE = 100;
 
     /**
-     * Block context of MAIN
-     * @param ctx
+     * @param ctx context.
      */
     public FileData(ParserRuleContext ctx) {
         super(ctx);
@@ -26,15 +28,16 @@ public class FileData extends ParserData {
     @Override
     public void appendCode(ParserData parserData) {
         if(parserData instanceof FunctionData)
-            methods.add((FunctionData) parserData);
+            functions.add((FunctionData) parserData);
         else
-            super.appendCode(parserData);
+            super.appendCode(parserData); // Static fields + main block
     }
 
-    private String getFileHeader(ParserRuleContext ctx) {
-        int stackSize = 100; // Resize for bigger programs
-        int varAndParamsCount = JasminHelper.getVariableIndex(ctx) + 1;
+    public void appendMain(FunctionData main) {
+        this.main = main;
+    }
 
+    private void setFileHeader() {
         sb.appendLine(".class public " + JasminHelper.className);
         sb.appendLine(".super java/lang/Object");
         sb.appendLine();
@@ -47,24 +50,25 @@ public class FileData extends ParserData {
         sb.appendLine(".end method");
         sb.appendLine();
         sb.appendLine("; Method definition for public static void main(String[] args)");
-        appendFunctionHeader(ctx);
-        sb.appendLine(".method public static main([Ljava/lang/String;)V");
-        sb.appendLine("\t.limit stack " + stackSize);
-        sb.appendLine("\t.limit locals " + varAndParamsCount);
-        return sb.toString();
+        appendFunctionHeader(main);
     }
 
-    private String getFileFooter() {
-        return  "\treturn\n" + ".end method";
+    private void setMainFooter() {
+        sb.appendLine("\treturn");
+        sb.appendLine(".end method");
     }
 
-    private void appendFunctionHeader(ParserRuleContext ctx) {
-        sb.appendLine(".method public static main([Ljava/lang/String;)V");
+    private void appendFunctionHeader(FunctionData functionData) {
+        FunctionContainer container = functionData.getFunctionContainer();
+        int variableIndex = container.getVariableIndex();
+        String identifier = JasminHelper.getFunctionIdentifier(functionData.getCtx());
+        sb.appendLine(".method public static " + identifier +
+                "(" + container.getConstructorParams() + ")" + container.getReturnTypeStr());
         sb.appendLine("\t.limit stack " + STACK_SIZE);
-        sb.appendLine("\t.limit locals " + JasminHelper.getVariableIndex(ctx));
+        sb.appendLine("\t.limit locals " + variableIndex);
     }
 
-    public void setStaticFieldDeclarations() {
+    private void setStaticFieldDeclarations() {
         // Set static variables
         Map<String, FieldData> fields = JasminHelper.getFields();
         for(String key : fields.keySet()) {
@@ -72,13 +76,21 @@ public class FileData extends ParserData {
             int type = fieldData.getDataType();
 
             sb.appendLine(".field public static " + fieldData.getIdentifier() + " "
-                    + JasminConstants.DataType.getDataTypeStr(type));
+                    + JasminConstants.DataType.getDataType(type));
         }
     }
 
-    @Override
-    public String toString() {
+    public String getFileStr() {
+        setFileHeader();
 
-        return super.toString();
+        for(JavaByteCommand command : main.getCode()) {
+            sb.appendLine("\t" + command);
+        }
+
+        setMainFooter();
+
+        // TODO functies toevoegen, results van functions fixen.
+
+        return sb.toString();
     }
 }

@@ -1,24 +1,35 @@
 package model;
 
 import generated.NimbleParser;
-import utils.JasminConstants;
+import org.antlr.v4.runtime.ParserRuleContext;
+import utils.FunctionContainer;
+import utils.JasminHelper;
 
 public class FunctionData extends ParserData {
 
-    private String methodName;
-    private JasminConstants.DataType returnValue;
+    private final FunctionContainer functionContainer;
 
-    public FunctionData(NimbleParser.FunctionContext ctx, String methodName, JasminConstants.DataType returnValue) {
+    private FunctionData(ParserRuleContext ctx) {
         super(ctx);
-        this.methodName = methodName;
-        this.returnValue = returnValue;
+        functionContainer = JasminHelper.getFunctionContainer(ctx);
     }
 
-    public String getMethodName() {
-        return methodName;
+    public FunctionData(NimbleParser.FunctionContext ctx) {
+        this((ParserRuleContext) ctx);
     }
 
-    public JasminConstants.DataType getReturnValue() {
-        return returnValue;
+    public FunctionData(ParserData block) {
+        this(block.getCtx());
+        appendCode(block);
+
+        // Set return type voor main.
+        functionContainer.setReturnType(NimbleParser.VOID);
+
+        // Handmatig zetten aangezien geen nimble data type.
+        functionContainer.appendConstructorParam("[Ljava/lang/String;");
+    }
+
+    public FunctionContainer getFunctionContainer() {
+        return functionContainer;
     }
 }

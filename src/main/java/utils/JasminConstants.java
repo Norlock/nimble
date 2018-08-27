@@ -11,7 +11,8 @@ public final class JasminConstants {
         STRING("Ljava/lang/String;"),
         INTEGER("I"),
         DOUBLE("D"),
-        BOOLEAN("Z");
+        BOOLEAN("Z"),
+        VOID("V");
 
         private final String value;
 
@@ -19,16 +20,18 @@ public final class JasminConstants {
             this.value = value;
         }
 
-        public static String getDataTypeStr(int type) {
+        public static DataType getDataType(int type) {
             switch (type) {
                 case NimbleParser.INTEGER_TYPE:
-                    return DataType.INTEGER.toString();
+                    return DataType.INTEGER;
                 case NimbleParser.BOOLEAN_TYPE:
-                    return DataType.BOOLEAN.toString();
+                    return DataType.BOOLEAN;
                 case NimbleParser.DOUBLE_TYPE:
-                    return DataType.DOUBLE.toString();
+                    return DataType.DOUBLE;
                 case NimbleParser.STRING_TYPE:
-                    return DataType.STRING.toString();
+                    return DataType.STRING;
+                case NimbleParser.VOID:
+                    return DataType.VOID;
                 default:
                     throw new RuntimeException("Unknown type");
             }
@@ -90,8 +93,6 @@ public final class JasminConstants {
             STRING_ADD = "ldc" + SPACE,
             DOUBLE_ADD = "ldc2_w" + SPACE;
 
-    public static final String INTEGER_INCREMENT = "iinc";
-
     // Compares doubles
     public static final String COMPARE_DOUBLE = "dcmpl"
             , DOUBLE_COMPARE_IF_LEFT_IS_GREATER = "dcmpg"
@@ -100,32 +101,11 @@ public final class JasminConstants {
     // Convert to double
     public static final String INT_TO_DOUBLE = "i2d" + SPACE;
 
-    // Jasmin will use opposition
-    public static final String IF_EQUAL = "ifeq" + SPACE;
-    public static final String IF_NOT_EQUAL = "ifne" + SPACE;
-
-    // Jasmin will use opposition
-    public static final String IF_GREATER = "ifgt" + SPACE;
-    public static final String IF_GREATER_OR_EQUAL = "ifge" + SPACE;
-
-    // Jasmin will use opposition
-    public static final String IF_LESS = "iflt" + SPACE;
-    public static final String IF_LESS_OR_EQUAL = "ifle" + SPACE;
-
-    // Jasmin will use opposition
-    public static final String IF_INTEGER_COMPARE_EQUAL = "if_icmpeq" + SPACE;
-    public static final String IF_INTEGER_COMPARE_NOT_EQUAL = "if_icmpne" + SPACE;
-
-    // Jasmin will use opposition
-    public static final String IF_INTEGER_LEFT_IS_GREATER = "if_icmpgt" + SPACE;
-    public static final String IF_INTEGER_LEFT_GREATER_OR_EQUAL = "if_icmpge" + SPACE;
-
-    // Jasmin will use opposition
-    public static final String IF_INTEGER_LEFT_IS_LESSER = "if_icmplt" + SPACE;
-    public static final String IF_INTEGER_LEFT_IS_LESSER_OR_EQUAL = "if_icmple" + SPACE;
-
     // Return method
-    public static final String END_METHOD_RETURN = "return";
+    public static final String RETURN = "return" + SPACE;
+
+    // Pop from stack
+    public static final String POP = "pop";
 
     //Invoke methods that are not bound to this class
     public static final String INVOKE_SPECIAL = "invokespecial" + SPACE;

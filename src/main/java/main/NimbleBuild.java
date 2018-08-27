@@ -1,5 +1,6 @@
 package main;
 
+import model.FileData;
 import model.commands.JavaByteCommand;
 import model.ParserData;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -27,7 +28,7 @@ public class NimbleBuild {
         }
     }
 
-    public void generate(ParserData parserData) {
+    public void generate(FileData fileData) {
         System.out.println("parsing: " + filenameFull);
 
         // Reset build
@@ -37,11 +38,7 @@ public class NimbleBuild {
 
             outputFile = Paths.get(BUILD_DIR, filenameBase + ".j");
             try (PrintWriter out = new PrintWriter(outputFile.toString())) {
-//                out.println(getFileHeader(parserData.getCtx()));
-                for (JavaByteCommand command : parserData.getCode()) {
-                    out.println("\t" + command.toString());
-                }
-//                out.println(getFileFooter());
+                out.append(fileData.getFileStr());
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }

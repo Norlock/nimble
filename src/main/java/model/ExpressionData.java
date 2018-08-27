@@ -267,9 +267,9 @@ public class ExpressionData extends BaseExpression {
     private void compareStrings(boolean isEqualOperator, String label) {
         addCommand(JasminConstants.COMPARE_STRING);
         if(isEqualOperator) { // Jasmin uses opposition.
-            addCommand(JasminConstants.IF_NOT_EQUAL + label);
+            addCommand(BranchOffType.IF_NOT_EQUAL, label);
         } else {
-            addCommand(JasminConstants.IF_EQUAL + label);
+            addCommand(BranchOffType.IF_EQUAL, label);
         }
     }
 
