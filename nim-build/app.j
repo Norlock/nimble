@@ -29,7 +29,14 @@
 	isub
 	iconst_3
 	isub
-	invokevirtual java/io/PrintStream/println(I)V
+	iconst_4
+	if_icmpge label1
+	iconst_1
+	goto label2
+	label1:
+	iconst_0
+	label2:
+	invokevirtual java/io/PrintStream/println(Z)V
 	getstatic java/lang/System.out Ljava/io/PrintStream;
 	iload_1
 	invokevirtual java/io/PrintStream/println(I)V

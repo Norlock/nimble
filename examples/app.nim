@@ -6,7 +6,7 @@ main {
     int a = 9;
     int b = 3;
     someField = "nee :(";
-    print(a + b - 6 - 3);
+    print((a + b - 6 - 3) < 4);
     print(b);
     int j = someMethod(3, 3);
 

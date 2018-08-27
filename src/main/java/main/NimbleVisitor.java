@@ -143,11 +143,6 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
     }
 
     @Override
-    public ParserData visitParentheseExpression(NimbleParser.ParentheseExpressionContext ctx) {
-        return this.visit(ctx.expression());
-    }
-
-    @Override
     public ParserData visitFunctionCall(NimbleParser.FunctionCallContext ctx) {
         String identifier = ctx.IDENTIFIER().getText();
 

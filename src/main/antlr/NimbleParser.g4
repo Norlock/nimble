@@ -112,7 +112,7 @@ expression
     ;
 
 atom
-    : LEFT_PARENTHESE expression RIGHT_PARENTHESE   #parentheseExpression
+    : condition                                     #parentheseExpression
     | INTEGER                                       #integerAtom
     | (TRUE | FALSE)                                #booleanAtom
     | IDENTIFIER                                    #identifierAtom
