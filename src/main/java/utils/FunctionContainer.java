@@ -2,12 +2,16 @@ package utils;
 
 import generated.NimbleParser;
 
+import java.nio.file.Paths;
+import java.util.ArrayList;
+
 public class FunctionContainer {
 
-    private int variableIndex = 0, returnType;
+    private int variableIndex, returnType;
     private String constructorParams = "";
     private boolean hasReturnStatement = false;
     private final String identifier;
+    private final ArrayList<Integer> constructorTypes = new ArrayList<>();
 
     public FunctionContainer(String functionIdentifier) {
         this.identifier = functionIdentifier;
@@ -16,11 +20,15 @@ public class FunctionContainer {
         if(identifier.equals(JasminConstants.MAIN)) {
             returnType = NimbleParser.VOID;
             constructorParams = "[Ljava/lang/String;";
-            variableIndex = 1;
         }
     }
 
+    public ArrayList<Integer> getConstructorTypes() {
+        return constructorTypes;
+    }
+
     public void appendConstructorParam(int varType) {
+        constructorTypes.add(varType);
         constructorParams += JasminConstants.DataType.getDataType(varType);
     }
 
@@ -71,5 +79,14 @@ public class FunctionContainer {
 
     public String getIdentifier() {
         return identifier;
+    }
+
+    public int getConstructorType(int paramIndex) {
+        return constructorTypes.get(paramIndex);
+    }
+
+    public String getFunctionCallStr() {
+        return JasminConstants.INVOKE_STATIC + Paths.get(JasminHelper.className, identifier)
+                + "(" + constructorParams + ")" + getReturnTypeStr();
     }
 }

@@ -3,6 +3,7 @@ package main;
 import generated.NimbleParser;
 import generated.NimbleParserBaseVisitor;
 import model.*;
+import org.antlr.v4.runtime.ParserRuleContext;
 import utils.FunctionContainer;
 import utils.JasminConstants;
 import utils.JasminHelper;
@@ -146,15 +147,63 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
         return this.visit(ctx.expression());
     }
 
-    /**
-     * Visit a parse tree produced by {@link NimbleParser#functionCall}.
-     *
-     * @param ctx the parse tree
-     * @return the visitor result
-     */
     @Override
     public ParserData visitFunctionCall(NimbleParser.FunctionCallContext ctx) {
-        return super.visitFunctionCall(ctx);
+        String identifier = ctx.IDENTIFIER().getText();
+
+        FunctionContainer container = JasminHelper.getFunctionContainer(identifier);
+        if(container == null)
+            throw new ParseException(ctx, "Cannot find function: " + identifier);
+
+        FunctionExpressionData functionExpressionData = new FunctionExpressionData(ctx, container);
+        if(ctx.functionAssignments() != null) {
+            functionExpressionData.appendCode(this.visit(ctx.functionAssignments()));
+        } else if (container.getConstructorTypes().size() > 0) {
+            throw new ParseException(ctx, "Function: " + identifier + " requires parameters to be set.");
+        }
+
+        functionExpressionData.setFunctionCall();
+
+        if(!useReturnValue(ctx)) {
+            functionExpressionData.addCommand(JasminConstants.POP);
+        }
+
+        return functionExpressionData;
+    }
+
+    private boolean useReturnValue(ParserRuleContext ctx) {
+        if(ctx instanceof NimbleParser.VariableAssignmentContext
+                || ctx instanceof NimbleParser.VariableDeclarationContext) {
+            return true;
+        } else if(ctx.invokingState == -1) {
+            return false;
+        } else {
+            return useReturnValue(ctx.getParent());
+        }
+    }
+
+    @Override
+    public ParserData visitFunctionAssignments(NimbleParser.FunctionAssignmentsContext ctx) {
+        ParserData parserData = new ParserData(ctx);
+        NimbleParser.FunctionCallContext parentCtx = (NimbleParser.FunctionCallContext) ctx.getParent();
+        String identifier = parentCtx.IDENTIFIER().getText();
+        FunctionContainer container = JasminHelper.getFunctionContainer(identifier);
+        int paramsSize = container.getConstructorTypes().size();
+        if(ctx.expression().size() != paramsSize)
+            throw new ParseException(ctx, "Function: " + identifier + " misses parameters.");
+
+        for(int i = 0; i < paramsSize; i++) {
+            BaseValue baseValue = (BaseValue) this.visit(ctx.expression(i));
+            int paramType = container.getConstructorType(i);
+            if(baseValue.getDataType() != paramType)
+                throw new ParseException(ctx, "Incorrect type(s) for function: " + identifier);
+            if(baseValue instanceof BaseExpression && baseValue.isBoolean()) {
+                ((BaseExpression) baseValue).setBooleanReturnValue();
+            }
+            parserData.appendCode(baseValue);
+        }
+
+        return parserData;
     }
 
     @Override

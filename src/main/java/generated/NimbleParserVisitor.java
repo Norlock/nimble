@@ -59,6 +59,24 @@ public interface NimbleParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitConstructorDeclaration(NimbleParser.ConstructorDeclarationContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link NimbleParser#constructorParameters}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitConstructorParameters(NimbleParser.ConstructorParametersContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link NimbleParser#functionCall}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFunctionCall(NimbleParser.FunctionCallContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link NimbleParser#functionAssignments}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFunctionAssignments(NimbleParser.FunctionAssignmentsContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link NimbleParser#block}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -88,12 +106,6 @@ public interface NimbleParserVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitIfStatement(NimbleParser.IfStatementContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link NimbleParser#functionCall}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitFunctionCall(NimbleParser.FunctionCallContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link NimbleParser#printStatement}.
 	 * @param ctx the parse tree
@@ -142,12 +154,6 @@ public interface NimbleParserVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitVariableType(NimbleParser.VariableTypeContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link NimbleParser#constructorParameters}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitConstructorParameters(NimbleParser.ConstructorParametersContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code atomExpression}
 	 * labeled alternative in {@link NimbleParser#expression}.
@@ -239,6 +245,13 @@ public interface NimbleParserVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitDoubleAtom(NimbleParser.DoubleAtomContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code functionCallAtom}
+	 * labeled alternative in {@link NimbleParser#atom}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFunctionCallAtom(NimbleParser.FunctionCallAtomContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code nullAtom}
 	 * labeled alternative in {@link NimbleParser#atom}.

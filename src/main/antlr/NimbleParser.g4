@@ -31,6 +31,18 @@ constructorDeclaration
     : LEFT_PARENTHESE constructorParameters? RIGHT_PARENTHESE
     ;
 
+constructorParameters
+    : variableType IDENTIFIER (COMMA variableType IDENTIFIER)*
+    ;
+
+functionCall
+    : IDENTIFIER LEFT_PARENTHESE functionAssignments? RIGHT_PARENTHESE
+    ;
+
+functionAssignments
+    : expression (COMMA expression)*
+    ;
+
 block
     : LEFT_BRACE statement* RIGHT_BRACE
     ;
@@ -48,20 +60,16 @@ statement
     : variableDeclaration
     | variableAssignment
     | ifStatement
-    | functionCall
     | whileLoop
     | printStatement
     | comment
     | returnStatement
+    | functionCall SEMICOLON
     ;
 
 
 ifStatement
     : IF conditionBlock (ELSE IF conditionBlock)* (ELSE block)?
-    ;
-
-functionCall
-    : IDENTIFIER LEFT_PARENTHESE expression* RIGHT_PARENTHESE SEMICOLON
     ;
 
 printStatement
@@ -92,10 +100,6 @@ modifier: GLOBAL | PACKAGE | INTERNAL ;
 
 variableType: INTEGER_TYPE | STRING_TYPE | BOOLEAN_TYPE | DOUBLE_TYPE ;
 
-constructorParameters
-    : variableType IDENTIFIER (COMMA variableType IDENTIFIER)*
-    ;
-
 expression
     : NOT expression                                                                    #notExpression
     | expression op=(ADD | SUBSTRACT) expression                                     #additiveExpression
@@ -114,5 +118,6 @@ atom
     | IDENTIFIER                                    #identifierAtom
     | STRING                                        #stringAtom
     | DOUBLE                                        #doubleAtom
+    | functionCall                                  #functionCallAtom
     | NULL                                          #nullAtom
     ;

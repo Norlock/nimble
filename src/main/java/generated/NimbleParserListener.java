@@ -88,6 +88,36 @@ public interface NimbleParserListener extends ParseTreeListener {
 	 */
 	void exitConstructorDeclaration(NimbleParser.ConstructorDeclarationContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link NimbleParser#constructorParameters}.
+	 * @param ctx the parse tree
+	 */
+	void enterConstructorParameters(NimbleParser.ConstructorParametersContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NimbleParser#constructorParameters}.
+	 * @param ctx the parse tree
+	 */
+	void exitConstructorParameters(NimbleParser.ConstructorParametersContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link NimbleParser#functionCall}.
+	 * @param ctx the parse tree
+	 */
+	void enterFunctionCall(NimbleParser.FunctionCallContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NimbleParser#functionCall}.
+	 * @param ctx the parse tree
+	 */
+	void exitFunctionCall(NimbleParser.FunctionCallContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link NimbleParser#functionAssignments}.
+	 * @param ctx the parse tree
+	 */
+	void enterFunctionAssignments(NimbleParser.FunctionAssignmentsContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NimbleParser#functionAssignments}.
+	 * @param ctx the parse tree
+	 */
+	void exitFunctionAssignments(NimbleParser.FunctionAssignmentsContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link NimbleParser#block}.
 	 * @param ctx the parse tree
 	 */
@@ -137,16 +167,6 @@ public interface NimbleParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitIfStatement(NimbleParser.IfStatementContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link NimbleParser#functionCall}.
-	 * @param ctx the parse tree
-	 */
-	void enterFunctionCall(NimbleParser.FunctionCallContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link NimbleParser#functionCall}.
-	 * @param ctx the parse tree
-	 */
-	void exitFunctionCall(NimbleParser.FunctionCallContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link NimbleParser#printStatement}.
 	 * @param ctx the parse tree
@@ -227,16 +247,6 @@ public interface NimbleParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitVariableType(NimbleParser.VariableTypeContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link NimbleParser#constructorParameters}.
-	 * @param ctx the parse tree
-	 */
-	void enterConstructorParameters(NimbleParser.ConstructorParametersContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link NimbleParser#constructorParameters}.
-	 * @param ctx the parse tree
-	 */
-	void exitConstructorParameters(NimbleParser.ConstructorParametersContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code atomExpression}
 	 * labeled alternative in {@link NimbleParser#expression}.
@@ -393,6 +403,18 @@ public interface NimbleParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitDoubleAtom(NimbleParser.DoubleAtomContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code functionCallAtom}
+	 * labeled alternative in {@link NimbleParser#atom}.
+	 * @param ctx the parse tree
+	 */
+	void enterFunctionCallAtom(NimbleParser.FunctionCallAtomContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code functionCallAtom}
+	 * labeled alternative in {@link NimbleParser#atom}.
+	 * @param ctx the parse tree
+	 */
+	void exitFunctionCallAtom(NimbleParser.FunctionCallAtomContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code nullAtom}
 	 * labeled alternative in {@link NimbleParser#atom}.

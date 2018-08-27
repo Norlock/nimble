@@ -108,6 +108,10 @@ public final class JasminHelper {
         return functionContainers.get(getFunctionIdentifier(ctx));
     }
 
+    public static FunctionContainer getFunctionContainer(String identifier) {
+        return functionContainers.get(identifier);
+    }
+
     /**
      * Initializes a new block for variables.
      * @param ctx block or function context.
