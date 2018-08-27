@@ -6,6 +6,7 @@ public final class JasminConstants {
 
     // For reading purpose
     public static final String SPACE = " ";
+    public static final String MAIN = "main";
 
     public enum DataType {
         STRING("Ljava/lang/String;"),

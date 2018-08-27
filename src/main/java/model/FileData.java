@@ -1,6 +1,5 @@
 package model;
 
-import generated.NimbleParser;
 import model.commands.JavaByteCommand;
 import org.antlr.v4.runtime.ParserRuleContext;
 import utils.CustomStringBuilder;
@@ -15,6 +14,7 @@ public class FileData extends ParserData {
 
     private CustomStringBuilder sb = new CustomStringBuilder();
     private ArrayList<FunctionData> functions = new ArrayList<>();
+    private ArrayList<ParserData> fields = new ArrayList<>();
     private FunctionData main;
     private static final int STACK_SIZE = 100;
 
@@ -27,17 +27,22 @@ public class FileData extends ParserData {
 
     @Override
     public void appendCode(ParserData parserData) {
-        if(parserData instanceof FunctionData)
-            functions.add((FunctionData) parserData);
-        else
-            super.appendCode(parserData); // Static fields + main block
+        throwError("This method call is not allowed here.");
+    }
+
+    public void appendField(ParserData field) {
+        fields.add(field);
+    }
+
+    public void appendFunction(FunctionData function) {
+        functions.add(function);
     }
 
     public void appendMain(FunctionData main) {
         this.main = main;
     }
 
-    private void setFileHeader() {
+    private void appendFileHeader() {
         sb.appendLine(".class public " + JasminHelper.className);
         sb.appendLine(".super java/lang/Object");
         sb.appendLine();
@@ -53,9 +58,9 @@ public class FileData extends ParserData {
         appendFunctionHeader(main);
     }
 
-    private void setMainFooter() {
-        sb.appendLine("\treturn");
+    private void appendEndFunction() {
         sb.appendLine(".end method");
+        sb.appendLine();
     }
 
     private void appendFunctionHeader(FunctionData functionData) {
@@ -81,15 +86,27 @@ public class FileData extends ParserData {
     }
 
     public String getFileStr() {
-        setFileHeader();
+        appendFileHeader();
+
+        for(ParserData parserData : fields) {
+            for(JavaByteCommand command : parserData.getCode()) {
+                sb.appendLine("\t" + command);
+            }
+        }
 
         for(JavaByteCommand command : main.getCode()) {
             sb.appendLine("\t" + command);
         }
 
-        setMainFooter();
+        appendEndFunction();
 
-        // TODO functies toevoegen, results van functions fixen.
+        for(FunctionData functionData : functions) {
+            appendFunctionHeader(functionData);
+            for(JavaByteCommand command : functionData.getCode()) {
+                sb.appendLine("\t" + command);
+            }
+            appendEndFunction();
+        }
 
         return sb.toString();
     }

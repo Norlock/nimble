@@ -1,7 +1,7 @@
 .class public App
 .super java/lang/Object
 
-.field public static test Ljava/lang/String;
+.field public static someField Ljava/lang/String;
 
 .method public <init>()V
 	aload_0                                      ; Loads "this" on the stack
@@ -13,12 +13,14 @@
 .method public static main([Ljava/lang/String;)V
 	.limit stack 100
 	.limit locals 5
+	ldc "jaaa!"
+	putstatic App/someField Ljava/lang/String;
 	ldc 9
 	istore_1
 	iconst_3
 	istore_2
 	ldc "nee :("
-	putstatic App/test Ljava/lang/String;
+	putstatic App/someField Ljava/lang/String;
 	getstatic java/lang/System.out Ljava/io/PrintStream;
 	iload_1
 	iload_2
@@ -49,12 +51,22 @@
 	invokevirtual java/lang/StringBuilder.toString()Ljava/lang/String;
 	invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
 	getstatic java/lang/System.out Ljava/io/PrintStream;
-	getstatic App/test Ljava/lang/String;
+	getstatic App/someField Ljava/lang/String;
 	invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
 	goto label1
 	label2:
 	ldc "yes"
 	astore 4
 	label1:
-	return
+	return 
 .end method
+
+.method public static someMethod(II)I
+	.limit stack 100
+	.limit locals 2
+	iload_0
+	iload_1
+	iadd
+	ireturn 
+.end method
+

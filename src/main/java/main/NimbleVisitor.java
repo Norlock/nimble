@@ -4,6 +4,7 @@ import generated.NimbleParser;
 import generated.NimbleParserBaseVisitor;
 import model.*;
 import utils.FunctionContainer;
+import utils.JasminConstants;
 import utils.JasminHelper;
 
 public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
@@ -15,7 +16,12 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
 
         // First iterate through components --> Will assign fields
         for (int i = 0; i < ctx.component().size(); i++) {
-            fileData.appendCode(this.visit(ctx.component(i)));
+            ParserData parserData = this.visit(ctx.component(i));
+            if(parserData instanceof FunctionData) {
+                fileData.appendFunction((FunctionData) parserData);
+            } else {
+                fileData.appendField(parserData);
+            }
         }
 
         fileData.appendMain((FunctionData) this.visit(ctx.main()));
@@ -24,7 +30,9 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
 
     @Override
     public ParserData visitMain(NimbleParser.MainContext ctx) {
-        return new FunctionData(this.visit(ctx.block()));
+        FunctionData functionData = new FunctionData(this.visit(ctx.block()));
+        functionData.addCommand(JasminConstants.RETURN);
+        return functionData;
     }
 
     @Override
@@ -156,9 +164,16 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
         this.visit(ctx.constructorDeclaration());
         this.visit(ctx.returnValue());
 
-        ParserData parserData = new FunctionData(ctx);
-        parserData.appendCode(this.visit(ctx.block()));
-        return parserData;
+        FunctionData functionData = new FunctionData(this.visit(ctx.block()));
+        FunctionContainer container = functionData.getFunctionContainer();
+        if(!container.hasReturnStatement() && container.isVoid()) {
+            // Void doesn't need return, Nimble will append automatically.
+            functionData.addCommand(JasminConstants.RETURN);
+        } else if(!container.hasReturnStatement() && !container.isVoid()) {
+            throw new ParseException(ctx, "Function misses return statement.");
+        }
+
+        return functionData;
     }
 
     /**
@@ -176,8 +191,13 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
 
     @Override
     public ParserData visitReturnStatement(NimbleParser.ReturnStatementContext ctx) {
-        BaseValue value = (BaseValue) this.visit(ctx.expression());
-        return JasminHelper.getReturnAssignment(ctx, value);
+        if(ctx.expression() != null) {
+            BaseValue value = (BaseValue) this.visit(ctx.expression());
+            return JasminHelper.getReturnAssignment(ctx, value);
+        }
+        else {
+            return JasminHelper.getReturnAssignment(ctx);
+        }
     }
 
     @Override
@@ -284,13 +304,6 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
         return expressionData;
     }
 
-    /**
-     * Visit a parse tree produced by the {@code equalityExpression}
-     * labeled alternative in {@link NimbleParser#expression}.
-     *
-     * @param ctx the parse tree
-     * @return the visitor result
-     */
     @Override
     public ParserData visitEqualityExpression(NimbleParser.EqualityExpressionContext ctx) {
         BaseValue left = (BaseValue) this.visit(ctx.expression(0));
@@ -306,13 +319,6 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
         return exprData;
     }
 
-    /**
-     * Visit a parse tree produced by the {@code notExpression}
-     * labeled alternative in {@link NimbleParser#expression}.
-     *
-     * @param ctx the parse tree
-     * @return the visitor result
-     */
     @Override
     public ParserData visitNotExpression(NimbleParser.NotExpressionContext ctx) {
         BaseValue value = (BaseValue) this.visit(ctx.expression());

@@ -1,23 +1,23 @@
 class App;
 
-global string test = "jaaa!";
+global string someField = "jaaa!";
 
 main {
     int a = 9;
     int b = 3;
-    test = "nee :(";
+    someField = "nee :(";
     print(a + b - 6 - 3);
     print(b);
     if(a < b) {
         string s = "ss";
         a = 5;
         print(a + s);
-        print(test);
+        print(someField);
     } else {
         string s = "yes";
     }
 }
 
-global int test(int a, int b) {
-    #return a + b;
+global int someMethod(int a, int b) {
+    return a + b;
 }

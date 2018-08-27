@@ -98,7 +98,7 @@ public final class JasminHelper {
     public static void setVariableBlock(NimbleParser.BlockContext ctx) {
         String identifier = getFunctionIdentifier(ctx);
         if(!functionContainers.containsKey(identifier))
-            functionContainers.put(identifier, new FunctionContainer());
+            functionContainers.put(identifier, new FunctionContainer(identifier));
 
         // After variable indexes are set, set var container.
         variables.put(ctx.hashCode(), new VariableContainer());
@@ -113,7 +113,8 @@ public final class JasminHelper {
      * @param ctx block or function context.
      */
     public static void setVariableBlock(NimbleParser.FunctionContext ctx) {
-        functionContainers.put(getFunctionIdentifier(ctx), new FunctionContainer()); // 0 is this.
+        String identifier = getFunctionIdentifier(ctx);
+        functionContainers.put(identifier, new FunctionContainer(identifier)); // 0 is this.
 
         // After variable indexes are set, set var container.
         variables.put(ctx.hashCode(), new VariableContainer());
@@ -187,8 +188,22 @@ public final class JasminHelper {
         return variable;
     }
 
+    public static ParserData getReturnAssignment(ParserRuleContext ctx) {
+        FunctionContainer container = JasminHelper.getFunctionContainer(ctx);
+        if(!container.setReturnStatementAndValidate(NimbleParser.VOID))
+            throw new ParseException(ctx, "Invalid return statement");
+
+        ParserData returnData = new ParserData(ctx);
+        returnData.addCommand(JasminConstants.RETURN);
+        return returnData;
+    }
+
     public static ParserData getReturnAssignment(ParserRuleContext ctx, BaseValue value) {
-        int returnType = getFunctionContainer(ctx).getReturnType();
+        FunctionContainer container = JasminHelper.getFunctionContainer(ctx);
+        if(!container.setReturnStatementAndValidate(value.getDataType()))
+            throw new ParseException(ctx, "Invalid return statement");
+
+        int returnType = container.getReturnType();
         ParserData returnData = getDataAssignment(ctx, returnType, value);
         returnData.addCommand(JasminConstants.Prefix.getPrefix(returnType) + JasminConstants.RETURN);
         return returnData;
