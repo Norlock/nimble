@@ -23,6 +23,14 @@ public class FieldData extends BaseValue {
         addCommand(getStatic + fieldNameFull + " " + JasminConstants.DataType.getDataType(fieldType));
     }
 
+    /**
+     * Copy constructor, needed for fields and variables since they can be reused.
+     * @param fieldData
+     */
+    public FieldData(FieldData fieldData) {
+        this(fieldData.getCtx(), fieldData.getIdentifier(), fieldData.getDataType());
+    }
+
     @Override
     public int getDataType() {
         return fieldType;

@@ -20,7 +20,7 @@ public class NotExpressionData extends BaseExpression {
         if(value.getDataType() != NimbleParser.BOOLEAN_TYPE) {
             throwError("Not expression only allowed for boolean types");
         } else if (value instanceof ExpressionData) {
-            JavaByteCommand cmd = getLastCmd();
+            JavaByteCommand cmd = getLastCmdCopy();
             if(cmd.isBranchOffCommand()) {
                 BranchOffCommand branchOffCommand = cmd.cast();
                 branchOffCommand.invertType();

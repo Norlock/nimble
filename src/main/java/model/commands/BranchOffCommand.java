@@ -32,4 +32,9 @@ public class BranchOffCommand extends JavaByteCommand {
     public String toString() {
         return type + label;
     }
+
+    @Override
+    public JavaByteCommand getCopy() {
+        return new BranchOffCommand(type, label);
+    }
 }

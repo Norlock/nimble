@@ -34,8 +34,8 @@ public class ExpressionData extends BaseExpression {
         } else {
             // This label will overwrite the other ones.
             label = JasminHelper.getNewLabel();
-            JavaByteCommand leftCmd = left.getLastCmd();
-            JavaByteCommand rightCmd = right.getLastCmd();
+            JavaByteCommand leftCmd = left.getLastCmdCopy();
+            JavaByteCommand rightCmd = right.getLastCmdCopy();
 
             if(leftCmd.isBranchOffCommand()) {
                 leftCmd.cast().setLabel(label);
@@ -59,14 +59,15 @@ public class ExpressionData extends BaseExpression {
             // This label will overwrite the other ones. So the left and right side have the same branch off label.
             String gotoLabel = JasminHelper.getNewLabel();
             label = JasminHelper.getNewLabel();
-            JavaByteCommand leftCmd = left.getLastCmd();
-            JavaByteCommand rightCmd = right.getLastCmd();
+            JavaByteCommand leftCmd = left.getLastCmdCopy();
+            JavaByteCommand rightCmd = right.getLastCmdCopy();
 
             // Or expressions inverts the left side and goes to block immediately
             if(leftCmd.isBranchOffCommand()) {
                 BranchOffCommand cmd = leftCmd.cast();
                 cmd.invertType();
                 cmd.setLabel(gotoLabel);
+                left.updateLastCmd(leftCmd);
             } else {
                 left.addCommand(BranchOffType.IF_NOT_EQUAL, gotoLabel);
             }

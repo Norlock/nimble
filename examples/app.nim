@@ -12,6 +12,10 @@ main {
     double j = someMethod(3, 3);
 
     print(j);
+    bool someBool = true;
+    if(someBool || someBool) {
+
+    }
 }
 
 global int someMethod(int a, int b) {

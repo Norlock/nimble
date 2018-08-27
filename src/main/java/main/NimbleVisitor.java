@@ -416,7 +416,9 @@ public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
         BaseValue var = JasminHelper.getFieldOrVariable(ctx.getText(), ctx);
         if (var == null)
             throw new ParseException(ctx, "Variable has not been declared yet.");
+        else if (var instanceof FieldData)
+            return new FieldData((FieldData) var);
         else
-            return var;
+            return new VariableData((VariableData) var);
     }
 }

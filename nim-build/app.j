@@ -12,7 +12,7 @@
 ; Method definition for public static void main(String[] args)
 .method public static main([Ljava/lang/String;)V
 	.limit stack 100
-	.limit locals 6
+	.limit locals 7
 	ldc "jaaa!"
 	putstatic App/someField Ljava/lang/String;
 	ldc 9
@@ -58,6 +58,16 @@
 	getstatic java/lang/System.out Ljava/io/PrintStream;
 	dload 4
 	invokevirtual java/io/PrintStream/println(D)V
+	iconst_1
+	istore 6
+	iload 6
+	ifne label4
+	iload 6
+	ifeq label5
+	label4:
+	goto label3
+	label5:
+	label3:
 	return 
 .end method
 

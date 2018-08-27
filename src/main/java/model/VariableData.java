@@ -23,6 +23,14 @@ public class VariableData extends BaseValue {
         }
     }
 
+    /**
+     * Copy constructor, needed for fields and variables since they can be reused.
+     * @param variableData
+     */
+    public VariableData(VariableData variableData) {
+        this(variableData.getCtx(), variableData.getDataType(), variableData.getVarIndex());
+    }
+
     public int getVarIndex() {
         return varIndex;
     }

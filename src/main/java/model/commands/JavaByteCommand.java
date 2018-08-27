@@ -1,7 +1,5 @@
 package model.commands;
 
-import model.commands.BranchOffCommand;
-
 public class JavaByteCommand {
     private String command;
 
@@ -17,6 +15,10 @@ public class JavaByteCommand {
 
     public BranchOffCommand cast() {
         return (BranchOffCommand) this;
+    }
+
+    public JavaByteCommand getCopy() {
+        return new JavaByteCommand(command);
     }
 
     @Override

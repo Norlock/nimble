@@ -54,8 +54,13 @@ public class ParserData {
         code.add(new JavaByteCommand(JasminConstants.GO_TO + label));
     }
 
-    public JavaByteCommand getLastCmd() {
-        return code.get(getCode().size() - 1);
+    public JavaByteCommand getLastCmdCopy() {
+        // Returns copy of last command so it doesn't use the same reference.
+        return code.get(getCode().size() - 1).getCopy();
+    }
+
+    public void updateLastCmd(JavaByteCommand command) {
+        code.set(code.size() - 1, command);
     }
 
 }
