@@ -1,7 +1,7 @@
 package model;
 
 import generated.NimbleParser;
-import main.ParseException;
+import utils.ParseException;
 import model.commands.BranchOffCommand;
 import model.commands.BranchOffType;
 import model.commands.JavaByteCommand;

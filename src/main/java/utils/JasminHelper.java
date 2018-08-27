@@ -1,7 +1,6 @@
 package utils;
 
 import generated.NimbleParser;
-import main.ParseException;
 import model.*;
 import org.antlr.v4.runtime.ParserRuleContext;
 

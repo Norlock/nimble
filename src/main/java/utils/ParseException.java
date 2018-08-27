@@ -1,4 +1,4 @@
-package main;
+package utils;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 

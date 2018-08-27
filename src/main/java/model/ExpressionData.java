@@ -69,14 +69,14 @@ public class ExpressionData extends BaseExpression {
                 cmd.setLabel(gotoLabel);
                 left.updateLastCmd(leftCmd);
             } else {
-                left.addCommand(BranchOffType.IF_NOT_EQUAL, gotoLabel);
+                left.addCommand(BranchOffType.IF_EQUAL, gotoLabel);
             }
 
             // Right side is normal
             if(rightCmd.isBranchOffCommand()) {
                 rightCmd.cast().setLabel(label);
             } else {
-                right.addCommand(BranchOffType.IF_EQUAL, label); // Value or Variable
+                right.addCommand(BranchOffType.IF_NOT_EQUAL, label); // Value or Variable
             }
 
             right.setLabel(gotoLabel);

@@ -7,6 +7,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import utils.FunctionContainer;
 import utils.JasminConstants;
 import utils.JasminHelper;
+import utils.ParseException;
 
 public class NimbleVisitor extends NimbleParserBaseVisitor<ParserData> {
 

@@ -14,7 +14,9 @@ main {
     print(j);
     bool someBool = true;
     if(someBool || someBool) {
-
+        bool an = true;
+    } else {
+        bool bn = false;
     }
 }
 

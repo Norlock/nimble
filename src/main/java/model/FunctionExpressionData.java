@@ -10,14 +10,10 @@ public class FunctionExpressionData extends BaseExpression {
     public FunctionExpressionData(ParserRuleContext ctx, FunctionContainer container) {
         super(ctx);
         this.container = container;
+        this.resultType = container.getReturnType();
     }
 
     public void setFunctionCall() {
         addCommand(container.getFunctionCallStr());
-    }
-
-    @Override
-    public int getDataType() {
-        return container.getReturnType();
     }
 }

@@ -156,12 +156,15 @@ atom 1 is de expressie (2 < 3) ofwel true.
 
 # 3. Code architectuur
 De visitor klasse van ANTLR retouneerd de klasse: `ParserData`. In het begin heb ik getwijfeld om i.p.v. ParserData een
-lijst met Strings (jasmin commando's) te retourneren maar heb hier uiteindelijk niet voor gekozen. Dit komt omdat
-commando's niet altijd hetzelfde moet retourneren. Een voorbeeld is een 'of' expressie:
+lijst met Strings (jasmin commando's) te retourneren maar heb hier uiteindelijk niet voor gekozen. M.b.v. een custom
+klasse is er veel code herbruikbaar. Jasmin werkt ook niet altijd hezelfde, 'of' expressies werken bijvoorbeeld met
+tegenovergestelde commando's. Een voorbeeld van een 'of' expressie:
 
 ```
 if(someBool || someBool) {
-  
+	bool a = true;
+} else {
+	bool b = false;
 }
 ```
 
@@ -169,24 +172,91 @@ Deze if constructie zal de volgende Jasmin code opleveren:
 
 ```
 iload 6
-ifne label4
+ifeq label4
 iload 6
-ifeq label5
+ifne label5
 label4:
+iconst_1
+istore 7
 goto label3
 label5:
+iconst_0
+istore 8
 label3:
 ```
 
-De rede dat ik gebruik 
+Hierboven is te zien dat de eerste someBool de commando's 'iload 6, ifeq label4` krijgt. Vervolgens wordt deze via de
+label direct naar de if block geleid (bool a = true;). De tweede somebool `iload 6, ifne label5` werkt zoals bij een
+gewone if statement. Via ParserData kan ik een kopie van de commando ifne opvragen en omzetten naar ifeq. Elk commando
+kan automatisch worden 'omgedraaid'.
 
-Deze klasse bevat een lijst met JavaByteCommands. 
-Er is een class Data. 
+## 3.1 Klasse structuur
+### 3.1.1 Packages
+**generated** <br>
+Binnen deze package zitten alle door ANTLR automatisch gegenereerde bestanden.
 
-* Data    
-    * ValueData 
-        * VariableData (checked)
-        * ExpressionData (checked)
-    * ParserData (not checked)
+**main** <br>
+De main package bevat de main klasse, de visitor klasse en de klasse om het project te builden.
+
+**model** <br>
+De model package bevat alle klasses die gebruikt worden om data op te slaan en te retourneren.
+
+**model.commands** <br>
+De commands sub package bevat de commando klasses. Deze klasses zijn makkelijker manipuleerbaar dan gewone Strings.
+
+**utils** <br>
+De utils package bevat allerlei helper klasses om data te vergaren en te manipuleren.
+
+### 3.1.2 Klasses
+De model klasses lijken op het eerste ogenblik ingewikkeld in elkaar te zitten maar zullen door het volgende diagram een
+stuk duidelijker moeten worden.
+
+![alt text](Klasses.png)
+
+**ParserData** <br>
+Deze klasse heeft constructor die een context verwacht. Deze context wordt gebruikt om foutmeldingen te genereren en om
+data op te zoeken. Via een context kan je bijvoorbeeld achterhalen in welke functie deze Klasse is gegenereerd. Deze
+klasse vervult vooral algemene zaken. De meer specifieke zaken worden allemaal door base klasses afgehandeld. Deze klasse heeft een aantal methodes:
+
+* throw Error(String errorMsg);
+Deze methode gooit een foutmelding, waarbij direct te zien is op welke regel de compiler is gecrashed.
+
+* ArrayList<JavaByteCommands> getCode();
+Deze methode retouneerd de toegevoegde commando's.
+
+**BaseValue** <br>
+Deze klasse is abstract en wordt voornamelijk gebruikt voor type checking, ook zitten hier methodes om waarden op de stack
+te zetten, zoals Strings of integers.
+
+**BaseExpression** <br>
+Expressies erft over van BaseValue. Expressies hebben wat extra eigenschappen zoals 'labels' en de mogelijkheid om
+boolean expressies retourneerbare waarde te geven. Van nature hoeft dat namelijk niet:
+
+```
+if(a < b) { # geen retourneerbare waarde.
+  
+}
+
+bool someBool = (a < b); # wel retourneerbare waarde.
+```
+
+**ExpressionData** <br>
+Deze klasse bevat bijna alle expressie methodes. De constructor verwacht een linker en rechter waarde (dit kan dus ook
+weer een expressie zijn).
+
+**FieldData / VariableData** <br>
+Deze klasses opereren ongeveer gelijk. Belangrijk is dat deze klasses kopie constructoren bevat. Deze kopie
+constructoren worden gebruikt om ongewenste manipulaties te voorkomen. Een voorbeeld kan zijn:
+
+```
+if(someBool || someBool)
+```
+
+Wanneer de linker someBool `ifne` omgedraaid wordt naar `ifeq`, mag dat alleen op het linker object gebeuren. Als deze
+naar dezelfde referentie verwijzen zouden er problemen kunnen ontstaan. Dit probleem wordt al vanaf het begin opgelost:
+
+```
+
+
 
 
