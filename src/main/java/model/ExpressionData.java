@@ -78,6 +78,7 @@ public class ExpressionData extends BaseExpression {
             // Right side is normal
             if(rightCmd.isBranchOffCommand()) {
                 rightCmd.cast().setLabel(label);
+                right.updateLastCmd(rightCmd);
             } else {
                 right.addCommand(BranchOffType.IF_NOT_EQUAL, label); // Value or Variable
             }
