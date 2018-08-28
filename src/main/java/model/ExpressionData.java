@@ -39,14 +39,17 @@ public class ExpressionData extends BaseExpression {
 
             if(leftCmd.isBranchOffCommand()) {
                 leftCmd.cast().setLabel(label);
+                left.updateLastCmd(leftCmd);
             } else {
                 left.addCommand(BranchOffType.IF_EQUAL, label); // Value or Variable
             }
             if(rightCmd.isBranchOffCommand()) {
                 rightCmd.cast().setLabel(label);
+                right.updateLastCmd(rightCmd);
             } else {
                 right.addCommand(BranchOffType.IF_EQUAL, label); // Value or Variable
             }
+
 
             loadDataOntoStack(NimbleParser.BOOLEAN_TYPE);
         }
